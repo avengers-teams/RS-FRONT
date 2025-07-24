@@ -1,6 +1,5 @@
 <template>
   <div>
-    <StatusCard />
     <div class="h-full flex flex-col">
       <n-button
         v-if="!hasNewConversation"
@@ -43,8 +42,6 @@ import { useConversationStore } from '@/store';
 import { BaseConversationSchema } from '@/types/schema';
 import { dropdownRenderer, popupChangeConversationTitleDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
-
-import StatusCard from './StatusCard.vue';
 
 const { t } = useI18n();
 

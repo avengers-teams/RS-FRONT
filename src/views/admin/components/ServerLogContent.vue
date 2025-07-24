@@ -1,18 +1,11 @@
 <template>
-  <div class=" flex flex-col">
+  <div class="flex flex-col">
     <!-- 设置 -->
     <div class="flex flex-row mt-3 justify-between">
       <div class="flex flex-wrap flex-row sm:space-x-3">
         <div class="option-item">
           <n-text>{{ t('commons.maxLineCount') }}</n-text>
-          <n-input-number
-            v-model:value="maxLineCount"
-            size="small"
-            class="w-27"
-            :min="100"
-            :max="2000"
-            :step="100"
-          />
+          <n-input-number v-model:value="maxLineCount" size="small" class="w-27" :min="100" :max="2000" :step="100" />
         </div>
         <div class="option-item">
           <n-text>{{ t('commons.updateInterval') }}</n-text>

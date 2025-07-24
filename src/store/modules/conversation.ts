@@ -80,9 +80,9 @@ const useConversationStore = defineStore('conversation', {
         mapping: {},
         metadata: info.openaiWebPlugins
           ? {
-            source: 'openai_web',
-            plugin_ids: info.openaiWebPlugins,
-          }
+              source: 'openai_web',
+              plugin_ids: info.openaiWebPlugins,
+            }
           : undefined,
       };
     },

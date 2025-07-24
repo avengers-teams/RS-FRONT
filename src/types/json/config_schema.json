@@ -131,11 +131,7 @@
       "properties": {
         "console_log_level": {
           "default": "INFO",
-          "enum": [
-            "INFO",
-            "DEBUG",
-            "WARNING"
-          ],
+          "enum": ["INFO", "DEBUG", "WARNING"],
           "title": "Console Log Level",
           "type": "string"
         }
@@ -144,10 +140,7 @@
       "type": "object"
     },
     "OpenaiApiChatModels": {
-      "enum": [
-        "gpt_3_5",
-        "gpt_4"
-      ],
+      "enum": ["gpt_3_5", "gpt_4"],
       "title": "OpenaiApiChatModels",
       "type": "string"
     },
@@ -188,10 +181,7 @@
           "type": "integer"
         },
         "enabled_models": {
-          "default": [
-            "gpt_3_5",
-            "gpt_4"
-          ],
+          "default": ["gpt_3_5", "gpt_4"],
           "items": {
             "$ref": "#/$defs/OpenaiApiChatModels"
           },
@@ -325,11 +315,7 @@
           "type": "integer"
         },
         "enabled_models": {
-          "default": [
-            "gpt_3_5",
-            "gpt_4",
-            "gpt_4_plugins"
-          ],
+          "default": ["gpt_3_5", "gpt_4", "gpt_4_plugins"],
           "items": {
             "$ref": "#/$defs/OpenaiWebChatModels"
           },
@@ -393,11 +379,7 @@
       "type": "string"
     },
     "OpenaiWebFileUploadStrategyOption": {
-      "enum": [
-        "server_upload_only",
-        "browser_upload_only",
-        "browser_upload_when_file_size_exceed"
-      ],
+      "enum": ["server_upload_only", "browser_upload_only", "browser_upload_when_file_size_exceed"],
       "title": "OpenaiWebFileUploadStrategyOption",
       "type": "string"
     },
@@ -414,9 +396,7 @@
           "type": "integer"
         },
         "request_stats_filter_keywords": {
-          "default": [
-            "/status"
-          ],
+          "default": ["/status"],
           "items": {
             "type": "string"
           },
@@ -450,11 +430,7 @@
         "sync_conversations_on_startup": false,
         "sync_conversations_schedule": false,
         "sync_conversations_schedule_interval_hours": 12,
-        "enabled_models": [
-          "gpt_3_5",
-          "gpt_4",
-          "gpt_4_plugins"
-        ],
+        "enabled_models": ["gpt_3_5", "gpt_4", "gpt_4_plugins"],
         "model_code_mapping": {
           "gpt_3_5": "text-davinci-002-render-sha",
           "gpt_3_5_mobile": "text-davinci-002-render-sha-mobile",
@@ -483,10 +459,7 @@
         "proxy": null,
         "connect_timeout": 10,
         "read_timeout": 20,
-        "enabled_models": [
-          "gpt_3_5",
-          "gpt_4"
-        ],
+        "enabled_models": ["gpt_3_5", "gpt_4"],
         "model_code_mapping": {
           "gpt_3_5": "gpt-3.5-turbo",
           "gpt_4": "gpt-4"
@@ -561,9 +534,7 @@
       "default": {
         "ask_stats_ttl": 7776000,
         "request_stats_ttl": 2592000,
-        "request_stats_filter_keywords": [
-          "/status"
-        ]
+        "request_stats_filter_keywords": ["/status"]
       }
     },
     "log": {

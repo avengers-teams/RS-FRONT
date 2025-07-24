@@ -37,7 +37,11 @@
         <n-spin size="medium" />
       </template>
     </n-empty>
-    <n-empty v-else-if="currentPlugins?.items.length == 0" class="min-h-144" :description="$t('commons.noPluginsAvailable')" />
+    <n-empty
+      v-else-if="currentPlugins?.items.length == 0"
+      class="min-h-144"
+      :description="$t('commons.noPluginsAvailable')"
+    />
     <div v-else>
       <div class="flex flex-wrap gap-3">
         <n-card v-for="(plugin, i) of currentPlugins?.items" :key="i" class="w-68 h-45">

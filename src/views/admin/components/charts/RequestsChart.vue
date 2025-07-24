@@ -74,24 +74,27 @@ const datasetSource = computed(() => {
   if (props.requestStats) {
     // aggregate by start_time
     // TODO: 根据 endpoint 提供筛选选项；这里只是按照时间展示总量
-    const aggregated = props.requestStats.reduce((acc, cur) => {
-      if (!cur._id?.start_time) return acc;
-      const timestamp = new Date(cur._id.start_time).getTime();
-      const count = cur.count;
-      const userIds = cur.user_ids.filter((id) => id !== null) as number[];
-      const key = timestamp.toString();
-      if (acc[key]) {
-        acc[key].count += count;
-        acc[key].userIds.concat(userIds || []);
-      } else {
-        acc[key] = {
-          timestamp,
-          count,
-          userIds: userIds || [],
-        };
-      }
-      return acc;
-    }, {} as Record<string, RequestStatsRecord>);
+    const aggregated = props.requestStats.reduce(
+      (acc, cur) => {
+        if (!cur._id?.start_time) return acc;
+        const timestamp = new Date(cur._id.start_time).getTime();
+        const count = cur.count;
+        const userIds = cur.user_ids.filter((id) => id !== null) as number[];
+        const key = timestamp.toString();
+        if (acc[key]) {
+          acc[key].count += count;
+          acc[key].userIds.concat(userIds || []);
+        } else {
+          acc[key] = {
+            timestamp,
+            count,
+            userIds: userIds || [],
+          };
+        }
+        return acc;
+      },
+      {} as Record<string, RequestStatsRecord>
+    );
     return Object.values(aggregated);
   } else {
     return [];
@@ -231,9 +234,9 @@ const option = computed<EChartsOption>(() => {
         const data = el.data as any;
         return `<div>
                   <span>${timeFormatter(data.timestamp, true)} ~ ${timeFormatter(
-          new Date(data.timestamp).getTime() + props.requestStatsGranularity! * 1000,
-          true
-        )}</span>
+                    new Date(data.timestamp).getTime() + props.requestStatsGranularity! * 1000,
+                    true
+                  )}</span>
                   <br />
                   <span>${el.seriesName}: ${data.count}</span> <br />
                   <span>${t('commons.requestUsers')}: ${data.userIds.map((id: number) => findUsername(id))}</span>

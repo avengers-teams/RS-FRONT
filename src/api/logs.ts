@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-import {
-  AskLogDocument,
-  LogFilterOptions,
-} from '@/types/schema';
+import { AskLogDocument, LogFilterOptions } from '@/types/schema';
 
 import ApiUrl from './url';
 

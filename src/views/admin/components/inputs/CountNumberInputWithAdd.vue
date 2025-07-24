@@ -2,12 +2,8 @@
   <div class="flex flex-row lt-sm:flex-wrap lt-sm:space-y-2 items-center space-x-2">
     <CountNumberInput v-model="modelValue" />
     <n-button-group size="small">
-      <n-button size="small" round @click="addCount(100)">
-        +100
-      </n-button>
-      <n-button size="small" round @click="addCount(1000)">
-        +1k
-      </n-button>
+      <n-button size="small" round @click="addCount(100)"> +100 </n-button>
+      <n-button size="small" round @click="addCount(1000)"> +1k </n-button>
     </n-button-group>
   </div>
 </template>

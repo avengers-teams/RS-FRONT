@@ -90,7 +90,6 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
       else if (recipient === 'myfiles_browser') displayType = 'myfiles_browser';
       else if (recipient !== 'all' && message.model == 'gpt_4_plugins') displayType = 'plugin';
       if (displayType) break;
-
     } else if (message.role == 'tool') {
       if (message.author_name == 'browser') displayType = 'browser';
       else if (message.author_name == 'dalle.text2im') displayType = 'dalle_result';
@@ -123,13 +122,16 @@ export function buildTemporaryMessage(
   openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
 ) {
   const random_strid = Math.random().toString(36).substring(2, 16);
-  const content = source === 'openai_api' ? {
-    content_type: 'text',
-    text: textContent,
-  } : {
-    content_type: 'text',
-    parts: [textContent],
-  };
+  const content =
+    source === 'openai_api'
+      ? {
+          content_type: 'text',
+          text: textContent,
+        }
+      : {
+          content_type: 'text',
+          parts: [textContent],
+        };
   const result = {
     id: `temp_${random_strid}`,
     source,

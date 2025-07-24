@@ -1,13 +1,11 @@
 import { mergeConfig } from 'vite';
-import vueDevTools from 'vite-plugin-vue-devtools'
+import vueDevTools from 'vite-plugin-vue-devtools';
 import baseConfig from './vite.config.base';
 
 export default mergeConfig(
   {
     mode: 'development',
-    plugins: [
-      vueDevTools(),
-    ],
+    plugins: [vueDevTools({ launchEditor: 'webstorm' })],
     server: {
       host: '0.0.0.0',
       port: 5173,

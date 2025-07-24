@@ -99,8 +99,8 @@ const isUserExpired = (user: UserReadAdmin) => {
 
 const getUserStatusText = (user: UserReadAdmin) => {
   let result = '';
-  if (user.setting.openai_web_chat_status) {
-    result = t(chatStatusMap[user.setting.openai_web_chat_status as keyof typeof chatStatusMap]);
+  if (user.chat_status) {
+    result = t(chatStatusMap[user.chat_status as keyof typeof chatStatusMap]);
   }
   if (isUserExpired(user)) {
     result += ` (${t('commons.expired')})`;
@@ -127,26 +127,6 @@ const columns: DataTableColumns<UserReadAdmin> = [
   { title: '#', key: 'id', sorter: 'default' },
   { title: t('commons.username'), key: 'username' },
   { title: t('commons.nickname'), key: 'nickname' },
-  {
-    title: t('commons.status'),
-    key: 'rev_chat_status',
-    render(row) {
-      return getUserStatusText(row);
-    },
-    sorter: (userA, userB) => {
-      const getStatus = (user: UserReadAdmin) => {
-        if (user.setting.openai_web_chat_status === 'asking') return 2;
-        else if (user.setting.openai_web_chat_status === 'queueing') return 1;
-        else return 0;
-      };
-      return getStatus(userB) - getStatus(userA);
-    },
-    filterOptions: userStateFilterOptions.value,
-    filter: (value, row) => {
-      if (value === 'expired' && isUserExpired(row)) return true;
-      return row.setting.openai_web_chat_status === value;
-    },
-  },
   {
     title: t('commons.activeTime'),
     key: 'last_active_time',

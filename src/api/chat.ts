@@ -41,5 +41,3 @@ export function patchOpenaiChatPluginsUsersSettingsApi(pluginId: string, setting
     },
   });
 }
-
-

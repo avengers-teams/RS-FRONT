@@ -5,18 +5,10 @@
         <n-space :align="'center'">
           <div class="lt-sm:hidden">
             <a href="/" style="text-decoration: none; color: inherit">
-              <span class="lt-md:hidden">{{ $t('commons.siteTitleFull') }}</span>
-              <span class="md:hidden">{{ $t('commons.siteTitle') }}</span>
+              <span class="font-mono text-2xl font-semibold oblique">{{ $t('commons.siteTitleFull') }}</span>
             </a>
           </div>
-          <div class="hidden sm:block">
-            <a class="h-full inline-block flex" href="https://github.com/chatpire/chatgpt-web-share" target="_blank">
-              <n-icon :color="appStore.theme == 'dark' ? 'white' : 'black'" :component="LogoGithub" />
-            </a>
-          </div>
-          <n-tag :bordered="false" type="success" size="small" class="hidden sm:inline-flex">
-            {{ version }}
-          </n-tag>
+          <div class="hidden sm:block"></div>
         </n-space>
       </template>
       <template #avatar>

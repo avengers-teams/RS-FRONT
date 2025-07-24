@@ -13,24 +13,13 @@
           <n-text>{{ t('commons.timeRange') }}</n-text>
           <n-date-picker v-model:value="range" size="small" class="w-80" type="daterange" clearable />
           <n-button-group size="small" round>
-            <n-button @click="range = [Date.now() - 7 * 24 * 60 * 60 * 1000, Date.now()]">
-              7d
-            </n-button>
-            <n-button @click="range = [Date.now() - 30 * 24 * 60 * 60 * 1000, Date.now()]">
-              30d
-            </n-button>
+            <n-button @click="range = [Date.now() - 7 * 24 * 60 * 60 * 1000, Date.now()]"> 7d </n-button>
+            <n-button @click="range = [Date.now() - 30 * 24 * 60 * 60 * 1000, Date.now()]"> 30d </n-button>
           </n-button-group>
         </div>
         <div class="option-item">
           <n-text>{{ t('commons.limit') }}</n-text>
-          <n-input-number
-            v-model:value="limit"
-            size="small"
-            class="w-27"
-            :min="100"
-            :max="100000"
-            :step="100"
-          />
+          <n-input-number v-model:value="limit" size="small" class="w-27" :min="100" :max="100000" :step="100" />
         </div>
       </div>
     </div>

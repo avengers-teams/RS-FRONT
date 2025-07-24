@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-col items-start my-2">
-    <div class="flex items-center text-xs rounded p-3 text-gray-900 bg-gray-100 max-w-full box-border" @click="handleExpand">
+    <div
+      class="flex items-center text-xs rounded p-3 text-gray-900 bg-gray-100 max-w-full box-border"
+      @click="handleExpand"
+    >
       <n-ellipsis class="flex items-center gap-3">
         {{ $t('commons.usePlugin') }} <b>{{ props.pluginName }}</b>
       </n-ellipsis>

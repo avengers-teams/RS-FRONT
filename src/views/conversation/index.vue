@@ -76,7 +76,7 @@
         <InputRegion
           v-model:input-value="inputValue"
           v-model:auto-scrolling="autoScrolling"
-          class="sticky bottom-0 z-10"
+          class="bottom-0 z-10"
           :can-abort="canAbort"
           :can-continue="!loadingAsk && canContinue"
           :send-disabled="sendDisabled"
@@ -101,7 +101,6 @@ import { NButton, NIcon, useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getArkoseInfo } from '@/api/arkose';
 import { getAskWebsocketApiUrl } from '@/api/chat';
 import { generateConversationTitleApi, setConversationTitleApi } from '@/api/conv';
 import { useAppStore, useConversationStore, useFileStore, useUserStore } from '@/store';
@@ -173,8 +172,6 @@ const currentSendMessage = ref<BaseChatMessage | null>(null);
 const currentRecvMessages = ref<BaseChatMessage[]>([]);
 
 const uploadMode = computed(() => {
-  const disableUploading = userStore.userInfo?.setting.openai_web.disable_uploading;
-  if (disableUploading) return null;
   if (
     currentConversation.value?.source === 'openai_web' &&
     currentConversation.value.current_model == 'gpt_4_code_interpreter'
@@ -289,9 +286,6 @@ const sendMsg = async () => {
   isAborted.value = false;
   let hasGotReply = false;
 
-  // 唤起 arkose
-  const { data: arkoseInfo } = await getArkoseInfo();
-
   // 处理附件
   let attachments = null as OpenaiWebChatMessageMetadataAttachment[] | null;
   if (uploadMode.value !== null && fileStore.uploadedFileInfos.length > 0) {
@@ -355,20 +349,6 @@ const sendMsg = async () => {
   }
 
   let arkoseToken = null as string | null;
-  if (arkoseInfo.enabled) {
-    const url = arkoseInfo.url;
-    try {
-      arkoseToken = await getArkoseToken(url);
-      console.log('Get arkose token', arkoseToken);
-    } catch (err: any) {
-      console.error('Failed to get Arkose token', err);
-      Dialog.error({
-        title: t('errors.arkoseError'),
-        content: t('errors.arkoseTokenError'),
-      });
-      // return;
-    }
-  }
 
   const askRequest: AskRequest = {
     new_conversation: isCurrentNewConversation.value,

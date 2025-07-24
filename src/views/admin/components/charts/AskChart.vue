@@ -103,8 +103,8 @@ function makeDatasets(askRecords: AskLogAggregation[]) {
           users: userIds
             ? userIds.length > 5
               ? `${findUsername(userIds[0])}, ${findUsername(userIds[1])}, ${findUsername(userIds[2])}, ... and ${
-                userIds.length - 3
-              } more`
+                  userIds.length - 3
+                } more`
               : userIds.map((id) => findUsername(id)).join(', ')
             : '',
           totalAskTime: v.total_ask_time?.toFixed(2) || 0,

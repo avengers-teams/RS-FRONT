@@ -11,22 +11,12 @@
         <n-icon><Close /></n-icon>
       </template>
     </n-button>
-    <n-button size="small" round @click="timestampValue = new Date().getTime()">
-      now
-    </n-button>
+    <n-button size="small" round @click="timestampValue = new Date().getTime()"> now </n-button>
     <n-button-group size="small">
-      <n-button size="small" round @click="addDay(1)">
-        +d
-      </n-button>
-      <n-button size="small" round @click="addDay(7)">
-        +w
-      </n-button>
-      <n-button size="small" round @click="addMonth(1)">
-        +m
-      </n-button>
-      <n-button size="small" round @click="addMonth(12)">
-        +y
-      </n-button>
+      <n-button size="small" round @click="addDay(1)"> +d </n-button>
+      <n-button size="small" round @click="addDay(7)"> +w </n-button>
+      <n-button size="small" round @click="addMonth(1)"> +m </n-button>
+      <n-button size="small" round @click="addMonth(12)"> +y </n-button>
     </n-button-group>
   </div>
 </template>

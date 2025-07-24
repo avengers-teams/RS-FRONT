@@ -8,20 +8,14 @@
           <n-time-picker v-model:formatted-value="item.end_time" class="w-28" />
         </div>
         <n-button-group size="small">
-          <n-button type="default" round @click="handleAdd(i)">
-            +
-          </n-button>
-          <n-button type="default" round @click="handleRemove(i)">
-            -
-          </n-button>
+          <n-button type="default" round @click="handleAdd(i)"> + </n-button>
+          <n-button type="default" round @click="handleRemove(i)"> - </n-button>
         </n-button-group>
       </div>
     </div>
     <div v-else class="flex items-center">
       <n-text>{{ $t('commons.empty') }}</n-text>
-      <n-button class="ml-4" size="small" round @click="handleAdd">
-        +
-      </n-button>
+      <n-button class="ml-4" size="small" round @click="handleAdd"> + </n-button>
     </div>
   </n-card>
 </template>

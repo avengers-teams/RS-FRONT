@@ -9,7 +9,9 @@
           <n-list hoverable>
             <n-list-item v-for="(item, index) of attachments" :key="index">
               <div class="flex flex-row justify-between">
-                <span class="font-bold"><n-ellipsis style="max-width: 200px">{{ item.name }}</n-ellipsis></span>
+                <span class="font-bold"
+                  ><n-ellipsis style="max-width: 200px">{{ item.name }}</n-ellipsis></span
+                >
                 <span>{{ sizeToHumanReadable(item.size || 0) }}</span>
               </div>
             </n-list-item>

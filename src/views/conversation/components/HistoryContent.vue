@@ -27,9 +27,7 @@
         class="flex flex-row items-center justify-center pb-4 relative"
         :style="{ backgroundColor: themeVars.baseColor }"
       >
-        <n-text class="mr-3">
-          {{ $t('labels.plugins') }}:
-        </n-text>
+        <n-text class="mr-3"> {{ $t('labels.plugins') }}: </n-text>
         <div v-if="convOpenaiWebPlugins === null" class="flex flex-row space-x-1 items-center">
           <n-spin :size="16" />
           <span>{{ $t('tips.loading') }}</span>
@@ -39,7 +37,7 @@
             <template #trigger>
               <n-tag round :bordered="false">
                 <template #icon>
-                  <img v-if="plugin.manifest?.logo_url" :src="plugin.manifest?.logo_url" class="ml-1 w-5 h-5">
+                  <img v-if="plugin.manifest?.logo_url" :src="plugin.manifest?.logo_url" class="ml-1 w-5 h-5" />
                 </template>
                 <span>{{ plugin.manifest?.name_for_human }}</span>
               </n-tag>
@@ -143,9 +141,9 @@ const rawMessages = computed<BaseChatMessage[]>(() => {
 const filteredMessages = computed<BaseChatMessage[]>(() => {
   return rawMessages.value
     ? rawMessages.value.filter((message) => {
-      if (message.role == 'system') return false;
-      return true;
-    })
+        if (message.role == 'system') return false;
+        return true;
+      })
     : [];
 });
 

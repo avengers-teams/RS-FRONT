@@ -20,30 +20,7 @@
           :consistent-menu-width="false"
           :render-label="renderModelSelectionLabel"
           :render-option="renderModelSelectionOption"
-        >
-          <template #action>
-            <div class="my-1 h-23 w-100 lt-sm:max-w-70 flex flex-col justify-between">
-              <div class="mb-2 text-xs">
-                <span class="font-semibold">{{ t('commons.modelDescriptions') }}: </span>
-                {{
-                  (currentHoveringModel || newConversationInfo.model) ? t(
-                    `modelDescriptions.${newConversationInfo.source}.${
-                      currentHoveringModel || newConversationInfo.model
-                    }`
-                  ) : ''
-                }}
-              </div>
-              <div class="text-xs text-right">
-                {{ t('commons.remain') }}:
-                {{
-                  getCountTrans(
-                    userStore.user?.setting[newConversationInfo.source!].per_model_ask_count[newConversationInfo.model!]
-                  )
-                }}
-              </div>
-            </div>
-          </template>
-        </n-select>
+        />
       </n-form-item>
       <n-form-item
         v-if="newConversationInfo.source === 'openai_web' && newConversationInfo.model === 'gpt_4_plugins'"
@@ -97,34 +74,22 @@ const availableChatSourceTypes = computed<SelectOption[]>(() => {
   }
   return [
     {
-      label: t('sources_short.openai_web'),
-      value: 'openai_web',
-      disabled: !userStore.user.setting.openai_web.allow_to_use,
-    },
-    {
       label: t('sources_short.openai_api'),
       value: 'openai_api',
-      disabled: !userStore.user.setting.openai_api.allow_to_use,
     },
   ];
 });
 
-const availableModels = computed<SelectOption[]>(() => {
-  if (!userStore.user) {
-    return [];
-  }
-  if (newConversationInfo.value.source === 'openai_web') {
-    return userStore.user.setting.openai_web.available_models.map((model) => ({
-      label: t(`models.${model}`),
-      value: model,
-    }));
-  } else {
-    return userStore.user.setting.openai_api.available_models.map((model) => ({
-      label: t(`models.${model}`),
-      value: model,
-    }));
-  }
-});
+const availableModels = ref([
+  {
+    label: '九格',
+    value: 'fm9g4bv',
+  },
+  {
+    label: 'DeepSeek',
+    value: 'deepseek_chat',
+  },
+]);
 
 const newConversationInfo = ref<NewConversationInfo>({
   title: null,

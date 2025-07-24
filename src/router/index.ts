@@ -32,7 +32,7 @@ const router = createRouter({
       name: 'conversation',
       component: () => import('@/views/conversation/index.vue'),
       meta: {
-        requiresAuth: false,
+        requiresAuth: true,
         roles: ['superuser', 'user'],
       },
     },
@@ -51,7 +51,7 @@ const router = createRouter({
       redirect: '/admin/user',
       component: () => import('@/views/admin/index.vue'),
       meta: {
-        requiresAuth: false,
+        requiresAuth: true,
         roles: ['superuser'],
       },
       children: [

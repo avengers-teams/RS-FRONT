@@ -3,7 +3,6 @@ import { WritableComputedRef } from 'vue';
 import { createI18n, type I18n, type Locale } from 'vue-i18n';
 
 import EN from './locales/en-US.json';
-import MS from './locales/ms-MY.json';
 import ZH from './locales/zh-CN.json';
 
 let i18n: I18n;
@@ -15,9 +14,6 @@ const init = () => {
     messages: {
       'en-US': {
         ...EN,
-      },
-      'ms-MY': {
-        ...MS,
       },
       'zh-CN': {
         ...ZH,

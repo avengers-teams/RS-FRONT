@@ -18,9 +18,12 @@
         <BrowsingIcon :name="action.type" :size="14" />
         <div v-if="action.type == 'search'">
           {{ $t('commons.search') }} Bing:
-          <span class="font-medium">“<a :href="getSearchUrl(action.searchContent)" target="_blank" rel="noreferrer" class="text-green-600">{{
-            action.searchContent
-          }}</a>”</span>
+          <span class="font-medium"
+            >“<a :href="getSearchUrl(action.searchContent)" target="_blank" rel="noreferrer" class="text-green-600">{{
+              action.searchContent
+            }}</a
+            >”</span
+          >
         </div>
         <div v-else-if="action.type == 'click'">
           <div class="flex items-center gap-2">

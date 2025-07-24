@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import { OpenaiChatFileUploadUrlRequest, StartUploadRequestSchema, StartUploadResponseSchema, UploadedFileInfoSchema } from '@/types/schema';
+import {
+  OpenaiChatFileUploadUrlRequest,
+  StartUploadRequestSchema,
+  StartUploadResponseSchema,
+  UploadedFileInfoSchema,
+} from '@/types/schema';
 
 import ApiUrl from './url';
 

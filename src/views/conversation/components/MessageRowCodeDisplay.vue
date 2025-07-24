@@ -17,9 +17,7 @@
       <div ref="codeRef" class="code-border" v-html="renderedCodeContent" />
       <!-- result -->
       <div v-if="result != null" class="rounded-md bg-black p-4 text-xs code-result">
-        <div class="mb-1 text-gray-400">
-          RESULT
-        </div>
+        <div class="mb-1 text-gray-400">RESULT</div>
         <div class="max-h-64 overflow-auto whitespace-pre-line font-mono text-white">
           {{ result }}
         </div>
