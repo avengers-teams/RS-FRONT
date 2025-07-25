@@ -94,20 +94,19 @@ import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
 import InputRegion from '@/views/conversation/components/InputRegion.vue';
-import LeftBar from '@/views/conversation/components/LeftBar.vue';
 
 import { saveAsMarkdown } from '../utils/export';
 import { buildTemporaryMessage, modifiyTemporaryMessageContent } from '../utils/message';
 
-const currentContent = ref('dashboard');
+const props = defineProps<{
+  _currentConversationId: string | null;
+}>();
 
 const themeVars = useThemeVars();
-
 const { t } = useI18n();
 
 const gtmd = screenWidthGreaterThan('md');
 
-const rootRef = ref();
 const historyRef = ref();
 const userStore = useUserStore();
 const appStore = useAppStore();
@@ -121,11 +120,12 @@ const autoScrolling = useStorage('autoScrolling', true);
 const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
 const canContinue = ref<boolean>(false);
-const foldLeftBar = useStorage('foldLeftBar', false);
 let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
-const currentConversationId = ref<string | null>(null);
+const currentConversationId = computed(() => {
+  return props._currentConversationId || null;
+});
 const isCurrentNewConversation = computed<boolean>(() => {
   // return currentConversationId.value === conversationStore.newConversation?.conversation_id;
   return currentConversationId.value?.startsWith('new_conversation') || false;

@@ -22,115 +22,41 @@
         :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
         :loading="loadingAsk"
         @new-conversation="makeNewTask"
-      >
-      </LeftBar>
+      />
     </n-layout-sider>
     <!-- 右栏 -->
-    <RightConversation />
+    <RightConversation :_current-conversation-id="currentConversationId"></RightConversation>
   </n-layout>
 </template>
 
 <script setup lang="ts">
-import { ArrowDown, ChatboxEllipses } from '@vicons/ionicons5';
-import { useStorage } from '@vueuse/core';
-import { NButton, NIcon, useThemeVars } from 'naive-ui';
-import { computed, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+import {useStorage} from '@vueuse/core';
+import { ref, watch} from 'vue';
+import {useI18n} from 'vue-i18n';
 
-import { getAskWebsocketApiUrl } from '@/api/chat';
-import { generateConversationTitleApi, setConversationTitleApi } from '@/api/conv';
-import { useAppStore, useConversationStore, useFileStore, useUserStore } from '@/store';
-import { NewConversationInfo } from '@/types/custom';
-import {
-  AskRequest,
-  AskResponse,
-  BaseChatMessage,
-  BaseConversationHistory,
-  BaseConversationSchema,
-  OpenaiWebChatMessageMetadataAttachment,
-  OpenaiWebChatMessageMultimodalTextContentImagePart,
-} from '@/types/schema';
-import { screenWidthGreaterThan } from '@/utils/media';
-import { popupNewConversationDialog } from '@/utils/renders';
-// import { popupNewConversationDialog } from '@/utils/renders';
-import { Dialog, LoadingBar, Message } from '@/utils/tips';
-import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
-import InputRegion from '@/views/conversation/components/InputRegion.vue';
+import {useAppStore, useConversationStore} from '@/store';
+import {NewConversationInfo} from '@/types/custom';
+import {popupNewConversationDialog} from '@/utils/renders';
+import {LoadingBar} from '@/utils/tips';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
-
-import { saveAsMarkdown } from './utils/export';
-import { buildTemporaryMessage, modifiyTemporaryMessageContent } from './utils/message';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
-import RightImage from '@/views/conversation/components/RightImage.vue';
 
-const currentContent = ref('dashboard');
-
-const themeVars = useThemeVars();
 
 const { t } = useI18n();
 
-const gtmd = screenWidthGreaterThan('md');
 
 const rootRef = ref();
-const historyRef = ref();
-const userStore = useUserStore();
 const appStore = useAppStore();
-const fileStore = useFileStore();
+
 const conversationStore = useConversationStore();
 
 const loadingAsk = ref(false);
 const loadingHistory = ref<boolean>(false);
-const autoScrolling = useStorage('autoScrolling', true);
 
-const isAborted = ref<boolean>(false);
-const canAbort = ref<boolean>(false);
-const canContinue = ref<boolean>(false);
 const foldLeftBar = useStorage('foldLeftBar', false);
-let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
 const currentConversationId = ref<string | null>(null);
-const isCurrentNewConversation = computed<boolean>(() => {
-  // return currentConversationId.value === conversationStore.newConversation?.conversation_id;
-  return currentConversationId.value?.startsWith('new_conversation') || false;
-});
-const currentConversation = computed<BaseConversationSchema | null>(() => {
-  if (isCurrentNewConversation.value) return conversationStore.newConversation;
-  const conv = conversationStore.conversations?.find((conversation: BaseConversationSchema) => {
-    return conversation.conversation_id == currentConversationId.value;
-  });
-  return conv || null;
-});
-const currentConvHistory = computed<BaseConversationHistory | null>(() => {
-  if (!currentConversationId.value) return null;
-  return conversationStore.conversationHistoryMap[currentConversationId.value] || null;
-});
-
-const inputValue = ref('');
-const currentSendMessage = ref<BaseChatMessage | null>(null);
-const currentRecvMessages = ref<BaseChatMessage[]>([]);
-
-const uploadMode = computed(() => {
-  if (
-    currentConversation.value?.source === 'openai_web' &&
-    currentConversation.value.current_model == 'gpt_4_code_interpreter'
-  )
-    return 'legacy_code_interpreter';
-  else if (currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4')
-    return 'all';
-  else return null;
-});
-
-// 实际的 currentMessageList，加上当前正在发送的消息
-const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
-  const result: BaseChatMessage[] = [];
-  if (currentSendMessage.value) result.push(currentSendMessage.value);
-  for (const msg of currentRecvMessages.value) {
-    result.push(msg);
-  }
-  // console.log('currentActiveMessages', currentActiveMessages.value, currentRecvMessages.value);
-  return result;
-});
 
 watch(currentConversationId, (newVal, _oldVal) => {
   if (newVal != 'new_conversation') {
@@ -159,14 +85,6 @@ const handleChangeConversation = (key: string | null) => {
     });
 };
 
-const sendDisabled = computed(() => {
-  return (
-    loadingAsk.value ||
-    currentConversationId.value == null ||
-    inputValue.value === null ||
-    inputValue.value.trim() == ''
-  );
-});
 
 const makeNewTask = () => {
   if (hasNewConversation.value) return;
@@ -186,323 +104,8 @@ const makeNewTask = () => {
   });
 };
 
-const abortRequest = () => {
-  if (aborter == null || !canAbort.value) return;
-  aborter();
-  aborter = null;
-};
 
-const continueGenerating = () => {
-  inputValue.value = ':continue';
-  sendMsg();
-};
 
-const scrollToBottom = () => {
-  historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });
-};
-
-const scrollToBottomSmooth = () => {
-  historyRef.value.scrollTo({
-    left: 0,
-    top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight,
-    behavior: 'smooth',
-  });
-};
-
-const sendMsg = async () => {
-  if (sendDisabled.value || loadingAsk.value || currentConvHistory.value == null) {
-    Message.error(t('tips.pleaseSelectConversation'));
-    return;
-  }
-
-  LoadingBar.start();
-  loadingAsk.value = true;
-  canContinue.value = false;
-  const text = inputValue.value;
-  inputValue.value = '';
-
-  canAbort.value = false;
-  isAborted.value = false;
-  let hasGotReply = false;
-
-  // 处理附件
-  let attachments = null as OpenaiWebChatMessageMetadataAttachment[] | null;
-  if (uploadMode.value !== null && fileStore.uploadedFileInfos.length > 0) {
-    attachments = fileStore.uploadedFileInfos
-      .filter((info) => info.openai_web_info && info.openai_web_info.file_id)
-      .map((info) => {
-        const result = {
-          id: info.openai_web_info!.file_id!,
-          name: info.original_filename,
-          size: info.size,
-          mimeType: info.content_type,
-        } as OpenaiWebChatMessageMetadataAttachment;
-        if (info.extra_info && info.extra_info.height !== undefined) {
-          result.height = info.extra_info.height;
-          result.width = info.extra_info.width;
-        }
-        return result;
-      });
-  }
-
-  // 处理 gpt-4 图片
-  let multimodalImages = null;
-  if (uploadMode.value === 'all') {
-    multimodalImages = fileStore.uploadedFileInfos
-      .filter((info) => info.openai_web_info && info.openai_web_info.file_id && info.content_type?.startsWith('image/'))
-      .map((info) => {
-        const fileId = info.openai_web_info!.file_id!;
-        const { width, height } = info.extra_info || {};
-        return {
-          asset_pointer: `file-service://${fileId}`,
-          width,
-          height,
-          size_bytes: info.size,
-        } as OpenaiWebChatMessageMultimodalTextContentImagePart;
-      });
-  }
-
-  // 使用临时的随机 id 保持当前更新的两个消息
-  if (text == ':continue') {
-    currentSendMessage.value = null;
-    currentRecvMessages.value = [];
-  } else {
-    currentSendMessage.value = buildTemporaryMessage(
-      currentConversation.value!.source,
-      'user',
-      text,
-      currentConvHistory.value?.current_node,
-      currentConversation.value!.current_model!,
-      attachments,
-      multimodalImages
-    );
-    currentRecvMessages.value = [
-      buildTemporaryMessage(
-        currentConversation.value!.source,
-        'assistant',
-        '...',
-        currentSendMessage.value.id,
-        currentConversation.value!.current_model!
-      ),
-    ];
-  }
-
-  const askRequest: AskRequest = {
-    new_conversation: isCurrentNewConversation.value,
-    source: currentConversation.value!.source,
-    model: currentConversation.value!.current_model!,
-    text_content: text,
-  };
-  if (conversationStore.newConversation) {
-    askRequest.new_title = conversationStore.newConversation.title || ''; // 这里可能为空串，表示需要生成标题
-  } else {
-    askRequest.conversation_id = currentConversationId.value!;
-    askRequest.parent = currentConvHistory.value.current_node;
-  }
-
-  const wsUrl = getAskWebsocketApiUrl();
-  let hasError = false;
-  let wsErrorMessage: AskResponse | null = null;
-  console.log('Connecting to', wsUrl, askRequest);
-  const webSocket = new WebSocket(wsUrl);
-
-  let respConversationId = null as string | null;
-
-  webSocket.onopen = (_event: Event) => {
-    webSocket.send(JSON.stringify(askRequest));
-  };
-
-  webSocket.onmessage = (event: MessageEvent) => {
-    const response = JSON.parse(event.data) as AskResponse;
-    // console.log('Received message from server:', reply);
-    if (response.type === 'waiting') {
-      // 等待回复
-      canAbort.value = false;
-      currentRecvMessages.value![0].content = modifiyTemporaryMessageContent(
-        currentRecvMessages.value![0],
-        t(response.tip || 'tips.waiting')
-      );
-    } else if (response.type === 'queueing') {
-      // 正在排队
-      canAbort.value = true;
-      currentRecvMessages.value![0].content = modifiyTemporaryMessageContent(
-        currentRecvMessages.value![0],
-        t(response.tip || 'tips.queueing')
-      );
-    } else if (response.type === 'message') {
-      if (!hasGotReply) {
-        currentRecvMessages.value = [];
-        hasGotReply = true;
-      }
-      const message = response.message as BaseChatMessage;
-      if (message.role == 'user') {
-        console.log('got message', message);
-        currentSendMessage.value = message;
-      } else {
-        if (message.title != null) {
-          currentConvHistory.value!.title = message.title;
-          return;
-        }
-        const index = currentRecvMessages.value.findIndex((msg) => msg.id === message.id);
-        if (index === -1) {
-          currentRecvMessages.value.push(message);
-        } else {
-          currentRecvMessages.value[index] = message;
-        }
-      }
-      // console.log('got message', message, index, currentRecvMessages.value);
-      respConversationId = response.conversation_id || null;
-      canAbort.value = true;
-    } else if (response.type === 'error') {
-      hasError = true;
-      console.error('websocket received error message', response);
-      wsErrorMessage = response;
-      // TODO Message error
-    }
-    if (autoScrolling.value) scrollToBottom();
-  };
-
-  webSocket.onclose = async (event: CloseEvent) => {
-    aborter = null;
-    canAbort.value = false;
-    console.log('WebSocket connection is closed', event, isAborted.value);
-    if (!hasError && (event.code == 1000 || isAborted.value)) {
-      // 正常关闭
-      if (hasGotReply) {
-        let allNewMessages = [] as BaseChatMessage[];
-        if (currentSendMessage.value) {
-          allNewMessages = [currentSendMessage.value] as BaseChatMessage[];
-        }
-        for (const msg of currentRecvMessages.value) {
-          allNewMessages.push(msg);
-        }
-
-        // 更新对话信息，恢复正常状态
-        if (isCurrentNewConversation.value) {
-          // 尝试生成标题或保存标题
-          if (
-            askRequest.source == 'openai_web' &&
-            (askRequest.new_title == undefined || askRequest.new_title.length == 0)
-          ) {
-            if (currentConvHistory.value!.title == undefined || currentConvHistory.value!.title.length == 0) {
-              const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
-              console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
-              try {
-                const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
-                currentConvHistory.value!.title = response.data;
-              } catch (err) {
-                console.error('Failed to generate conversation title', err);
-              }
-            } else {
-              // 自动生成了标题，更新到数据库
-              const title = currentConvHistory.value!.title;
-              try {
-                console.log('update title', respConversationId, title);
-                await setConversationTitleApi(respConversationId!, title);
-              } catch (err) {
-                console.error('Failed to set conversation title', err);
-              }
-            }
-          }
-
-          const newConvHistory = {
-            _id: respConversationId!,
-            source: askRequest.source,
-            title: currentConvHistory.value!.title,
-            current_model: currentConvHistory.value!.current_model,
-            create_time: currentConvHistory.value!.create_time,
-            update_time: currentConvHistory.value!.update_time,
-            metadata: currentConvHistory.value!.metadata,
-            mapping: {},
-            current_node: '',
-          } as BaseConversationHistory;
-          // conversationStore.$patch({
-          //   conversationHistoryMap: {
-          //     [respConversationId!]: newConvHistory,
-          //   },
-          // });
-          conversationStore.conversationHistoryMap[respConversationId!] = newConvHistory;
-        }
-        conversationStore.addMessagesToConversation(respConversationId!, allNewMessages);
-        currentSendMessage.value = null;
-        currentRecvMessages.value = [];
-        currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
-
-        // 清除附件
-        fileStore.clear();
-
-        await conversationStore.fetchAllConversations();
-        conversationStore.removeNewConversation();
-        hasNewConversation.value = false;
-        console.log('done', allNewMessages, currentConversationId.value);
-      }
-    } else {
-      let content = '';
-      if (wsErrorMessage != null) {
-        if (wsErrorMessage.tip) {
-          content = t(wsErrorMessage.tip) + ' ';
-        }
-        content += wsErrorMessage.error_detail || t('errors.unknown');
-      } else {
-        content = `WebSocket ${event.code}: ${t(event.reason || 'errors.unknown')}`;
-      }
-      Dialog.error({
-        title: t('errors.askError'),
-        content,
-        positiveText: t('commons.withdrawMessage'),
-        negativeText: t('commons.cancel'),
-        onPositiveClick: () => {
-          currentSendMessage.value = null;
-          currentRecvMessages.value = [];
-        },
-      });
-    }
-    await userStore.fetchUserInfo();
-    LoadingBar.finish();
-    loadingAsk.value = false;
-    isAborted.value = false;
-  };
-
-  webSocket.onerror = (event: Event) => {
-    console.error('WebSocket error:', event);
-  };
-
-  aborter = () => {
-    isAborted.value = true;
-    webSocket.close();
-  };
-};
-
-const exportToMarkdownFile = () => {
-  if (!currentConversation.value) {
-    Message.error(t('tips.pleaseSelectConversation'));
-    return;
-  }
-  saveAsMarkdown(currentConvHistory.value!);
-};
-
-const historyContentRef = ref();
-const showFullscreenTips = ref(false);
-
-const showFullscreenHistory = () => {
-  if (!currentConversation.value) {
-    Message.error(t('tips.pleaseSelectConversation'));
-    return;
-  }
-  // focus historyContentRef
-  historyContentRef.value.focus();
-  historyContentRef.value.toggleFullscreenHistory(true);
-};
-
-const exportToPdfFile = () => {
-  if (!currentConversation.value) {
-    Message.error(t('tips.pleaseSelectConversation'));
-    return;
-  }
-  historyContentRef.value.toggleFullscreenHistory(false);
-  window.print();
-  historyContentRef.value.toggleFullscreenHistory(false);
-};
 
 // 加载对话列表
 conversationStore.fetchAllConversations().then();
