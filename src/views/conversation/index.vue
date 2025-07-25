@@ -348,20 +348,11 @@ const sendMsg = async () => {
     ];
   }
 
-  let arkoseToken = null as string | null;
-
   const askRequest: AskRequest = {
     new_conversation: isCurrentNewConversation.value,
     source: currentConversation.value!.source,
     model: currentConversation.value!.current_model!,
     text_content: text,
-    openai_web_plugin_ids:
-      currentConvHistory.value!.metadata?.source === 'openai_web'
-        ? currentConvHistory.value!.metadata?.plugin_ids
-        : undefined,
-    openai_web_attachments: attachments || undefined,
-    openai_web_multimodal_image_parts: multimodalImages || undefined,
-    arkose_token: arkoseToken,
   };
   if (conversationStore.newConversation) {
     askRequest.new_title = conversationStore.newConversation.title || ''; // 这里可能为空串，表示需要生成标题

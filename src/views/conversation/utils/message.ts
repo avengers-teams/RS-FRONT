@@ -49,12 +49,12 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
     }
     return 'text';
   }
-  for (const message of group) {
-    if (message.source !== 'openai_web') {
-      console.error('wrong message mixed in non-text content group', group);
-      return null;
-    }
-  }
+  // for (const message of group) {
+  //   if (message.source !== 'openai_web') {
+  //     console.error('wrong message mixed in non-text content group', group);
+  //     return null;
+  //   }
+  // }
 
   let displayType: DisplayItemType | null = null;
   const textOrMultimodal = (message: BaseChatMessage) => {
