@@ -34,11 +34,6 @@
         :user="currentUser"
         @save="handleUpdateUserBasic"
       />
-      <UpdateUserSettingForm
-        v-else-if="drawer.name.value == 'updateSetting'"
-        :user="currentUser"
-        @save="handleUpdateUserSetting"
-      />
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -62,7 +57,6 @@ import { renderUserPerModelCounts } from '@/utils/user';
 
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';
-import UpdateUserSettingForm from '../components/UpdateUserSettingForm.vue';
 
 const { t } = useI18n();
 
