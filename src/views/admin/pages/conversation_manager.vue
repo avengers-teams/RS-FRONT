@@ -66,7 +66,7 @@ import {
   vanishConversationApi,
 } from '@/api/conv';
 import { getAllUserApi } from '@/api/user';
-import { BaseConversationSchema, OpenaiWebConversationSchema, UserReadAdmin } from '@/types/schema';
+import { BaseConversationSchema, UserReadAdmin } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';

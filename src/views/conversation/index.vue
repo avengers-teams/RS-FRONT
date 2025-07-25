@@ -25,25 +25,23 @@
       />
     </n-layout-sider>
     <!-- 右栏 -->
-    <RightConversation :_current-conversation-id="currentConversationId"></RightConversation>
+    <RightConversation @update="updateConvId" :_current-conversation-id="currentConversationId"></RightConversation>
   </n-layout>
 </template>
 
 <script setup lang="ts">
-import {useStorage} from '@vueuse/core';
-import { ref, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
+import { useStorage } from '@vueuse/core';
+import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import {useAppStore, useConversationStore} from '@/store';
-import {NewConversationInfo} from '@/types/custom';
-import {popupNewConversationDialog} from '@/utils/renders';
-import {LoadingBar} from '@/utils/tips';
+import { useAppStore, useConversationStore } from '@/store';
+import { NewConversationInfo } from '@/types/custom';
+import { popupNewConversationDialog } from '@/utils/renders';
+import { LoadingBar } from '@/utils/tips';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
 
-
 const { t } = useI18n();
-
 
 const rootRef = ref();
 const appStore = useAppStore();
@@ -63,6 +61,10 @@ watch(currentConversationId, (newVal, _oldVal) => {
     handleChangeConversation(newVal);
   }
 });
+
+const updateConvId = (new_id: any) => {
+  currentConversationId.value = new_id;
+};
 
 const handleChangeConversation = (key: string | null) => {
   // TODO: 清除当前已询问、得到回复，但是发生错误的两条消息
@@ -85,7 +87,6 @@ const handleChangeConversation = (key: string | null) => {
     });
 };
 
-
 const makeNewTask = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
@@ -103,9 +104,6 @@ const makeNewTask = () => {
     appStore.lastSelectedModel = newConversationInfo.model;
   });
 };
-
-
-
 
 // 加载对话列表
 conversationStore.fetchAllConversations().then();

@@ -90,7 +90,6 @@ import {
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
-// import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
 import InputRegion from '@/views/conversation/components/InputRegion.vue';
@@ -101,6 +100,8 @@ import { buildTemporaryMessage, modifiyTemporaryMessageContent } from '../utils/
 const props = defineProps<{
   _currentConversationId: string | null;
 }>();
+
+const emit = defineEmits(['update']);
 
 const themeVars = useThemeVars();
 const { t } = useI18n();
@@ -123,9 +124,7 @@ const canContinue = ref<boolean>(false);
 let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
-const currentConversationId = computed(() => {
-  return props._currentConversationId || null;
-});
+const currentConversationId = ref<string | null>(props._currentConversationId || null);
 const isCurrentNewConversation = computed<boolean>(() => {
   // return currentConversationId.value === conversationStore.newConversation?.conversation_id;
   return currentConversationId.value?.startsWith('new_conversation') || false;
@@ -164,11 +163,14 @@ const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
   for (const msg of currentRecvMessages.value) {
     result.push(msg);
   }
-  // console.log('currentActiveMessages', currentActiveMessages.value, currentRecvMessages.value);
   return result;
+});
+watch(props, () => {
+  currentConversationId.value = props._currentConversationId;
 });
 
 watch(currentConversationId, (newVal, _oldVal) => {
+  emit('update', currentConversationId.value);
   if (newVal != 'new_conversation') {
     handleChangeConversation(newVal);
   }
