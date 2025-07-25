@@ -9,22 +9,7 @@
             </n-icon>
           </template>
         </n-button>
-        <n-button circle @click="syncConversations">
-          <template #icon>
-            <n-icon>
-              <CloudDownloadFilled />
-            </n-icon>
-          </template>
-        </n-button>
         <div v-show="checkedRowKeys.length !== 0" class="space-x-2">
-          <n-button type="warning" secondary @click="handleInvalidateConversations">
-            <template #icon>
-              <n-icon>
-                <EmojiFlagsFilled />
-              </n-icon>
-            </template>
-            {{ $t('commons.invalidateConversation') }}
-          </n-button>
           <n-button type="error" secondary @click="handleVanishConversations">
             <template #icon>
               <n-icon>
@@ -44,9 +29,6 @@
         </div>
       </div>
       <div class="space-x-2">
-        <n-button @click="handleVanishAllInvalidConversations">
-          {{ $t('commons.deleteInvalidConversations') }}
-        </n-button>
         <n-button type="error" @click="handleClearAllConversations">
           {{ $t('commons.clearAllConversations') }}
         </n-button>
@@ -101,33 +83,6 @@ const checkedRowKeys = ref<Array<string>>([]);
 const refreshData = () => {
   getAdminAllConversationsApi(false).then((res) => {
     data.value = res.data;
-  });
-};
-
-const syncConversations = () => {
-  const d = Dialog.info({
-    title: t('dialog.title.syncConversations'),
-    content: t('dialog.content.syncConversations'),
-    positiveText: t('commons.confirm'),
-    negativeText: t('commons.cancel'),
-    onPositiveClick: () => {
-      d.loading = true;
-      return new Promise((resolve, reject) => {
-        runActionSyncOpenaiWebConversations()
-          .then(() => {
-            Message.success(t('tips.success'));
-            refreshData();
-            resolve(true);
-          })
-          .catch((err) => {
-            Message.error(t('tips.failed') + ': ' + err);
-            reject(err);
-          })
-          .finally(() => {
-            d.loading = false;
-          });
-      });
-    },
   });
 };
 
@@ -293,38 +248,6 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
   },
 ]);
 
-const handleInvalidateConversations = () => {
-  const d = Dialog.info({
-    title: t('commons.invalidateConversation'),
-    content: t('tips.invalidateConversation'),
-    positiveText: t('commons.confirm'),
-    negativeText: t('commons.cancel'),
-    onPositiveClick: () => {
-      d.loading = true;
-      return new Promise((resolve, reject) => {
-        const action = async () => {
-          for (const conversation_id of checkedRowKeys.value) {
-            await deleteConversationApi(conversation_id);
-          }
-        };
-        action()
-          .then(() => {
-            Message.success(t('tips.deleteConversationSuccess'));
-            refreshData();
-            resolve(true);
-          })
-          .catch((err) => {
-            Message.error(t('tips.deleteConversationFailed') + ': ' + err);
-            reject(err);
-          })
-          .finally(() => {
-            d.loading = false;
-          });
-      });
-    },
-  });
-};
-
 const handleVanishConversations = () => {
   const d = Dialog.warning({
     title: t('commons.vanishConversation'),
@@ -395,44 +318,6 @@ const handleAssignConversations = () => {
           .catch((err) => {
             Message.error(t('tips.failed') + ': ' + err);
             reject(err);
-          })
-          .finally(() => {
-            d.loading = false;
-          });
-      });
-    },
-  });
-};
-
-const handleVanishAllInvalidConversations = () => {
-  const d = Dialog.info({
-    title: t('commons.deleteInvalidConversations'),
-    content: t('commons.deleteInvalidConversationsConfirm'),
-    positiveText: t('commons.confirm'),
-    negativeText: t('commons.cancel'),
-    onPositiveClick: () => {
-      d.loading = true;
-      const action = async () => {
-        for (const conversation of data.value) {
-          if (!conversation.is_valid) {
-            await vanishConversationApi(conversation.conversation_id!);
-            await new Promise((resolve) => setTimeout(resolve, 200));
-          }
-        }
-        data.value = data.value.filter((conversation) => conversation.is_valid);
-      };
-      return new Promise((resolve, reject) => {
-        action()
-          .then(() => {
-            Message.success(t('tips.deleteConversationSuccess'));
-            refreshData();
-            checkedRowKeys.value = [];
-            resolve(true);
-          })
-          .catch((err) => {
-            console.error(err);
-            Message.error(t('tips.deleteConversationFailed'));
-            reject();
           })
           .finally(() => {
             d.loading = false;

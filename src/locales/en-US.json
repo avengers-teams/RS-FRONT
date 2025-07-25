@@ -1,7 +1,9 @@
 {
   "commons": {
+    "newConversation": "New task",
+
     "notLogin": "Not logged in",
-    "siteTitle": "ChatGPT",
+    "siteTitle": "ChatGPT Web Share",
     "confirm": "Confirm",
     "stayInCurrentPage": "Stay on this page",
     "username": "Username",
@@ -9,7 +11,6 @@
     "login": "Log in",
     "logout": "Log out",
     "logoutSuccess": "Logged out successfully",
-    "newConversation": "New conversation",
     "confirmDialogTitle": "Confirm action",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -242,6 +243,9 @@
     "teamConversationNotAllowed": "You are currently not allowed to use this conversation, please contact the administrator to activate Team subscription permissions."
   },
   "tips": {
+    "loadTask": "Select a task from the menu, or",
+    "newTask": "Start New Task",
+
     "loginExpired": "Login expired. Do you want to go to the login page?",
     "pleaseEnterUsername": "Username",
     "pleaseEnterPassword": "Password",
@@ -271,8 +275,6 @@
     "vanishConversation": "Are you sure you want to destroy this conversation? It will be removed from the database and the records on the OpenAI account will be cleared.",
     "conversationTitle": "Enter conversation title, leave blank to use default title",
     "whetherUsePaidModel": "Please choose the model to use, leave blank to use default model",
-    "loadConversation": "Select a conversation from the menu, or",
-    "newConversation": "Start New Conversation",
     "loginSuccess": "Logged in successfully",
     "jumpingPage": "Jumping...",
     "terminated": "Connection terminated by the server",

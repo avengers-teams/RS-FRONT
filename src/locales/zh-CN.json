@@ -1,5 +1,7 @@
 {
   "commons": {
+    "newConversation": "新任务",
+
     "notLogin": "未登录",
     "siteTitle": "ChatGPT",
     "confirm": "确定",
@@ -9,7 +11,6 @@
     "login": "登录",
     "logout": "退出登录",
     "logoutSuccess": "登出成功",
-    "newConversation": "新对话",
     "confirmDialogTitle": "确认操作",
     "cancel": "取消",
     "delete": "删除",
@@ -244,6 +245,9 @@
     "arkoseTokenError": "Arkose 验证失败，请联系管理员处理。"
   },
   "tips": {
+    "loadTask": "请从左侧选择任务以加载，或者",
+    "newTask": "发起新任务",
+
     "loginExpired": "登录已过期。是否跳转到登录页面？",
     "pleaseEnterUsername": "用户名",
     "pleaseEnterPassword": "密码",
@@ -273,8 +277,6 @@
     "vanishConversation": "确定要彻底删除该会话吗？将在 OpenAI 账户上删除对话，并在数据库中删除对应记录。",
     "conversationTitle": "输入对话标题，为空则使用默认标题",
     "whetherUsePaidModel": "请选择使用的模型，为空则使用默认模型",
-    "loadConversation": "请从左侧选择对话以加载，或者",
-    "newConversation": "发起新对话",
     "loginSuccess": "登录成功",
     "jumpingPage": "正在跳转……",
     "terminated": "连接被服务端终止",

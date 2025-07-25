@@ -24,7 +24,7 @@
     <div class="mx-80 mb-4 flex flex-row space-x-2 items-center">
       <!-- 文件上传按钮 -->
       <n-badge :value="fileStore.uploadedFileInfos.length" :offset="[-6, 3]">
-        <n-button strong secondary circle @click="showFileUpload = !showFileUpload">
+        <n-button class="top-5" strong secondary circle @click="showFileUpload = !showFileUpload">
           <template #icon>
             <n-icon><AttachFileFilled /></n-icon>
           </template>
@@ -33,11 +33,11 @@
       <n-input
         ref="inputRef"
         v-model:value="inputValue"
-        class="flex-1"
+        class="rounded-lg top-5 flex-1"
         type="textarea"
         :bordered="true"
         :placeholder="$t('tips.sendMessage', [appStore.preference.sendKey])"
-        :autosize="{ minRows: 1 }"
+        :autosize="{ minRows: 5, maxRows: 5 }"
         :style="inputStyle"
         @keydown="shortcutSendMsg"
         @paste="onPaste"

@@ -5,7 +5,7 @@
     <ChatGPTAvatar :alpha="alpha" :size="20" :model="props.conversation.current_model" />
 
     <n-ellipsis class="w-full">
-      {{ conversation.title || 'New chat' }}
+      {{ conversation.title || 'New Task' }}
     </n-ellipsis>
   </div>
 </template>

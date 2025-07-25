@@ -1,33 +1,71 @@
 <template>
-  <n-layout
-    ref="rootRef"
-    has-sider
-    :class="['h-full', !appStore.preference.widerConversationPage ? 'lg:w-screen-lg lg:mx-auto' : '']"
-  >
-    <!-- 左栏 -->
-    <n-layout-sider
-      v-model:collapsed="foldLeftBar"
-      :native-scrollbar="false"
-      :collapsed-width="0"
-      collapse-mode="transform"
-      trigger-style="top: 27px; right: -26px;"
-      collapsed-trigger-style="top: 27px; right: -26px;"
-      bordered
-      show-trigger="arrow-circle"
-      :width="280"
-      class="h-full"
-    >
-      <LeftBar
-        v-model:value="currentConversationId"
-        :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
-        :loading="loadingAsk"
-        @new-conversation="makeNewTask"
+  <!-- 右栏 -->
+  <n-layout-content embeded :class="['flex flex-col overflow-hidden', gtmd() ? '' : 'min-w-100vw']">
+    <div class="h-full relative flex flex-col">
+      <!-- 消息记录内容（用于全屏展示） -->
+      <n-scrollbar
+        v-if="currentConversationId"
+        ref="historyRef"
+        class="relative"
+        :content-style="loadingHistory ? { height: '100%' } : {}"
       >
-      </LeftBar>
-    </n-layout-sider>
-    <!-- 右栏 -->
-    <RightConversation />
-  </n-layout>
+        <!-- 回到底部按钮 -->
+        <div class="right-3 bottom-3 absolute z-20">
+          <n-button secondary circle size="small" @click="scrollToBottomSmooth">
+            <template #icon>
+              <n-icon :component="ArrowDown" />
+            </template>
+          </n-button>
+        </div>
+        <HistoryContent
+          ref="historyContentRef"
+          v-model:can-continue="canContinue"
+          :conversation-id="currentConversationId"
+          :extra-messages="currentActiveMessages"
+          :fullscreen="false"
+          :show-tips="showFullscreenTips"
+          :loading="loadingHistory"
+        />
+        <div class="h-14" />
+      </n-scrollbar>
+      <!-- 未选中对话（空界面） -->
+      <div
+        v-else-if="!currentConversationId"
+        class="flex-grow flex flex-col justify-center"
+        :style="{ backgroundColor: themeVars.cardColor }"
+      >
+        <n-empty v-if="!currentConversation" :description="$t('tips.loadTask')">
+          <template #icon>
+            <n-icon>
+              <ChatboxEllipses />
+            </n-icon>
+          </template>
+          <template #extra>
+            <n-button secondary @click="makeNewTask">
+              {{ $t('tips.newTask') }}
+            </n-button>
+          </template>
+        </n-empty>
+      </div>
+      <!-- 下半部分（回复区域） -->
+      <InputRegion
+        v-model:input-value="inputValue"
+        v-model:auto-scrolling="autoScrolling"
+        class="bottom-0 z-10 h-50"
+        :can-abort="canAbort"
+        :can-continue="!loadingAsk && canContinue"
+        :send-disabled="sendDisabled"
+        :upload-mode="uploadMode"
+        :upload-disabled="loadingAsk"
+        @abort-request="abortRequest"
+        @continue-generating="continueGenerating"
+        @export-to-markdown-file="exportToMarkdownFile"
+        @export-to-pdf-file="exportToPdfFile"
+        @send-msg="sendMsg"
+        @show-fullscreen-history="showFullscreenHistory"
+      />
+    </div>
+  </n-layout-content>
 </template>
 
 <script setup lang="ts">
@@ -58,10 +96,8 @@ import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
 import InputRegion from '@/views/conversation/components/InputRegion.vue';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 
-import { saveAsMarkdown } from './utils/export';
-import { buildTemporaryMessage, modifiyTemporaryMessageContent } from './utils/message';
-import RightConversation from '@/views/conversation/components/RightConversation.vue';
-import RightImage from '@/views/conversation/components/RightImage.vue';
+import { saveAsMarkdown } from '../utils/export';
+import { buildTemporaryMessage, modifiyTemporaryMessageContent } from '../utils/message';
 
 const currentContent = ref('dashboard');
 
