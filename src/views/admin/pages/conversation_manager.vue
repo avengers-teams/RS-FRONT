@@ -65,7 +65,6 @@ import {
   getAdminAllConversationsApi,
   vanishConversationApi,
 } from '@/api/conv';
-import { runActionSyncOpenaiWebConversations } from '@/api/system';
 import { getAllUserApi } from '@/api/user';
 import { BaseConversationSchema, OpenaiWebConversationSchema, UserReadAdmin } from '@/types/schema';
 import { getChatModelNameTrans } from '@/utils/chat';
