@@ -9,9 +9,6 @@
           "
         />
       </n-form-item>
-      <n-form-item :label="t('labels.source')">
-        <n-select v-model:value="newConversationInfo.source" :options="availableChatSourceTypes" />
-      </n-form-item>
       <n-form-item :label="t('labels.model')">
         <n-select
           v-model:value="newConversationInfo.model"
@@ -22,20 +19,12 @@
           :render-option="renderModelSelectionOption"
         />
       </n-form-item>
-      <n-form-item
-        v-if="newConversationInfo.source === 'openai_web' && newConversationInfo.model === 'gpt_4_plugins'"
-        :label="t('labels.plugins')"
-      >
+      <n-form-item label="任务类型">
         <n-select
           v-model:value="newConversationInfo.openaiWebPlugins"
-          :options="pluginOptions"
-          clearable
-          multiple
-          :placeholder="selectPluginPlaceholder"
-          :loading="loadingPlugins"
-          :disabled="loadingPlugins"
-          :render-label="renderPluginSelectionLabel"
-          :render-tag="renderPluginSelectionTag"
+          :options="typeOptions"
+          :default-value="1"
+          placeholder="请选择任务类型"
         />
       </n-form-item>
     </n-form>
@@ -87,7 +76,7 @@ const availableModels = ref([
   },
   {
     label: 'DeepSeek',
-    value: 'deepseek_chat',
+    value: 'deepseek-chat',
   },
 ]);
 
@@ -101,21 +90,28 @@ const newConversationInfo = ref<NewConversationInfo>({
 const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
 const loadingPlugins = ref<boolean>(false);
 
-const selectPluginPlaceholder = computed<string>(() => {
-  return loadingPlugins.value
-    ? t('tips.NewConversationForm.loadingPlugins')
-    : t('tips.NewConversationForm.selectPlugins');
-});
-
-const pluginOptions = computed<SelectOption[]>(() => {
-  if (!availablePlugins.value) {
-    return [];
-  }
-  return availablePlugins.value.map((plugin) => ({
-    label: plugin.manifest?.name_for_human || plugin.id!,
-    value: plugin.id!,
-  }));
-});
+const typeOptions = ref([
+  {
+    label: '图像语义生成',
+    value: 1,
+  },
+  {
+    label: '目标识别与计数',
+    value: 2,
+  },
+  {
+    label: '空间感知与定位',
+    value: 3,
+  },
+  {
+    label: '地物分类与状态评估',
+    value: 4,
+  },
+  {
+    label: '场景推理与决策',
+    value: 5,
+  },
+]);
 
 function renderModelSelectionLabel(option: SelectOption) {
   return h(NewConversationFormModelSelectionLabel, {
@@ -143,43 +139,6 @@ function renderModelSelectionOption({ node, option }: { node: VNode; option: Sel
     }
   );
 }
-
-function renderPluginSelectionLabel(option: SelectOption) {
-  const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
-  return h(NewConversationFormPluginSelectionLabel, {
-    plugin,
-  });
-}
-
-const renderPluginSelectionTag: SelectRenderTag = ({ option, handleClose }) => {
-  const plugin = availablePlugins.value?.find((plugin) => plugin.id === option.value);
-  return h(
-    NTag,
-    {
-      closable: true,
-      onMousedown: (e: FocusEvent) => {
-        e.preventDefault();
-      },
-      onClose: (e: MouseEvent) => {
-        e.stopPropagation();
-        handleClose();
-      },
-    },
-    {
-      default: () =>
-        h(
-          'div',
-          { class: 'flex flex-row' },
-          {
-            default: () => [
-              h(NAvatar, { size: 'small', src: plugin?.manifest?.logo_url || undefined }),
-              h('div', { class: 'ml-2' }, { default: () => plugin?.manifest?.name_for_human }),
-            ],
-          }
-        ),
-    }
-  );
-};
 
 function setDefaultValues() {
   //   const defaultSource = computed(() => {
