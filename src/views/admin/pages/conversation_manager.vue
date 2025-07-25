@@ -186,26 +186,6 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
     },
   },
   {
-    title: 'Source ID',
-    key: 'source_id',
-    width: 80,
-    render: (row) => {
-      let result = 'N/A';
-      if (row.source === 'openai_web') {
-        const conv = row as OpenaiWebConversationSchema;
-        result = conv.source_id || t('commons.empty');
-      }
-      return h(
-        NTooltip,
-        { trigger: 'hover' },
-        {
-          trigger: () => result?.substring(0, 4),
-          default: () => result,
-        }
-      );
-    },
-  },
-  {
     title: t('commons.createTime'),
     key: 'create_time',
     width: 200,
@@ -231,19 +211,6 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
       return row.current_model ? getChatModelNameTrans(row.current_model) : t('commons.unknown');
     },
     sorter: 'default',
-  },
-  {
-    title: t('commons.isValid'),
-    key: 'is_valid',
-    width: 120,
-    render(row) {
-      return row.is_valid ? t('commons.yes') : t('commons.no');
-    },
-    sorter: (a, b) => {
-      const val_a = a.is_valid ? 1 : 0;
-      const val_b = b.is_valid ? 1 : 0;
-      return val_a - val_b;
-    },
   },
 ]);
 
