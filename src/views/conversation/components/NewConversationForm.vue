@@ -32,19 +32,15 @@
 </template>
 
 <script setup lang="ts">
-import { NAvatar, NTag, NTooltip, SelectOption, SelectRenderTag } from 'naive-ui';
+import { NTooltip, SelectOption } from 'naive-ui';
 import { computed, h, ref, VNode, watch } from 'vue';
 
-import { getInstalledOpenaiChatPluginsApi, getOpenaiChatPluginsApi } from '@/api/chat';
 import { i18n } from '@/i18n';
 import { useAppStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
-import { ChatSourceTypes, OpenaiChatPlugin } from '@/types/schema';
-import { getCountTrans } from '@/utils/chat';
-import { Message } from '@/utils/tips';
+import { ChatSourceTypes } from '@/types/schema';
 
 import NewConversationFormModelSelectionLabel from './NewConversationFormModelSelectionLabel.vue';
-import NewConversationFormPluginSelectionLabel from './NewConversationFormPluginSelectionLabel.vue';
 
 const t = i18n.global.t as any;
 
@@ -86,9 +82,6 @@ const newConversationInfo = ref<NewConversationInfo>({
   model: null,
   openaiWebPlugins: null,
 });
-
-const availablePlugins = ref<OpenaiChatPlugin[] | null>(null);
-const loadingPlugins = ref<boolean>(false);
 
 const typeOptions = ref([
   {
@@ -167,28 +160,6 @@ function setDefaultValues() {
 }
 
 setDefaultValues();
-
-watch(
-  () => {
-    return [newConversationInfo.value.source, newConversationInfo.value.model];
-  },
-  async ([source, model]) => {
-    if (source === 'openai_web' && model === 'gpt_4_plugins') {
-      newConversationInfo.value.openaiWebPlugins = [];
-      loadingPlugins.value = true;
-      try {
-        const res = await getInstalledOpenaiChatPluginsApi();
-        availablePlugins.value = res.data.items;
-      } catch (err) {
-        Message.error(t('tips.NewConversationForm.failedToGetPlugins'));
-      }
-      loadingPlugins.value = false;
-    } else {
-      availablePlugins.value = null;
-    }
-  },
-  { immediate: true }
-);
 
 watch(
   () => {

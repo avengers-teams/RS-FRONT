@@ -1,11 +1,6 @@
 import axios from 'axios';
 
-import {
-  OpenaiChatFileUploadUrlRequest,
-  StartUploadRequestSchema,
-  StartUploadResponseSchema,
-  UploadedFileInfoSchema,
-} from '@/types/schema';
+import { StartUploadRequestSchema, StartUploadResponseSchema, UploadedFileInfoSchema } from '@/types/schema';
 
 import ApiUrl from './url';
 
@@ -19,10 +14,6 @@ export function uploadFileToLocalApi(file: File) {
   });
 }
 
-export function getLocalFileDownloadUrl(fileId: string) {
-  return `${ApiUrl.FilesLocalDownload}/${fileId}`;
-}
-
 export function startUploadFileToOpenaiWeb(uploadRequest: StartUploadRequestSchema) {
   return axios.post<StartUploadResponseSchema>(ApiUrl.FilesOpenaiWebUploadStart, uploadRequest);
 }
@@ -34,22 +25,6 @@ export function completeUploadFileToOpenaiWeb(uploadId: string) {
 export function requestUploadFileFromLocalToOpenaiWeb(fileId: string) {
   return axios.post<UploadedFileInfoSchema>(`${ApiUrl.FilesLocalUploadToOpenaiWeb}/${fileId}`);
 }
-
-// export async function uploadFileToAzureBlob(file: File, signedUrl: string): Promise<Response> {
-//   const headers = new Headers({
-//     'x-ms-blob-type': 'BlockBlob',
-//     'x-ms-version': '2020-04-08',
-//     'Content-Type': file.type || 'application/octet-stream',
-//   });
-
-//   const response = await fetch(signedUrl, {
-//     method: 'PUT',
-//     headers: headers,
-//     body: file,
-//   });
-
-//   return response;
-// }
 
 export async function uploadFileToAzureBlob(
   file: File,

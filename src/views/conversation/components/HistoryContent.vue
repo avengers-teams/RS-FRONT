@@ -22,30 +22,6 @@
           </template>
         </n-button>
       </div>
-      <div
-        v-if="convOpenaiWebPluginIds && convOpenaiWebPluginIds.length > 0"
-        class="flex flex-row items-center justify-center pb-4 relative"
-        :style="{ backgroundColor: themeVars.baseColor }"
-      >
-        <n-text class="mr-3"> {{ $t('labels.plugins') }}: </n-text>
-        <div v-if="convOpenaiWebPlugins === null" class="flex flex-row space-x-1 items-center">
-          <n-spin :size="16" />
-          <span>{{ $t('tips.loading') }}</span>
-        </div>
-        <div v-else class="flex flex-row space-x-1 lt-md:flex-col lt-md:space-y-1 items-center">
-          <n-popover v-for="(plugin, i) of convOpenaiWebPlugins" :key="i" trigger="hover" placement="bottom">
-            <template #trigger>
-              <n-tag round :bordered="false">
-                <template #icon>
-                  <img v-if="plugin.manifest?.logo_url" :src="plugin.manifest?.logo_url" class="ml-1 w-5 h-5" />
-                </template>
-                <span>{{ plugin.manifest?.name_for_human }}</span>
-              </n-tag>
-            </template>
-            <OpenaiWebPluginDetailCard :plugin="plugin" />
-          </n-popover>
-        </div>
-      </div>
       <!-- 消息记录 -->
       <MessageRow
         v-for="messages in filteredMessagesList"
@@ -73,11 +49,9 @@ import { useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getInstalledOpenaiChatPluginApi } from '@/api/chat';
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
-import OpenaiWebPluginDetailCard from '@/components/OpenaiWebPluginDetailCard.vue';
 import { useConversationStore } from '@/store';
-import { BaseChatMessage, BaseConversationHistory, OpenaiChatPlugin } from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
 import { getChatModelNameTrans, getMessageListFromHistory, mergeContinuousMessages } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
@@ -109,15 +83,6 @@ const convHistory = computed<BaseConversationHistory | null>(() => {
   if (!conversationId) return null;
   return conversationStore.conversationHistoryMap[conversationId];
 });
-
-const convOpenaiWebPluginIds = computed<string[] | null>(() => {
-  if (convHistory.value?.metadata && convHistory.value.metadata.source === 'openai_web') {
-    return convHistory.value.metadata.plugin_ids || null;
-  }
-  return null;
-});
-
-const convOpenaiWebPlugins = ref<OpenaiChatPlugin[] | null>(null);
 
 const rawMessages = computed<BaseChatMessage[]>(() => {
   let result = convHistory.value ? getMessageListFromHistory(convHistory.value) : [];
@@ -155,20 +120,6 @@ watch(
   () => props.fullscreen,
   () => {
     toggleFullscreenHistory(props.showTips);
-  }
-);
-
-watch(
-  () => convOpenaiWebPluginIds.value,
-  async (pluginIds) => {
-    if (!pluginIds) return;
-    const allRequests = pluginIds.map((pluginId) => getInstalledOpenaiChatPluginApi(pluginId));
-    const results = await Promise.all(allRequests);
-    console.log('convOpenaiWebPlugins', results);
-    convOpenaiWebPlugins.value = results.map((result) => result.data);
-  },
-  {
-    immediate: true,
   }
 );
 

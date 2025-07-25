@@ -26,9 +26,6 @@
           <div v-else-if="item.type == 'browser'">
             <MessageRowBrowserDisplay :messages="item.messages" />
           </div>
-          <div v-else-if="item.type == 'plugin'">
-            <MessageRowPluginDisplay :messages="item.messages" />
-          </div>
           <div v-else-if="item.type == 'code'">
             <MessageRowCodeDisplay :messages="item.messages" />
           </div>
@@ -140,7 +137,6 @@ import MessageRowDallePromptDisplay from './MessageRowDallePromptDisplay.vue';
 import MessageRowMultimodalTextDalleDisplay from './MessageRowMultimodalTextDalleDisplay.vue';
 import MessageRowMultimodalTextDisplay from './MessageRowMultimodalTextDisplay.vue';
 import MessageRowMyFilesBrowserDisplay from './MessageRowMyFilesBrowserDisplay.vue';
-import MessageRowPluginDisplay from './MessageRowPluginDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
 
 const { t } = useI18n();
