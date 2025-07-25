@@ -114,7 +114,6 @@ import {
   OpenaiWebChatMessageMetadataAttachment,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
-import { getArkoseToken } from '@/utils/arkose';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
 // import { popupNewConversationDialog } from '@/utils/renders';

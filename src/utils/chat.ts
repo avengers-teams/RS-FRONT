@@ -61,12 +61,16 @@ export const getContentRawText = (message: BaseChatMessage | null): string => {
   if (!message || !message.content) return '';
   if (typeof message.content == 'string') return message.content;
   else if (message.content.content_type == 'text') {
-    if (message.source == 'openai_web') {
-      const content = message.content as OpenaiWebChatMessageTextContent;
-      return content.parts![0];
-    } else {
-      const content = message.content as OpenaiApiChatMessageTextContent;
-      return content.text || '';
+    // if (message.source == 'openai_web') {
+    //   const content = message.content as OpenaiWebChatMessageTextContent;
+    //   return content.parts![0];
+    // } else {
+    //   const content = message.content as OpenaiApiChatMessageTextContent;
+    //   return content.text || '';
+    // }
+    if (message.content.content_type == 'text') {
+      const content = message.content as OpenaiWebChatMessageTextContent | OpenaiApiChatMessageTextContent;
+      return content.parts ? content.parts[0] : content.text || '';
     }
   } else if (message.content.content_type == 'code') {
     const content = message.content as OpenaiWebChatMessageCodeContent;
@@ -222,6 +226,7 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
 }
 
 export function getTextMessageContent(messages: BaseChatMessage[]) {
+  console.log('getTextMessageContent', messages);
   let result = '';
   // 遍历 props.messages
   // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
