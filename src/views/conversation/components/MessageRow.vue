@@ -23,9 +23,6 @@
               :messages="item.messages"
             />
           </div>
-          <div v-else-if="item.type == 'code'">
-            <MessageRowCodeDisplay :messages="item.messages" />
-          </div>
           <div v-else-if="item.type == 'multimodal_text'">
             <MessageRowMultimodalTextDisplay
               :conversation-id="props.conversationId"
@@ -118,7 +115,6 @@ import { Message } from '@/utils/tips';
 
 import { determineMessageType, DisplayItem } from '../utils/message';
 import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
-import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
 import MessageRowMultimodalTextDisplay from './MessageRowMultimodalTextDisplay.vue';
 import MessageRowMyFilesBrowserDisplay from './MessageRowMyFilesBrowserDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
