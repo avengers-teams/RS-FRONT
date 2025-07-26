@@ -1,25 +1,7 @@
 <template>
   <div class="flex flex-col align-middle" :style="{ background: themeVars.baseColor }">
     <n-divider />
-    <!-- 暂停按钮 -->
-    <div class="flex w-full justify-center absolute -top-10">
-      <n-button v-show="canAbort" secondary strong type="error" size="small" @click="emits('abort-request')">
-        <template #icon>
-          <Stop />
-        </template>
-        {{ t('commons.abortRequest') }}
-      </n-button>
-    </div>
 
-    <!-- 继续生成按钮 -->
-    <div class="flex w-full justify-center absolute -top-10">
-      <n-button v-show="canContinue" secondary strong type="success" size="small" @click="emits('continue-generating')">
-        <template #icon>
-          <DoubleArrowRound />
-        </template>
-        {{ t('commons.continueGenerating') }}
-      </n-button>
-    </div>
     <!-- 输入框 -->
     <div class="mx-80 mb-4 flex flex-row space-x-2 items-center">
       <!-- 文件上传按钮 -->
@@ -51,31 +33,19 @@
         </template>
       </n-input>
     </div>
-    <!--<div class="mb-1 mx-auto">
-      <n-text depth="3" class="text-size-[0.6rem]">
-        {{ currentAvaliableAskCountsTip }}
-      </n-text>
-    </div>-->
 
     <!-- 文件上传区域 -->
-    <div v-if="props.uploadMode" v-show="showFileUpload" class="mx-4 mb-4">
-      <FileUploadRegion ref="fileUploadRegionRef" :mode="props.uploadMode" :disabled="uploadDisabled" />
+    <div v-show="showFileUpload" class="mx-4 mb-4">
+      <FileUploadRegion ref="fileUploadRegionRef" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { LogoMarkdown, Print, Send, Stop } from '@vicons/ionicons5';
-import {
-  AttachFileFilled,
-  DoubleArrowRound,
-  FullscreenRound,
-  KeyboardDoubleArrowDownRound,
-  KeyboardDoubleArrowUpRound,
-} from '@vicons/material';
+import { Send } from '@vicons/ionicons5';
+import { AttachFileFilled } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
 import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 
 import { useAppStore, useFileStore } from '@/store';
 
@@ -84,7 +54,6 @@ import FileUploadRegion from './FileUploadRegion.vue';
 const themeVars = useThemeVars();
 const appStore = useAppStore();
 const fileStore = useFileStore();
-const { t } = useI18n();
 
 const fileUploadRegionRef = ref<InstanceType<typeof FileUploadRegion>>();
 
@@ -121,15 +90,6 @@ const onPaste = (e: ClipboardEvent) => {
   }
 };
 
-const autoScrolling = computed({
-  get() {
-    return props.autoScrolling;
-  },
-  set(value) {
-    emits('update:auto-scrolling', value);
-  },
-});
-
 const inputExpanded = ref<boolean>(false);
 const inputStyle = computed(() => {
   if (!inputExpanded.value)
@@ -152,19 +112,9 @@ const inputValue = computed({
 });
 
 const emits = defineEmits<{
-  (e: 'abort-request'): void;
-  (e: 'continue-generating'): void;
   (e: 'send-msg'): void;
-  (e: 'export-to-markdown-file'): void;
-  (e: 'export-to-pdf-file'): void;
-  (e: 'show-fullscreen-history'): void;
-  (e: 'update:auto-scrolling', value: boolean): void;
   (e: 'update:input-value', value: string): void;
 }>();
-
-const toggleInputExpanded = () => {
-  inputExpanded.value = !inputExpanded.value;
-};
 
 const shortcutSendMsg = (e: KeyboardEvent) => {
   if (sendDisabled.value) return;

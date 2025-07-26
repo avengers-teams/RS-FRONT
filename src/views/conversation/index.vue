@@ -22,10 +22,16 @@
         :class="['h-full pt-4 px-4 box-border mb-4 overflow-hidden flex flex-col space-y-4']"
         :loading="loadingAsk"
         @new-conversation="makeNewTask"
+        @add-event="handleEvent"
       />
     </n-layout-sider>
     <!-- 右栏 -->
-    <RightConversation @update="updateConvId" :_current-conversation-id="currentConversationId"></RightConversation>
+    <RightConversation
+      v-if="taskType"
+      :_current-conversation-id="currentConversationId"
+      @update="updateConvId"
+    ></RightConversation>
+    <RightImage v-else :_current-conversation-id="currentConversationId" />
   </n-layout>
 </template>
 
@@ -40,6 +46,11 @@ import { popupNewConversationDialog } from '@/utils/renders';
 import { LoadingBar } from '@/utils/tips';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
+import RightImage from '@/views/conversation/components/RightImage.vue';
+const taskType = ref(true);
+const handleEvent = (data: any) => {
+  console.log(data); // 接收到的数据
+};
 
 const { t } = useI18n();
 

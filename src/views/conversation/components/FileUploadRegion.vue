@@ -1,70 +1,11 @@
 <template>
-  <div v-if="props.mode === 'legacy_code_interpreter'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
-    <n-upload
-      ref="uploadLegacyRef"
-      v-model:file-list="fileStore.naiveUiUploadFileInfos"
-      class="lt-sm:mb-4"
-      multiple
-      :disabled="props.disabled"
-      :show-file-list="false"
-      :trigger-style="{ width: '100%' }"
-      :custom-request="customRequest"
-      :max="10"
-    >
-      <n-upload-dragger class="lt-sm:hidden">
-        <div class="mb-2">
-          <n-icon size="48" :depth="3">
-            <UploadFileRound />
-          </n-icon>
-        </div>
-        <n-text style="font-size: 16px">
-          {{ $t('tips.dragFileHere') }}
-        </n-text>
-        <n-p depth="3" style="margin: 8px 0 0 0">
-          {{ $t('tips.fileUploadRequirements') }}
-        </n-p>
-      </n-upload-dragger>
-
-      <n-upload-trigger abstract>
-        <n-button class="sm:hidden">
-          {{ $t('commons.selectFile') }}
-        </n-button>
-      </n-upload-trigger>
-    </n-upload>
-
-    <n-upload
-      v-model:file-list="fileStore.naiveUiUploadFileInfos"
-      abstract
-      multiple
-      :disabled="props.disabled"
-      :custom-request="customRequest"
-      :show-cancel-button="true"
-      :show-remove-button="true"
-      :show-retry-button="true"
-      :on-remove="removeFile"
-      :max="10"
-    >
-      <n-card :content-style="{ padding: '1em' }">
-        <n-empty
-          v-if="fileStore.naiveUiUploadFileInfos.length == 0"
-          :description="$t('commons.emptyFileList')"
-          class="h-full flex items-center justify-center"
-        />
-        <n-scrollbar v-else>
-          <n-upload-file-list />
-        </n-scrollbar>
-      </n-card>
-    </n-upload>
-  </div>
-
-  <div v-else-if="props.mode === 'all'" class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
+  <div class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
     <n-upload
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
       class="lt-sm:hidden"
       multiple
       :show-file-list="false"
       :trigger-style="{ width: '100%' }"
-      :disabled="props.disabled"
       :custom-request="customRequest"
       :accept="acceptedMimeTypes.join(',')"
       :on-before-upload="checkFileBeforeUpload"
@@ -90,7 +31,6 @@
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
       abstract
       multiple
-      :disabled="props.disabled"
       :custom-request="customRequest"
       :show-cancel-button="true"
       :show-remove-button="true"
@@ -143,11 +83,6 @@ import { acceptedMimeTypes, getImageDimensions, isImage, isSupportedImage } from
 const { t } = useI18n();
 
 const fileStore = useFileStore();
-
-const props = defineProps<{
-  mode: 'all' | 'legacy_code_interpreter';
-  disabled: boolean;
-}>();
 
 const uploadLegacyRef = ref();
 const uploadAllRef = ref();
@@ -287,12 +222,7 @@ function addFile(file: File) {
   console.log('addFile', fileStore.naiveUiUploadFileInfos);
   // console.log(uploadAllRef.value);
   nextTick(() => {
-    if (props.mode === 'legacy_code_interpreter') {
-      uploadLegacyRef.value?.submit();
-    } else {
-      uploadAllRef.value?.submit();
-    }
-    // console.log('ok');
+    uploadAllRef.value?.submit();
   });
 }
 

@@ -123,13 +123,13 @@ export function buildTemporaryMessage(
   const content =
     source === 'openai_api'
       ? {
-          content_type: 'text',
-          text: textContent,
-        }
+        content_type: 'text',
+        text: textContent,
+      }
       : {
-          content_type: 'text',
-          parts: [textContent],
-        };
+        content_type: 'text',
+        parts: [textContent],
+      };
   const result = {
     id: `temp_${random_strid}`,
     source,

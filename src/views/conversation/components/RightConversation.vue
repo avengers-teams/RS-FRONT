@@ -57,12 +57,7 @@
         :send-disabled="sendDisabled"
         :upload-mode="uploadMode"
         :upload-disabled="loadingAsk"
-        @abort-request="abortRequest"
-        @continue-generating="continueGenerating"
-        @export-to-markdown-file="exportToMarkdownFile"
-        @export-to-pdf-file="exportToPdfFile"
         @send-msg="sendMsg"
-        @show-fullscreen-history="showFullscreenHistory"
       />
     </div>
   </n-layout-content>
@@ -94,7 +89,6 @@ import { Dialog, LoadingBar, Message } from '@/utils/tips';
 import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
 import InputRegion from '@/views/conversation/components/InputRegion.vue';
 
-import { saveAsMarkdown } from '../utils/export';
 import { buildTemporaryMessage, modifiyTemporaryMessageContent } from '../utils/message';
 
 const props = defineProps<{
@@ -121,7 +115,6 @@ const autoScrolling = useStorage('autoScrolling', true);
 const isAborted = ref<boolean>(false);
 const canAbort = ref<boolean>(false);
 const canContinue = ref<boolean>(false);
-let aborter: (() => void) | null = null;
 
 const hasNewConversation = ref<boolean>(false);
 const currentConversationId = ref<string | null>(props._currentConversationId || null);
@@ -222,17 +215,6 @@ const makeNewTask = () => {
     appStore.lastSelectedSource = newConversationInfo.source;
     appStore.lastSelectedModel = newConversationInfo.model;
   });
-};
-
-const abortRequest = () => {
-  if (aborter == null || !canAbort.value) return;
-  aborter();
-  aborter = null;
-};
-
-const continueGenerating = () => {
-  inputValue.value = ':continue';
-  sendMsg();
 };
 
 const scrollToBottom = () => {
@@ -401,7 +383,6 @@ const sendMsg = async () => {
   };
 
   webSocket.onclose = async (event: CloseEvent) => {
-    aborter = null;
     canAbort.value = false;
     console.log('WebSocket connection is closed', event, isAborted.value);
     if (!hasError && (event.code == 1000 || isAborted.value)) {
@@ -505,42 +486,14 @@ const sendMsg = async () => {
     console.error('WebSocket error:', event);
   };
 
-  aborter = () => {
-    isAborted.value = true;
-    webSocket.close();
-  };
-};
-
-const exportToMarkdownFile = () => {
-  if (!currentConversation.value) {
-    Message.error(t('tips.pleaseSelectConversation'));
-    return;
-  }
-  saveAsMarkdown(currentConvHistory.value!);
+  // aborter = () => {
+  //   isAborted.value = true;
+  //   webSocket.close();
+  // };
 };
 
 const historyContentRef = ref();
 const showFullscreenTips = ref(false);
-
-const showFullscreenHistory = () => {
-  if (!currentConversation.value) {
-    Message.error(t('tips.pleaseSelectConversation'));
-    return;
-  }
-  // focus historyContentRef
-  historyContentRef.value.focus();
-  historyContentRef.value.toggleFullscreenHistory(true);
-};
-
-const exportToPdfFile = () => {
-  if (!currentConversation.value) {
-    Message.error(t('tips.pleaseSelectConversation'));
-    return;
-  }
-  historyContentRef.value.toggleFullscreenHistory(false);
-  window.print();
-  historyContentRef.value.toggleFullscreenHistory(false);
-};
 
 // 加载对话列表
 conversationStore.fetchAllConversations().then();

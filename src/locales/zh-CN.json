@@ -1,6 +1,7 @@
 {
   "commons": {
     "newConversation": "新任务",
+    "currentConversationModel": "当前任务",
 
     "notLogin": "未登录",
     "siteTitle": "ChatGPT",
@@ -54,7 +55,7 @@
     "vanishConversation": "彻底删除对话",
     "shaModel": "Default",
     "paidModel": "Legacy",
-    "currentConversationModel": "当前模型",
+
     "availableModels": "允许使用的模型",
     "maxConversationCount": "最大对话数",
     "availableTotalAskCount": "总可用提问次数",

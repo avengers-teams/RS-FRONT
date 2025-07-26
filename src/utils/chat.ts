@@ -48,7 +48,6 @@ export const getChatModelIconStyle = (model_name: OpenaiWebChatModels | OpenaiAp
 export const getChatModelNameTrans = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
   if (model_name == null) return t('commons.unknown');
   if (allChatModelNames.includes(model_name)) return t(`models.${model_name}`);
-  else return `${t('commons.unknown')}(${model_name})`;
   // else return model_name;
 };
 

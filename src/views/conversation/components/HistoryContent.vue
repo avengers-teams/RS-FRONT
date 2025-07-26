@@ -9,10 +9,10 @@
   >
     <div v-if="!props.loading" class="relative">
       <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
-        <n-text class="flex h-full items-center">
+        <n-text class="flex h-full items-center gap-1">
           {{ $t('commons.currentConversationModel') }}:
-          <ChatGPTAvatar class="ml-2 mr-1" :model="convHistory?.current_model" :size="20" />
-          {{ getChatModelNameTrans(convHistory?.current_model || null) }} ({{ t(`sources.${convHistory?.source}`) }})
+          <ChatGPTIcon style="height: 25px; width: 25px" />
+          {{ convHistory?.current_model || null }}
         </n-text>
         <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
           <template #icon>
@@ -50,9 +50,10 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
+import ChatGPTIcon from '@/components/ChatGPTIcon.vue';
 import { useConversationStore } from '@/store';
 import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
-import { getChatModelNameTrans, getMessageListFromHistory, mergeContinuousMessages } from '@/utils/chat';
+import { getMessageListFromHistory, mergeContinuousMessages } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';

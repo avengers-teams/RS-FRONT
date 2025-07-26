@@ -23,24 +23,11 @@
               :messages="item.messages"
             />
           </div>
-          <div v-else-if="item.type == 'browser'">
-            <MessageRowBrowserDisplay :messages="item.messages" />
-          </div>
           <div v-else-if="item.type == 'code'">
             <MessageRowCodeDisplay :messages="item.messages" />
           </div>
           <div v-else-if="item.type == 'multimodal_text'">
             <MessageRowMultimodalTextDisplay
-              :conversation-id="props.conversationId"
-              :render-markdown="renderMarkdown"
-              :messages="item.messages"
-            />
-          </div>
-          <div v-else-if="item.type == 'dalle_prompt'">
-            <MessageRowDallePromptDisplay :messages="item.messages" />
-          </div>
-          <div v-else-if="item.type == 'dalle_result'">
-            <MessageRowMultimodalTextDalleDisplay
               :conversation-id="props.conversationId"
               :render-markdown="renderMarkdown"
               :messages="item.messages"
@@ -131,10 +118,7 @@ import { Message } from '@/utils/tips';
 
 import { determineMessageType, DisplayItem } from '../utils/message';
 import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
-import MessageRowBrowserDisplay from './MessageRowBrowserDisplay.vue';
 import MessageRowCodeDisplay from './MessageRowCodeDisplay.vue';
-import MessageRowDallePromptDisplay from './MessageRowDallePromptDisplay.vue';
-import MessageRowMultimodalTextDalleDisplay from './MessageRowMultimodalTextDalleDisplay.vue';
 import MessageRowMultimodalTextDisplay from './MessageRowMultimodalTextDisplay.vue';
 import MessageRowMyFilesBrowserDisplay from './MessageRowMyFilesBrowserDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';

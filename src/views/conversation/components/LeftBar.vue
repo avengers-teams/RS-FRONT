@@ -33,41 +33,11 @@
       <!-- 左侧功能按钮 -->
       <n-list class="text-center">
         <n-divider />
-        <n-list-item
-          class="pb-5 pt-0 cursor-pointer hover:text-blue-500"
-          :class="awesome === 1 ? 'text-blue-500' : ''"
-          @click="setAwesome(1)"
-        >
-          图像语义生成
-        </n-list-item>
-        <n-list-item
-          class="py-5 cursor-pointer hover:text-blue-500"
-          :class="awesome === 2 ? 'text-blue-500' : ''"
-          @click="setAwesome(2)"
-        >
-          目标识别与计数
-        </n-list-item>
-        <n-list-item
-          class="py-5 cursor-pointer hover:text-blue-500"
-          :class="awesome === 3 ? 'text-blue-500' : ''"
-          @click="setAwesome(3)"
-        >
-          空间感知与定位
-        </n-list-item>
-        <n-list-item
-          class="py-5 cursor-pointer hover:text-blue-500"
-          :class="awesome === 4 ? 'text-blue-500' : ''"
-          @click="setAwesome(4)"
-        >
-          地物分类与状态评估
-        </n-list-item>
-        <n-list-item
-          class="py-5 cursor-pointer hover:text-blue-500"
-          :class="awesome === 5 ? 'text-blue-500' : ''"
-          @click="setAwesome(5)"
-        >
-          场景推理与决策
-        </n-list-item>
+        <n-list-item class="pb-5 pt-0 cursor-pointer" @click="emits('addEvent', 1)"> 图像语义生成 </n-list-item>
+        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 2)"> 目标识别与计数 </n-list-item>
+        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 3)"> 空间感知与定位 </n-list-item>
+        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 4)"> 地物分类与状态评估 </n-list-item>
+        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 5)"> 场景推理与决策 </n-list-item>
       </n-list>
     </div>
   </div>
@@ -76,7 +46,7 @@
 <script lang="ts" setup>
 import { Add } from '@vicons/ionicons5';
 import { MenuOption, NEllipsis } from 'naive-ui';
-import { computed, h, ref } from 'vue';
+import { computed, defineEmits, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
@@ -84,8 +54,6 @@ import { useConversationStore } from '@/store';
 import { BaseConversationSchema } from '@/types/schema';
 import { dropdownRenderer, popupChangeConversationTitleDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
-import RightConversation from '@/views/conversation/components/RightConversation.vue';
-import RightImage from '@/views/conversation/components/RightImage.vue';
 
 const { t } = useI18n();
 
@@ -104,6 +72,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: 'update:value', value: string | null): void;
   (e: 'new-conversation'): void;
+  (e: 'addEvent', value: any): void;
 }>();
 
 // get and set to bind convId and value

@@ -1,6 +1,7 @@
 {
   "commons": {
     "newConversation": "New task",
+    "currentConversationModel": "Task",
 
     "notLogin": "Not logged in",
     "siteTitle": "ChatGPT Web Share",
@@ -54,7 +55,7 @@
     "vanishConversation": "Destroy conversation",
     "shaModel": "Default",
     "paidModel": "Legacy",
-    "currentConversationModel": "Model",
+
     "availableModels": "Available Models",
     "maxConversationCount": "Max number of conversations",
     "availableTotalAskCount": "Available Total Ask Count",
