@@ -1,12 +1,10 @@
 import DOMPurify from 'dompurify';
 
 import { i18n } from '@/i18n';
-import { allChatModelNames } from '@/types/json_schema';
 import {
   BaseChatMessage,
   BaseConversationHistory,
   OpenaiApiChatMessageTextContent,
-  OpenaiApiChatModels,
   OpenaiWebChatMessageCodeContent,
   OpenaiWebChatMessageMetadata,
   OpenaiWebChatMessageMultimodalTextContent,
@@ -16,14 +14,9 @@ import {
   OpenaiWebChatMessageTetherBrowsingDisplayContent,
   OpenaiWebChatMessageTetherQuoteContent,
   OpenaiWebChatMessageTextContent,
-  OpenaiWebChatModels,
 } from '@/types/schema';
-const t = i18n.global.t as any;
 
-export const getChatModelNameTrans = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
-  if (model_name == null) return t('commons.unknown');
-  if (allChatModelNames.includes(model_name)) return t(`models.${model_name}`);
-};
+const t = i18n.global.t as any;
 
 export const getContentRawText = (message: BaseChatMessage | null): string => {
   if (!message || !message.content) return '';

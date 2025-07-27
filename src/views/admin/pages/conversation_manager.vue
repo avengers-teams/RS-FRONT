@@ -66,7 +66,6 @@ import {
 } from '@/api/conv';
 import { getAllUserApi } from '@/api/user';
 import { BaseConversationSchema, UserReadAdmin } from '@/types/schema';
-import { getChatModelNameTrans } from '@/utils/chat';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
 
@@ -197,15 +196,6 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
         }
       );
     },
-  },
-  {
-    title: t('commons.modelName'),
-    key: 'current_model',
-    width: 200,
-    render(row) {
-      return row.current_model ? getChatModelNameTrans(row.current_model) : t('commons.unknown');
-    },
-    sorter: 'default',
   },
 ]);
 
