@@ -6,7 +6,6 @@ import {
   BaseConversationHistory,
   OpenaiApiChatMessageTextContent,
   OpenaiWebChatMessageCodeContent,
-  OpenaiWebChatMessageMetadata,
   OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
   OpenaiWebChatMessageStderrContent,
@@ -91,28 +90,11 @@ export function mergeContinuousMessages(messages: BaseChatMessage[]): BaseChatMe
   const result = [] as BaseChatMessage[][];
   let currentMessageList = [] as BaseChatMessage[];
   for (const message of messages) {
-    // 将chatgpt的连续对话划分到一组
-    if (message.source == 'openai_web' && message.role !== 'user') {
-      const metadata = message.metadata as OpenaiWebChatMessageMetadata;
-      if (metadata && metadata.end_turn != true) {
-        currentMessageList.push(message);
-      } else {
-        if (currentMessageList.length > 0) {
-          currentMessageList.push(message);
-          result.push(currentMessageList);
-          currentMessageList = [];
-        } else {
-          result.push([message]);
-        }
-      }
-    } else {
-      // TODO: API 暂不支持连续对话合并
-      if (currentMessageList.length > 0) {
-        result.push(currentMessageList);
-        currentMessageList = [];
-      }
-      result.push([message]);
+    if (currentMessageList.length > 0) {
+      result.push(currentMessageList);
+      currentMessageList = [];
     }
+    result.push([message]);
   }
   if (currentMessageList.length > 0) {
     result.push(currentMessageList);
@@ -120,58 +102,15 @@ export function mergeContinuousMessages(messages: BaseChatMessage[]): BaseChatMe
   return result;
 }
 
-// 对于一段连续消息中的消息按照功能性来分组
 export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessage[][] {
   const result = [] as BaseChatMessage[][];
   let currentMessageList = [] as BaseChatMessage[];
-  let currentMessageListType: 'text' | 'dalle' | 'other' | null = null;
-
   for (const message of messages) {
-    if (message.source == 'openai_web') {
-      const metadata = message.metadata as OpenaiWebChatMessageMetadata;
-      if (message.role == 'user') {
-        if (messages.length > 1) {
-          console.error('found multiple user message in splitMessagesInGroup', messages);
-          continue;
-        }
-        currentMessageList.push(message);
-        currentMessageListType = 'text';
-      } else if (
-        message.role == 'assistant' &&
-        typeof message.content !== 'string' &&
-        message.content?.content_type == 'text' &&
-        metadata?.recipient == 'all'
-      ) {
-        if (currentMessageListType !== 'text') {
-          currentMessageListType = 'text';
-          if (currentMessageList.length > 0) result.push(currentMessageList);
-          currentMessageList = [];
-        }
-        currentMessageList.push(message);
-      } else if (message.author_name == 'dalle.text2im') {
-        if (currentMessageListType !== 'dalle') {
-          currentMessageListType = 'dalle';
-          if (currentMessageList.length > 0) result.push(currentMessageList);
-          currentMessageList = [];
-        }
-        currentMessageList.push(message);
-      } else {
-        // 连续的其它情况放到一组
-        if (currentMessageListType !== 'other') {
-          if (currentMessageList.length > 0) result.push(currentMessageList);
-          currentMessageListType = 'other';
-          currentMessageList = [];
-        }
-        currentMessageList.push(message);
-      }
-    } else {
-      // TODO: API 暂不支持连续对话合并
-      if (currentMessageList.length > 0) {
-        result.push(currentMessageList);
-        currentMessageList = [];
-      }
-      result.push([message]);
+    if (currentMessageList.length > 0) {
+      result.push(currentMessageList);
+      currentMessageList = [];
     }
+    result.push([message]);
   }
   if (currentMessageList.length > 0) {
     result.push(currentMessageList);
@@ -180,7 +119,6 @@ export function splitMessagesInGroup(messages: BaseChatMessage[]): BaseChatMessa
 }
 
 export function getTextMessageContent(messages: BaseChatMessage[]) {
-  console.log('getTextMessageContent', messages);
   let result = '';
   // 遍历 props.messages
   // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
@@ -190,28 +128,7 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
     if (!message || !message.content) continue;
     else if (typeof message.content == 'string') result += message.content;
     else if (message.content.content_type == 'text') {
-      let text = getContentRawText(message);
-      if (message.source == 'openai_web' && message.role === 'assistant') {
-        const metadata = message.metadata as OpenaiWebChatMessageMetadata;
-        if (metadata?.citations && metadata.citations.length > 0) {
-          let processedText = text;
-          metadata.citations
-            .sort((a, b) => {
-              return (a.start_ix as number) - (b.start_ix as number);
-            })
-            .reverse()
-            .forEach((citation, _index) => {
-              const start = citation.start_ix!;
-              const end = citation.end_ix!;
-              const originalText = text.slice(start, end);
-              const replacement = `<span class="browsing-citation" data-citation="${encodeURIComponent(
-                JSON.stringify(citation.metadata!)
-              )}">${originalText}</span>`;
-              processedText = processedText.slice(0, start) + replacement + processedText.slice(end);
-            });
-          text = processedText;
-        }
-      }
+      const text = getContentRawText(message);
       result += text;
     }
   }
