@@ -10,17 +10,12 @@ export type UserUpdateAdmin = components['schemas']['UserUpdateAdmin'];
 
 export type UserSettingSchema = components['schemas']['UserSettingSchema-Input'];
 
-export type OpenaiWebChatModels = components['schemas']['OpenaiWebChatModels'];
-export type OpenaiApiChatModels = components['schemas']['OpenaiApiChatModels'];
-
 export type OpenaiWebChatMessageMetadata = components['schemas']['OpenaiWebChatMessageMetadata'];
 export type OpenaiWebChatMessageMetadataAttachment = components['schemas']['OpenaiWebChatMessageMetadataAttachment'];
 export type OpenaiWebChatMessageTextContent = components['schemas']['OpenaiWebChatMessageTextContent'];
 export type OpenaiWebChatMessageMultimodalTextContent =
   components['schemas']['OpenaiWebChatMessageMultimodalTextContent'];
 export type OpenaiWebChatMessageCodeContent = components['schemas']['OpenaiWebChatMessageCodeContent'];
-export type OpenaiWebChatMessageExecutionOutputContent =
-  components['schemas']['OpenaiWebChatMessageExecutionOutputContent'];
 export type OpenaiWebChatMessageStderrContent = components['schemas']['OpenaiWebChatMessageStderrContent'];
 export type OpenaiWebChatMessageTetherBrowsingDisplayContent =
   components['schemas']['OpenaiWebChatMessageTetherBrowsingDisplayContent'];
@@ -32,7 +27,6 @@ export type OpenaiWebChatMessageMultimodalTextContentImagePart =
   components['schemas']['OpenaiWebChatMessageMultimodalTextContentImagePart-Input'];
 
 export type BaseChatMessage = components['schemas']['BaseChatMessage'];
-export type OpenaiWebChatMessage = components['schemas']['OpenaiWebChatMessage'];
 export type OpenaiChatInterpreterInfo = components['schemas']['OpenaiChatInterpreterInfo'];
 
 export type BaseConversationSchema = components['schemas']['BaseConversationSchema'];
@@ -45,9 +39,3 @@ export type AskResponse = components['schemas']['AskResponse'];
 export type UploadedFileInfoSchema = components['schemas']['UploadedFileInfoSchema'];
 export type StartUploadRequestSchema = components['schemas']['StartUploadRequestSchema'];
 export type StartUploadResponseSchema = components['schemas']['StartUploadResponseSchema'];
-
-export const chatStatusMap = {
-  asking: 'commons.askingChatStatus',
-  queueing: 'commons.queueingChatStatus',
-  idling: 'commons.idlingChatStatus',
-};
