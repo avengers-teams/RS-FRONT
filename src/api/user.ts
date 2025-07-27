@@ -1,9 +1,6 @@
 import axios from 'axios';
-
 import { UserCreate, UserRead, UserReadAdmin, UserSettingSchema, UserUpdate, UserUpdateAdmin } from '@/types/schema';
-
 import ApiUrl from './url';
-
 export type LoginData = {
   username: string;
   password: string;

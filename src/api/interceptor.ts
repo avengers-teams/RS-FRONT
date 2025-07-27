@@ -5,8 +5,6 @@ import { i18n } from '@/i18n';
 import router from '@/router';
 import { useUserStore } from '@/store';
 import { Dialog, Message } from '@/utils/tips';
-
-// import { isLogin } from '@/utils/auth';
 import ApiUrl from './url';
 const t = i18n.global.t as any;
 
@@ -17,16 +15,8 @@ export interface HttpResponse<T = unknown> {
 }
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-// axios.defaults.baseURL = "/openai_api/";
-
 axios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // if (token) {
-    //   if (!config.headers) {
-    //     config.headers = {};
-    //   }
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
     return config;
   },
   (error) => {
