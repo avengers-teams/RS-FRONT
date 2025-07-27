@@ -7,8 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ChatGPTAvatar: (typeof import('./src/components/ChatGPTAvatar.vue'))['default'];
-    ChatGPTIcon: (typeof import('./src/components/ChatGPTIcon.vue'))['default'];
+    ChatGPTAvatar: (typeof import('./src/components/LKAvatar.vue'))['default'];
+    ChatGPTIcon: (typeof import('./src/components/LKIcon.vue'))['default'];
     NAvatar: (typeof import('naive-ui'))['NAvatar'];
     NBadge: (typeof import('naive-ui'))['NBadge'];
     NButton: (typeof import('naive-ui'))['NButton'];

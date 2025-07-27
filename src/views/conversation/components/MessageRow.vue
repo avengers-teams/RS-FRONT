@@ -6,7 +6,7 @@
           <PersonFilled />
         </n-icon>
       </n-avatar>
-      <ChatGPTAvatar v-else size="small" :model="lastMessage?.model" />
+      <LkAvatar v-else size="small" />
     </div>
     <div class="ml-4 lt-md:mx-0 w-full min-h-16">
       <!-- Json View -->
@@ -106,7 +106,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { JsonViewer } from 'vue3-json-viewer';
 
-import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
+import LkAvatar from '@/components/LKAvatar.vue';
 import { useAppStore } from '@/store';
 import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
 import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';

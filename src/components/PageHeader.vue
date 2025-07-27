@@ -12,8 +12,8 @@
         </n-space>
       </template>
       <template #avatar>
-        <!-- <ChatGPTAvatar color="green" icon-style="default" :size="32" /> -->
-        <ChatGPTIcon />
+        <!-- <LkAvatar color="green" icon-style="default" :size="32" /> -->
+        <LkIcon />
       </template>
       <template #extra>
         <n-space>
@@ -69,7 +69,7 @@ import { Dialog, Message } from '@/utils/tips';
 
 import PreferenceForm from './PreferenceForm.vue';
 import UserProfileCard from './UserProfileCard.vue';
-import ChatGPTIcon from '@/components/ChatGPTIcon.vue';
+import LkIcon from '@/components/LKIcon.vue';
 
 const { t } = useI18n();
 const userStore = useUserStore();

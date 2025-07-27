@@ -11,7 +11,7 @@
       <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
         <n-text class="flex h-full items-center gap-1">
           {{ $t('commons.currentConversationModel') }}:
-          <ChatGPTIcon style="height: 25px; width: 25px" />
+          <LkIcon style="height: 25px; width: 25px" />
           {{ convHistory?.current_model || null }}
         </n-text>
         <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
@@ -49,8 +49,8 @@ import { useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
-import ChatGPTIcon from '@/components/ChatGPTIcon.vue';
+import LkAvatar from '@/components/LKAvatar.vue';
+import LkIcon from '@/components/LKIcon.vue';
 import { useConversationStore } from '@/store';
 import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
 import { getMessageListFromHistory, mergeContinuousMessages } from '@/utils/chat';

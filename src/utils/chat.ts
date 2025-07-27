@@ -20,23 +20,10 @@ import {
 } from '@/types/schema';
 const t = i18n.global.t as any;
 
-export const getChatModelIconStyle = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
-  if (model_name == 'gpt_4_plugins') return 'plugins';
-  else if (model_name == 'gpt_4_browsing') return 'browsing';
-  else if (model_name == 'gpt_4_code_interpreter') return 'code-interpreter';
-  else if (model_name == 'gpt_4_dalle') return 'dalle';
-  else return 'default';
-};
-
 export const getChatModelNameTrans = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
   if (model_name == null) return t('commons.unknown');
   if (allChatModelNames.includes(model_name)) return t(`models.${model_name}`);
   // else return model_name;
-};
-
-export const getCountTrans = (count: number | undefined | null): string => {
-  if (count == undefined || count == null) return t('commons.unlimited');
-  return count == -1 ? t('commons.unlimited') : `${count}`;
 };
 
 export const getContentRawText = (message: BaseChatMessage | null): string => {
