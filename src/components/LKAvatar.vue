@@ -1,5 +1,5 @@
 <template>
-  <n-avatar color="#" :size="size" :class="props.alpha ? [`opacity-${props.alpha}`] : []">
+  <n-avatar color="#ffffff" :size="size" :class="props.alpha ? [`opacity-${props.alpha}`] : []">
     <LkIcon :size="48" />
   </n-avatar>
 </template>

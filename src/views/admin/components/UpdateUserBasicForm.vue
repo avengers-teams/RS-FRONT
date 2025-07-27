@@ -55,14 +55,6 @@ watch(
   (user) => {
     if (!user) return;
     userUpdate.value = {
-      // username: user.username,
-      // nickname: user.nickname,
-      // email: user.email,
-      // avatar: user.avatar,
-      // remark: user.remark,
-      // is_active: user.is_active,
-      // is_verified: user.is_verified,
-      // is_superuser: user.is_superuser,
       ...user,
       password: '',
     };

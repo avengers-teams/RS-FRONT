@@ -42,12 +42,12 @@
 import { Pencil, TrashOutline } from '@vicons/ionicons5';
 import { RefreshFilled } from '@vicons/material';
 import { DataTableColumns, NButton, NIcon } from 'naive-ui';
-import { computed, h, ref } from 'vue';
+import { h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
+import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi } from '@/api/user';
 import { useDrawer } from '@/hooks/drawer';
-import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
+import { UserCreate, UserReadAdmin, UserUpdateAdmin } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
@@ -72,46 +72,6 @@ const refreshData = () => {
 
 getAllUserApi().then((res) => {
   data.value = res.data;
-});
-
-const isUserExpired = (user: UserReadAdmin) => {
-  const currentTime = new Date().getTime();
-  // valid_until: format like 2023-11-07T04:57:26.887525+00:00
-  if (user.setting.openai_web?.valid_until && currentTime > new Date(user.setting.openai_web.valid_until).getTime()) {
-    return true;
-  } else if (
-    user.setting.openai_api?.valid_until &&
-    currentTime > new Date(user.setting.openai_api.valid_until).getTime()
-  ) {
-    return true;
-  }
-  return false;
-};
-
-const getUserStatusText = (user: UserReadAdmin) => {
-  let result = '';
-  if (user.chat_status) {
-    result = t(chatStatusMap[user.chat_status as keyof typeof chatStatusMap]);
-  }
-  if (isUserExpired(user)) {
-    result += ` (${t('commons.expired')})`;
-  }
-  return result;
-};
-
-const userStateFilterOptions = computed(() => {
-  const values = {
-    idling: 'commons.idlingChatStatus',
-    asking: 'commons.askingChatStatus',
-    queueing: 'commons.queueingChatStatus',
-    expired: 'commons.expired',
-  };
-  return Object.keys(values).map((key) => {
-    return {
-      label: t(values[key as keyof typeof values]),
-      value: key,
-    };
-  });
 });
 
 const columns: DataTableColumns<UserReadAdmin> = [
@@ -214,24 +174,6 @@ const handleUpdateUserBasic = (userUpdate: Partial<UserUpdateAdmin>) => {
     delete userUpdate.password;
   }
   updateUserByIdApi(currentUser.value.id, userUpdate)
-    .then((res) => {
-      Message.success(t('tips.updateSuccess'));
-      data.value = data.value.map((item) => {
-        if (item.id === res.data.id) {
-          return res.data;
-        } else {
-          return item;
-        }
-      });
-    })
-    .finally(() => {
-      drawer.close();
-    });
-};
-
-const handleUpdateUserSetting = (userSetting: Partial<UserSettingSchema>) => {
-  if (!currentUser.value) return;
-  updateUserSettingApi(currentUser.value.id, userSetting)
     .then((res) => {
       Message.success(t('tips.updateSuccess'));
       data.value = data.value.map((item) => {
