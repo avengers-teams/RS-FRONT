@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     LKAvatar: typeof import('./src/components/LKAvatar.vue')['default']
     LKIcon: typeof import('./src/components/LKIcon.vue')['default']
+    NAutoComplete: typeof import('naive-ui')['NAutoComplete']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NBadge: typeof import('naive-ui')['NBadge']
     NButton: typeof import('naive-ui')['NButton']
@@ -16,6 +17,7 @@ declare module 'vue' {
     NCollapse: typeof import('naive-ui')['NCollapse']
     NCollapseItem: typeof import('naive-ui')['NCollapseItem']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
+    NDataTable: typeof import('naive-ui')['NDataTable']
     NDivider: typeof import('naive-ui')['NDivider']
     NDropdown: typeof import('naive-ui')['NDropdown']
     NEllipsis: typeof import('naive-ui')['NEllipsis']

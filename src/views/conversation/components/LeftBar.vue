@@ -15,7 +15,7 @@
             <Add />
           </n-icon>
         </template>
-        {{ $t('commons.newConversation') }}
+        新任务
       </n-button>
       <n-menu
         ref="menuRef"

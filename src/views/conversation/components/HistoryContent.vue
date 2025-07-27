@@ -12,7 +12,7 @@
         <n-text class="flex h-full items-center gap-1">
           {{ $t('commons.currentConversationModel') }}:
           <LkIcon style="height: 25px; width: 25px" />
-          {{ convHistory?.current_model || null }}
+          {{ convHistory?.task_type || null }}
         </n-text>
         <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
           <template #icon>

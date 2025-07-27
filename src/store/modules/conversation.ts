@@ -48,42 +48,24 @@ const useConversationStore = defineStore('conversation', {
     },
 
     createNewConversation(info: NewConversationInfo) {
-      if (
-        !info.source ||
-        !info.model ||
-        !(info.source === 'openai_api' || info.source === 'openai_web') ||
-        (info.model !== 'gpt_4_plugins' && info.openaiWebPlugins && info.openaiWebPlugins.length > 0)
-      ) {
-        console.error('Invalid conversation info', info);
-        throw new Error('Invalid conversation info');
-      }
       console.log(info);
       const currentTime = new Date().toISOString();
       this.newConversation = {
         id: -1,
-        source: info.source,
-        is_valid: true,
         conversation_id: newConversationId,
         title: info.title || '',
-        current_model: info.model,
+        task_type: info.task_type,
         create_time: currentTime,
         update_time: currentTime,
       };
       this.conversationHistoryMap[newConversationId] = {
         _id: newConversationId,
-        source: info.source,
         title: info.title || '',
-        current_model: info.model,
+        task_type: info.task_type,
         current_node: '',
         create_time: currentTime,
         update_time: currentTime,
         mapping: {},
-        metadata: info.openaiWebPlugins
-          ? {
-              source: 'openai_web',
-              plugin_ids: info.openaiWebPlugins,
-            }
-          : undefined,
       };
     },
 

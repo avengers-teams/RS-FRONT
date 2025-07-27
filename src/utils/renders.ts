@@ -108,9 +108,9 @@ export const popupResetUserPasswordDialog = (
 export const popupNewConversationDialog = (callback: (newConversationInfo: NewConversationInfo) => Promise<void>) => {
   let input = null as NewConversationInfo | null;
   const d = Dialog.info({
-    title: t('commons.newConversation'),
-    positiveText: t('commons.confirm'),
-    negativeText: t('commons.cancel'),
+    title: t('新任务'),
+    positiveText: t('确认'),
+    negativeText: t('取消'),
     content: () =>
       h(NewConversationForm, {
         onInput: (newConversationInfo: NewConversationInfo) => {
@@ -124,12 +124,8 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
         if (input === null) {
           resolve(false);
         }
-        if (input?.model === null) {
-          Message.error(t('tips.modelRequired'));
-          resolve(false);
-        }
-        if (input?.openaiWebPlugins && input.openaiWebPlugins.length > 3) {
-          Message.error(t('tips.openaiWebPluginsLengthMoreThan3'));
+        if (input?.task_type === null) {
+          Message.error('请选择任务类型');
           resolve(false);
         }
         callback(input!)
