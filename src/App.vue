@@ -4,7 +4,10 @@
     <div class="w-full box-border flex flex-col">
       <n-layout>
         <PageHeader v-if="userStore.user" />
-        <div style="height: calc(100vh - var(--header-height)); height: calc(100dvh - var(--header-height))">
+        <div v-if="isLoginPage">
+          <router-view />
+        </div>
+        <div v-else style="height: calc(100vh - var(--header-height)); height: calc(100dvh - var(--header-height))">
           <router-view />
         </div>
       </n-layout>
@@ -31,6 +34,10 @@ const setFullHeight = () => {
 };
 
 useEventListener('resize', setFullHeight);
+
+const isLoginPage = computed(() => {
+  return location.pathname === '/login' || location.pathname === '/register';
+});
 
 const theme = computed(() => {
   if (appStore.theme == 'dark') {
