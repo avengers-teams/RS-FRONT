@@ -6,30 +6,32 @@
         <form action="#" class="sign-in-form">
           <h2 class="title">登录</h2>
           <div class="input-field">
-            <i><font-awesome-icon icon="fa-solid fa-user" /></i>
+            <i> <img src="../../../public/用户.svg" class="w-5" /></i>
             <input v-model="formValue.username" type="text" placeholder="用户名" />
           </div>
           <div class="input-field">
-            <i><font-awesome-icon icon="fa-solid fa-lock" /></i>
+            <i> <img src="../../../public/密码.svg" class="w-5" /></i>
             <input v-model="formValue.password" type="password" placeholder="密码" />
           </div>
           <input type="submit" value="立即登录" class="btn solid" @click="login" />
+          <n-button class="" @click="isLogin = !isLogin" text>没有账号?去注册</n-button>
         </form>
         <form action="#" class="sign-up-form">
           <h2 class="title">注册</h2>
           <div class="input-field">
-            <i><font-awesome-icon icon="fa-solid fa-user" /></i>
+            <i> <img src="../../../public/用户.svg" class="w-5" /></i>
             <input type="text" placeholder="用户名" />
           </div>
           <div class="input-field">
-            <i><font-awesome-icon icon="fa-solid fa-envelope" /></i>
+            <i> <img src="../../../public/邮箱.svg" class="w-5" /></i>
             <input type="email" placeholder="邮箱" />
           </div>
           <div class="input-field">
-            <i><font-awesome-icon icon="fa-solid fa-lock" /></i>
+            <i> <img src="../../../public/密码.svg" class="w-5" /></i>
             <input type="password" placeholder="密码" />
           </div>
           <input type="submit" class="btn" value="立即注册" />
+          <n-button class="" @click="isLogin = !isLogin" text>已有账号?去登录</n-button>
         </form>
       </div>
     </div>
@@ -37,11 +39,11 @@
     <div class="panels-container">
       <div class="panel left-panel">
         <div class="content">
-          <h3>加入我们</h3>
+          <img src="../../../public/logo.png" class="w-30" />
+          <h1 class="yishuzi text-5xl">灵瞰视界，洞见未来</h1>
           <p>加入我们，成为本站的一份子。</p>
-          <button class="btn transparent" @click="isLogin = !isLogin">去注册</button>
         </div>
-        <img src="@/assets/images/signin.svg" class="image" alt="" />
+        <img src="../../../public/卫星.svg" class="image123" alt="" />
       </div>
       <div class="panel right-panel">
         <div class="content">
@@ -49,7 +51,7 @@
           <p>立即登录已有帐号，享受独家权益。</p>
           <button class="btn transparent" @click="isLogin = !isLogin">去登录</button>
         </div>
-        <img src="@/assets/images/signup.svg" class="image" alt="" />
+        <img src="../../../public/卫星.svg" class="image123" alt="" />
       </div>
     </div>
   </div>
@@ -112,6 +114,15 @@ if (userStore.user) {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.yishuzi {
+  font-family: monospace;
+  color: #ffe484;
+  background-color: transparent;
+  -webkit-text-stroke: 0.2px #0a2a5c;
+  text-shadow: rgba(5, 20, 40, 0.6) 4px 4px 2px;
+  position: relative;
 }
 
 body,
@@ -181,18 +192,22 @@ form.sign-in-form {
   margin: 10px 0;
   height: 55px;
   border-radius: 55px;
-  display: grid;
-  grid-template-columns: 15% 85%;
-  padding: 0 0.4rem;
+  display: flex; /* 设置父容器为 Flexbox */
+  justify-content: space-between; /* 让图标和输入框分开 */
+  padding: 0 2rem;
   position: relative;
+  align-items: center;
 }
 
 .input-field i {
+  display: flex; /* 使图标也变为 Flexbox 项 */
+  justify-content: center; /* 水平居中图标 */
+  align-items: center; /* 垂直居中图标 */
   text-align: center;
   line-height: 55px;
-  color: #acacac;
   transition: 0.5s;
   font-size: 1.1rem;
+  margin-right: 15px;
 }
 
 .input-field input {
@@ -206,7 +221,7 @@ form.sign-in-form {
 }
 
 .input-field input::placeholder {
-  color: #aaa;
+  color: #636363;
   font-weight: 500;
 }
 
@@ -242,7 +257,7 @@ form.sign-in-form {
 
 .btn {
   width: 150px;
-  background-color: #5995fd;
+  background-color: rgba(70, 195, 179, 0.91);
   border: none;
   outline: none;
   height: 49px;
@@ -276,13 +291,13 @@ form.sign-in-form {
   top: -10%;
   right: 48%;
   transform: translateY(-50%);
-  background-image: linear-gradient(-45deg, #63beef 20%, #069e84 80%);
+  background-image: linear-gradient(-45deg, #63beef 20%, #0bac90 80%);
   transition: 1.8s ease-in-out;
   border-radius: 50%;
   z-index: 6;
 }
 
-.image {
+.image123 {
   width: 100%;
   transition: transform 1.1s ease-in-out;
   transition-delay: 0.4s;
@@ -333,9 +348,9 @@ form.sign-in-form {
   font-size: 0.8rem;
 }
 
-.right-panel .image,
+.right-panel .image123,
 .right-panel .content {
-  transform: translateX(800px);
+  transform: translate(800px, -400px);
 }
 
 /* ANIMATION */
@@ -345,7 +360,7 @@ form.sign-in-form {
   right: 52%;
 }
 
-.container123.sign-up-mode .left-panel .image,
+.container123.sign-up-mode .left-panel .image123,
 .container123.sign-up-mode .left-panel .content {
   transform: translateX(-800px);
 }
@@ -364,7 +379,7 @@ form.sign-in-form {
   z-index: 1;
 }
 
-.container123.sign-up-mode .right-panel .image,
+.container123.sign-up-mode .right-panel .image123,
 .container123.sign-up-mode .right-panel .content {
   transform: translateX(0%);
 }
@@ -415,7 +430,7 @@ form.sign-in-form {
     grid-row: 1 / 2;
   }
 
-  .image {
+  .image123 {
     width: 200px;
     transition: transform 0.9s ease-in-out;
     transition-delay: 0.6s;
@@ -459,17 +474,17 @@ form.sign-in-form {
     right: initial;
   }
 
-  .container123.sign-up-mode .left-panel .image,
+  .container123.sign-up-mode .left-panel .image123,
   .container123.sign-up-mode .left-panel .content {
     transform: translateY(-300px);
   }
 
-  .container123.sign-up-mode .right-panel .image,
+  .container123.sign-up-mode .right-panel .image123,
   .container123.sign-up-mode .right-panel .content {
     transform: translateY(0px);
   }
 
-  .right-panel .image,
+  .right-panel .image123,
   .right-panel .content {
     transform: translateY(300px);
   }
@@ -485,7 +500,7 @@ form.sign-in-form {
     padding: 0 1.5rem;
   }
 
-  .image {
+  .image123 {
     display: none;
   }
   .panel .content {
