@@ -46,7 +46,6 @@ function setUniqueItemsForEnumProperties(obj: any) {
   }
 */
 function fixModelOptionalTypeAnyOf(model: any) {
-  // console.log('fixModelOptionalTypeAnyOf', model);
   if (model['properties'] == undefined) {
     return;
   }
@@ -76,8 +75,6 @@ function fixModelOptionalTypeAnyOf(model: any) {
 }
 
 export function fixModelSchema(model: any) {
-  // console.log('fixModelSchema: before', model);
   setUniqueItemsForEnumProperties(model);
   fixModelOptionalTypeAnyOf(model);
-  // console.log('fixModelSchema: after', model);
 }

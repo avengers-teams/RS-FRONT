@@ -23,20 +23,12 @@ const t = i18n.global.t as any;
 export const getChatModelNameTrans = (model_name: OpenaiWebChatModels | OpenaiApiChatModels | string | null) => {
   if (model_name == null) return t('commons.unknown');
   if (allChatModelNames.includes(model_name)) return t(`models.${model_name}`);
-  // else return model_name;
 };
 
 export const getContentRawText = (message: BaseChatMessage | null): string => {
   if (!message || !message.content) return '';
   if (typeof message.content == 'string') return message.content;
   else if (message.content.content_type == 'text') {
-    // if (message.source == 'openai_web') {
-    //   const content = message.content as OpenaiWebChatMessageTextContent;
-    //   return content.parts![0];
-    // } else {
-    //   const content = message.content as OpenaiApiChatMessageTextContent;
-    //   return content.text || '';
-    // }
     if (message.content.content_type == 'text') {
       const content = message.content as OpenaiWebChatMessageTextContent | OpenaiApiChatMessageTextContent;
       return content.parts ? content.parts[0] : content.text || '';
@@ -230,7 +222,6 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
       result += text;
     }
   }
-  // console.log('text display result', result);
   result = replaceMathDelimiters(result);
   return result;
 }
@@ -285,7 +276,6 @@ export function replaceMathDelimiters(input: string) {
     output += input.charAt(pos);
     pos++;
   }
-  // return output;
   return output.replace(/\n\n\n+/g, '\n\n');
 }
 

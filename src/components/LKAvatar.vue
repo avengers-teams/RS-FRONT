@@ -1,6 +1,6 @@
 <template>
   <n-avatar color="#ffffff" :size="size" :class="props.alpha ? [`opacity-${props.alpha}`] : []">
-    <LkIcon :size="48" />
+    <LkIcon style="height: 35px; width: 35px" />
   </n-avatar>
 </template>
 

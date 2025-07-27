@@ -1,4 +1,3 @@
-import { RemovableRef } from '@vueuse/core';
 import { UploadFileInfo } from 'naive-ui';
 import { Ref } from 'vue';
 
@@ -46,7 +45,6 @@ interface FileState {
   uploadedFileInfos: UploadedFileInfoSchema[];
   naiveUiUploadFileInfos: UploadFileInfo[];
   naiveUiFileIdToServerFileIdMap: Record<string, string>;
-  // imageMetadataMap: Record<string, { width: number; height: number }>; // 使用 server 端的文件 id 作为 key
 }
 
 export type { AppState, ConversationState, FileState, UserState };

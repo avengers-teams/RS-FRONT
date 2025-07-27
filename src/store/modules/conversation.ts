@@ -8,7 +8,7 @@ import {
   setConversationTitleApi,
 } from '@/api/conv';
 import { NewConversationInfo } from '@/types/custom';
-import { BaseChatMessage, BaseConversationSchema } from '@/types/schema';
+import { BaseChatMessage } from '@/types/schema';
 
 import { ConversationState } from '../types';
 
@@ -93,10 +93,6 @@ const useConversationStore = defineStore('conversation', {
       }
       delete this.conversationHistoryMap[this.newConversation!.conversation_id!];
       this.newConversation = null;
-    },
-
-    addConversation(conversation: BaseConversationSchema) {
-      this.conversations.push(conversation);
     },
 
     async deleteConversation(conversation_id: string) {

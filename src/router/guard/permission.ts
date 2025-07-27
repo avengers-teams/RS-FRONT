@@ -21,10 +21,6 @@ export default function setupPermissionGuard(router: Router) {
           } as LocationQueryRaw,
         });
       } else {
-        // if (to.meta.roles.find((role) => role === userStore.user.role) === ) {
-        //   if (userStore.user.is_superuser) next();
-        //   else next({ name: "403" });
-        // } else next();
         const role = userStore.user.is_superuser ? 'superuser' : 'user';
         if (to.meta.roles.find((r) => r === role) === undefined) {
           next({ name: '403' });

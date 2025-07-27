@@ -1,5 +1,5 @@
 import { i18n } from '@/i18n';
-import { chatStatusMap, UserRead } from '@/types/schema';
+import { UserRead } from '@/types/schema';
 
 const t = i18n.global.t as any;
 
