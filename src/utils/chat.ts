@@ -17,6 +17,14 @@ import {
 
 const t = i18n.global.t as any;
 
+export const taskTypeMap: Record<string, string> = {
+  1: '图像语义生成',
+  2: '目标识别与计数',
+  3: '空间感知与定位',
+  4: '地物分类与状态评估',
+  5: '场景推理与决策',
+};
+
 export const getContentRawText = (message: BaseChatMessage | null): string => {
   if (!message || !message.content) return '';
   if (typeof message.content == 'string') return message.content;
