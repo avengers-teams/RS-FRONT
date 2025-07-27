@@ -9,16 +9,7 @@
           "
         />
       </n-form-item>
-      <n-form-item :label="t('labels.model')">
-        <n-select
-          v-model:value="newConversationInfo.model"
-          :options="availableModels"
-          :virtual-scroll="false"
-          :consistent-menu-width="false"
-          :render-label="renderModelSelectionLabel"
-          :render-option="renderModelSelectionOption"
-        />
-      </n-form-item>
+
       <n-form-item label="任务类型">
         <n-select
           v-model:value="newConversationInfo.openaiWebPlugins"
@@ -32,15 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { NTooltip, SelectOption } from 'naive-ui';
-import { computed, h, ref, VNode, watch } from 'vue';
+import { SelectOption } from 'naive-ui';
+import { computed, ref, watch } from 'vue';
 
 import { i18n } from '@/i18n';
 import { useAppStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
 import { ChatSourceTypes } from '@/types/schema';
-
-import NewConversationFormModelSelectionLabel from './NewConversationFormModelSelectionLabel.vue';
 
 const t = i18n.global.t as any;
 
@@ -50,8 +39,6 @@ const appStore = useAppStore();
 const emits = defineEmits<{
   (e: 'input', newConversationInfo: NewConversationInfo): void;
 }>();
-
-const currentHoveringModel = ref<string | null>(null);
 
 const availableChatSourceTypes = computed<SelectOption[]>(() => {
   if (!userStore.user) {
@@ -105,33 +92,6 @@ const typeOptions = ref([
     value: 5,
   },
 ]);
-
-function renderModelSelectionLabel(option: SelectOption) {
-  return h(NewConversationFormModelSelectionLabel, {
-    source: newConversationInfo.value.source!,
-    model: option.value as string,
-  });
-}
-
-function renderModelSelectionOption({ node, option }: { node: VNode; option: SelectOption }) {
-  return h(
-    NTooltip,
-    {
-      class: 'hidden',
-      onUpdateShow: (value: boolean) => {
-        if (value) {
-          currentHoveringModel.value = option.value as string;
-        } else {
-          currentHoveringModel.value = null;
-        }
-      },
-    },
-    {
-      trigger: () => node,
-      default: () => null,
-    }
-  );
-}
 
 function setDefaultValues() {
   //   const defaultSource = computed(() => {

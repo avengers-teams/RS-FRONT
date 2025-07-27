@@ -40,20 +40,17 @@
 
 <script setup lang="ts">
 import { Pencil, TrashOutline } from '@vicons/ionicons5';
-import { RefreshFilled, SettingsRound } from '@vicons/material';
+import { RefreshFilled } from '@vicons/material';
 import { DataTableColumns, NButton, NIcon } from 'naive-ui';
 import { computed, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { deleteUserApi, getAllUserApi, registerApi, updateUserByIdApi, updateUserSettingApi } from '@/api/user';
-import ChatTypeTagInfoCell from '@/components/ChatTypeTagInfoCell.vue';
 import { useDrawer } from '@/hooks/drawer';
 import { chatStatusMap, UserCreate, UserReadAdmin, UserSettingSchema, UserUpdateAdmin } from '@/types/schema';
-import { getCountTrans } from '@/utils/chat';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
-import { renderUserPerModelCounts } from '@/utils/user';
 
 import CreateUserForm from '../components/CreateUserForm.vue';
 import UpdateUserBasicForm from '../components/UpdateUserBasicForm.vue';

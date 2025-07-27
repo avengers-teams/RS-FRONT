@@ -13,7 +13,7 @@
       </template>
       <template #avatar>
         <!-- <ChatGPTAvatar color="green" icon-style="default" :size="32" /> -->
-        <CWSIcon />
+        <ChatGPTIcon />
       </template>
       <template #extra>
         <n-space>
@@ -61,8 +61,6 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 import { updateUserMeApi } from '@/api/user';
-import ChatGPTAvatar from '@/components/ChatGPTAvatar.vue';
-import CWSIcon from '@/components/icons/CWSIcon.vue';
 import router from '@/router';
 import { useAppStore, useUserStore } from '@/store';
 import { Preference } from '@/store/types';
@@ -71,6 +69,7 @@ import { Dialog, Message } from '@/utils/tips';
 
 import PreferenceForm from './PreferenceForm.vue';
 import UserProfileCard from './UserProfileCard.vue';
+import ChatGPTIcon from '@/components/ChatGPTIcon.vue';
 
 const { t } = useI18n();
 const userStore = useUserStore();
