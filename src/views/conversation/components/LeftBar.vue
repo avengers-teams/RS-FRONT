@@ -17,28 +17,30 @@
         </template>
         新任务
       </n-button>
-      <n-menu
-        ref="menuRef"
-        v-model:value="convId"
-        class="-mx-2"
-        :content-style="{ backgroundColor: 'red' }"
-        :disabled="props.loading"
-        :options="menuOptions"
-        :root-indent="18"
-      />
+      <div class="h-full">
+        <n-menu
+          ref="menuRef"
+          v-model:value="convId"
+          class="-mx-2 h-[64vh] overflow-y-auto"
+          :content-style="{ backgroundColor: 'red' }"
+          :disabled="props.loading"
+          :options="menuOptions"
+          :root-indent="18"
+        />
+        <div class="h-[23vh] overflow-y-auto">
+          <!-- 左侧功能按钮 -->
+          <n-list class="text-center">
+            <n-divider />
+            <n-list-item class="pb-5 pt-0 cursor-pointer" @click="emits('addEvent', 1)"> 图像语义生成 </n-list-item>
+            <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 2)"> 目标识别与计数 </n-list-item>
+            <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 3)"> 空间感知与定位 </n-list-item>
+            <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 4)"> 地物分类与状态评估 </n-list-item>
+            <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 5)"> 场景推理与决策 </n-list-item>
+          </n-list>
+        </div>
+      </div>
 
       <!--      </n-scrollbar>-->
-    </div>
-    <div class="fixed bottom-0 w-66">
-      <!-- 左侧功能按钮 -->
-      <n-list class="text-center">
-        <n-divider />
-        <n-list-item class="pb-5 pt-0 cursor-pointer" @click="emits('addEvent', 1)"> 图像语义生成 </n-list-item>
-        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 2)"> 目标识别与计数 </n-list-item>
-        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 3)"> 空间感知与定位 </n-list-item>
-        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 4)"> 地物分类与状态评估 </n-list-item>
-        <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 5)"> 场景推理与决策 </n-list-item>
-      </n-list>
     </div>
   </div>
 </template>
