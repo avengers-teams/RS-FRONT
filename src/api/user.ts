@@ -20,6 +20,10 @@ export function loginApi(data: LoginData) {
   });
 }
 
+export function userRegisterApi(userInfo: any) {
+  return axios.post<UserRead>(ApiUrl.UserRegister, userInfo);
+}
+
 export function registerApi(userInfo: UserCreate) {
   return axios.post<UserRead>(ApiUrl.Register, userInfo);
 }

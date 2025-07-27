@@ -13,24 +13,25 @@
             <i> <img src="../../../public/密码.svg" class="w-5" /></i>
             <input v-model="formValue.password" type="password" placeholder="密码" />
           </div>
-          <input type="submit" value="立即登录" class="btn solid" @click="login" />
+          <n-button class="btn solid text-lg" @click="login" text-color="#ffffff">立即登录</n-button>
           <n-button class="" @click="isLogin = !isLogin" text>没有账号?去注册</n-button>
         </form>
         <form action="#" class="sign-up-form">
           <h2 class="title">注册</h2>
           <div class="input-field">
             <i> <img src="../../../public/用户.svg" class="w-5" /></i>
-            <input type="text" placeholder="用户名" />
+            <input v-model="formValue.username" type="text" placeholder="用户名" />
           </div>
           <div class="input-field">
             <i> <img src="../../../public/邮箱.svg" class="w-5" /></i>
-            <input type="email" placeholder="邮箱" />
+            <input v-model="formValue.email" type="email" placeholder="邮箱" />
           </div>
           <div class="input-field">
             <i> <img src="../../../public/密码.svg" class="w-5" /></i>
-            <input type="password" placeholder="密码" />
+            <input v-model="formValue.password" type="password" placeholder="密码" />
           </div>
-          <input type="submit" class="btn" value="立即注册" />
+
+          <n-button class="btn solid text-lg" text-color="#ffffff" @click="register">立即注册</n-button>
           <n-button class="" @click="isLogin = !isLogin" text>已有账号?去登录</n-button>
         </form>
       </div>
@@ -41,15 +42,17 @@
         <div class="content">
           <img src="../../../public/logo.png" class="w-30" />
           <h1 class="yishuzi text-5xl">灵瞰视界，洞见未来</h1>
-          <p>加入我们，成为本站的一份子。</p>
+          <h3 class="buttomtext">感知地球变化，赋能智慧决策</h3>
         </div>
         <img src="../../../public/卫星.svg" class="image123" alt="" />
       </div>
       <div class="panel right-panel">
-        <div class="content">
-          <h3>已有帐号？</h3>
-          <p>立即登录已有帐号，享受独家权益。</p>
-          <button class="btn transparent" @click="isLogin = !isLogin">去登录</button>
+        <div class="content tooltext">
+          <h3>智能语义生成｜秒级描述影像内容</h3>
+          <h3>目标精准盘点｜楼宇车辆毫厘无遗</h3>
+          <h3>厘米级空间定位｜分秒必争的灾害沙盘</h3>
+          <h3>地物状态透视｜量化灾损与城市变迁</h3>
+          <h3>动态推演决策｜预判趋势+生成最优路径</h3>
         </div>
         <img src="../../../public/卫星.svg" class="image123" alt="" />
       </div>
@@ -63,7 +66,7 @@ import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import { LoginData } from '@/api/user';
+import { LoginData, userRegisterApi } from '@/api/user';
 import { useAppStore, useUserStore } from '@/store';
 import { Message } from '@/utils/tips';
 
@@ -75,6 +78,7 @@ const isLogin = ref(false);
 const formValue = reactive({
   username: userStore.savedLoginForm.savedUsername || '',
   password: userStore.savedLoginForm.savedPassword || '',
+  email: null,
 });
 
 const loading = ref(false);
@@ -82,12 +86,16 @@ const loading = ref(false);
 const login = async () => {
   if (loading.value) return;
   loading.value = true;
-
+  if (!formValue.username || !formValue.password) {
+    Message.error('用户名和密码不能为空');
+    loading.value = false;
+    return;
+  }
   try {
     await userStore.login(formValue as LoginData);
     const { redirect } = router.currentRoute.value.query;
     await userStore.fetchUserInfo();
-    Message.success(t('tips.loginSuccess'));
+    Message.success('登录成功');
     if (redirect) {
       await router.push(redirect as string);
       return;
@@ -101,7 +109,24 @@ const login = async () => {
     loading.value = false;
   }
 };
-
+const register = async () => {
+  if (!formValue.username || !formValue.password || !formValue.email) {
+    Message.error('用户名、密码和邮箱不能为空');
+    return;
+  }
+  try {
+    const res = await userRegisterApi(formValue);
+    console.log(res);
+    if (res.status === 200) {
+      Message.success('注册成功，请登录');
+      isLogin.value = false; // 切换到登录界面
+    } else {
+      Message.error(res.data.message || '注册失败，请稍后再试');
+    }
+  } catch (error) {
+    console.error('注册失败:', error);
+  }
+};
 if (userStore.user) {
   router.push({ name: 'conversation' });
 }
@@ -123,8 +148,22 @@ if (userStore.user) {
   -webkit-text-stroke: 0.2px #0a2a5c;
   text-shadow: rgba(5, 20, 40, 0.6) 4px 4px 2px;
   position: relative;
+  margin-top: 15px;
 }
 
+.buttomtext {
+  font-family: cursive;
+  color: #033f51;
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin-top: 8px;
+}
+
+.tooltext {
+  color: #ffffff;
+  font-family: serif;
+  font-size: 1.3rem;
+}
 body,
 input {
   font-family: 'Poppins', sans-serif;
@@ -322,22 +361,15 @@ form.sign-in-form {
 }
 
 .panel .content {
-  color: #fff;
   transition: transform 0.9s ease-in-out;
   transition-delay: 0.6s;
-}
-
-.panel h3 {
-  font-weight: 600;
-  line-height: 1;
-  font-size: 1.5rem;
+  padding: 1.4rem 0;
 }
 
 .panel p {
   font-size: 0.95rem;
   padding: 0.7rem 0;
 }
-
 .btn.transparent {
   margin: 0;
   background: none;

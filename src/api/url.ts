@@ -1,5 +1,6 @@
 enum ApiUrl {
   Register = '/auth/register',
+  UserRegister = '/user/register',
   Login = '/auth/login',
   Logout = '/auth/logout',
   UserMe = '/user/me',
