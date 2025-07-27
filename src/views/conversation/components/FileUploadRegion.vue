@@ -21,7 +21,7 @@
           {{ $t('tips.dragFileOrImageHere') }}
         </n-text>
         <n-p depth="3" style="margin: 8px 0 0 0">
-          {{ $t('tips.gpt4UploadingRequirements') }}
+          {{ $t('tips.supportedImageFormats') }}
         </n-p>
       </n-upload-dragger>
     </n-upload>
@@ -63,36 +63,42 @@
 
 <script setup lang="ts">
 import { UploadFileRound } from '@vicons/material';
+import axios from 'axios';
 import { UploadCustomRequestOptions, UploadFileInfo } from 'naive-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import {
-  completeUploadFileToOpenaiWeb,
-  requestUploadFileFromLocalToOpenaiWeb,
-  startUploadFileToOpenaiWeb,
-  uploadFileToAzureBlob,
-  uploadFileToLocalApi,
-} from '@/api/files';
 import { useFileStore } from '@/store';
-import { StartUploadRequestSchema, UploadedFileInfoSchema } from '@/types/schema';
+import { UploadedFileInfoSchema } from '@/types/schema';
 import { Message } from '@/utils/tips';
 
-import { acceptedMimeTypes, getImageDimensions, isImage, isSupportedImage } from '../utils/files';
 const { t } = useI18n();
 
 const fileStore = useFileStore();
 
 const uploadAllRef = ref();
 
+// 修改为后端接受的MIME类型
+const acceptedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/tiff'];
+
+const isImage = (file: File) => {
+  return file.type.startsWith('image/');
+};
+
+const isSupportedImage = (file: File) => {
+  return acceptedMimeTypes.includes(file.type);
+};
+
 const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
   const rawFile = options.file.file as File;
-  if (isImage(rawFile) && !isSupportedImage(rawFile)) {
+  if (!isSupportedImage(rawFile)) {
     Message.warning(t('tips.unsupportedImageFormat', [options.file.name]));
     return false;
   }
-  if (rawFile.size > 512 * 1024 * 1024) {
+  // 可以根据需要调整文件大小限制
+  if (rawFile.size > 10 * 1024 * 1024) {
+    // 10MB
     Message.warning(t('tips.fileSizeTooLarge', [options.file.name]));
     return false;
   }
@@ -107,89 +113,50 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     }
 
     const rawFile = file.file as File;
-    if (isImage(rawFile) && !isSupportedImage(rawFile)) {
+    if (!isSupportedImage(rawFile)) {
       Message.warning(t('tips.unsupportedImageFormat', [file.name]));
       onError();
       return;
     }
-    const isImageType = isSupportedImage(rawFile);
-
-    let useCase;
-    if (isImageType) useCase = 'multimodal';
-    else useCase = 'my_files';
-
-    // 1. 先调用 startUploadFileToOpenaiWeb
-    const uploadInfo = {
-      file_name: file.name,
-      file_size: file.file?.size,
-      use_case: useCase,
-      mime_type: file.file?.type,
-    } as StartUploadRequestSchema;
-
-    if (isImageType) {
-      const { width, height } = await getImageDimensions(rawFile);
-      uploadInfo.width = width;
-      uploadInfo.height = height;
-    }
 
     onProgress({ percent: 0 });
 
-    const startUploadResponse = await startUploadFileToOpenaiWeb(uploadInfo);
+    // 创建FormData对象
+    const formData = new FormData();
+    formData.append('images', rawFile);
 
-    // 检查返回的状态，如果有错误或者没有返回 upload_file_info，抛出错误
-    if (!startUploadResponse.data) {
-      throw new Error('Failed to start the upload process.');
+    // 发送到新的上传接口
+    const response = await axios.post('/chat/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress({ percent: percentCompleted });
+        }
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to upload the file.');
     }
 
-    // 2. 若响应中 upload_file_info 不为空，进入 browser 上传流程
-    let uploadedFileInfo;
-    if (startUploadResponse.data.upload_file_info) {
-      if (!startUploadResponse.data.upload_file_info.openai_web_info) {
-        throw new Error('Failed to get the upload url.');
-      }
+    // 假设后端返回的是一个文件信息数组，我们取第一个
+    const uploadedFileInfo = response.data[0];
 
-      const signedUrl = startUploadResponse.data.upload_file_info.openai_web_info.upload_url;
-
-      // 2.1 调用 uploadFileToAzureBlob 上传文件到 Azure Blob
-      await uploadFileToAzureBlob(file.file as File, signedUrl!, onProgress);
-
-      // 2.2 调用 completeUploadFileToOpenaiWeb 通知服务端完成上传
-      const completeUploadResponse = await completeUploadFileToOpenaiWeb(startUploadResponse.data.upload_file_info.id);
-
-      if (completeUploadResponse.status !== 200) {
-        throw new Error('Failed to complete the upload process.');
-      }
-
-      uploadedFileInfo = completeUploadResponse.data;
-    }
-    // 3. 若响应中 upload_file_info 为空，进入服务端中转上传流程
-    else {
-      // 3.1 调用 uploadFileToLocalApi 上传文件到服务端
-      const localUploadResponse = await uploadFileToLocalApi(file.file as File);
-
-      if (localUploadResponse.status !== 200) {
-        throw new Error('Failed to upload the file to the local server.');
-      }
-
-      // 3.2 调用 requestUploadFileFromLocalToOpenaiWeb 通知服务端上传文件到 OpenAI Web
-      const fileFromLocalToOpenaiWebResponse = await requestUploadFileFromLocalToOpenaiWeb(localUploadResponse.data.id);
-
-      if (fileFromLocalToOpenaiWebResponse.status !== 200) {
-        throw new Error('Failed to upload the file from local to OpenAI Web.');
-      }
-
-      uploadedFileInfo = fileFromLocalToOpenaiWebResponse.data;
-      console.log('uploadedFileInfo', uploadedFileInfo);
-    }
-
+    // 存储上传的文件信息
     fileStore.uploadedFileInfos = [...fileStore.uploadedFileInfos, uploadedFileInfo];
-    fileStore.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.id;
+    fileStore.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.hash_name;
 
     // 文件上传成功完成
     Message.success(t('tips.fileUploadSuccess', [file.name]));
     onFinish();
   } catch (error) {
-    Message.error(t('tips.fileUploadFailed', [file.name]) + `: ${JSON.stringify(error)}`, { duration: 5 * 1000 });
+    Message.error(
+      t('tips.fileUploadFailed', [file.name]) + `: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+      { duration: 5 * 1000 }
+    );
     console.error(error);
     onError();
   }
@@ -200,7 +167,7 @@ const removeFile = async (options: { file: UploadFileInfo; fileList: Array<Uploa
   const fileId = fileStore.naiveUiFileIdToServerFileIdMap[file.id];
   if (fileId != undefined) {
     fileStore.uploadedFileInfos = fileStore.uploadedFileInfos.filter((uploadedFileInfo: UploadedFileInfoSchema) => {
-      return uploadedFileInfo.id != fileId;
+      return uploadedFileInfo.hash_name != fileId;
     });
     delete fileStore.naiveUiFileIdToServerFileIdMap[file.id];
     console.log(`Removed file ${file.name} with id ${fileId}`);
@@ -219,7 +186,6 @@ function addFile(file: File) {
   } as UploadFileInfo;
   fileStore.naiveUiUploadFileInfos = [...fileStore.naiveUiUploadFileInfos, newFileInfo];
   console.log('addFile', fileStore.naiveUiUploadFileInfos);
-  // console.log(uploadAllRef.value);
   nextTick(() => {
     uploadAllRef.value?.submit();
   });
