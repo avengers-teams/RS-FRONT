@@ -54,10 +54,6 @@ export function getFileDownloadUrlApi(file_id: string) {
   return axios.get<string>(`/files/${file_id}/download-url`);
 }
 
-export function getInterpreterInfoApi(conversation_id: string) {
-  return axios.get<OpenaiChatInterpreterInfo>(`${ApiUrl.Conversation}/${conversation_id}/interpreter`);
-}
-
 export function getInterpreterSandboxFileDownloadUrlApi(
   conversation_id: string,
   message_id: string,
