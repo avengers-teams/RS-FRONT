@@ -47,6 +47,7 @@ import { LoadingBar } from '@/utils/tips';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
 import RightImage from '@/views/conversation/components/RightImage.vue';
+
 const taskType = ref(true);
 const handleEvent = (data: any) => {
   console.log(data); // 接收到的数据

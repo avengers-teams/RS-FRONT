@@ -47,13 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  InformationCircleOutline,
-  LogoGithub,
-  LogOutOutline,
-  PersonCircleOutline,
-  SettingsSharp,
-} from '@vicons/ionicons5';
+import { InformationCircleOutline, LogOutOutline, PersonCircleOutline, SettingsSharp } from '@vicons/ionicons5';
 import { ChatFilled, DarkModeRound, LightModeRound, ManageAccountsFilled, PasswordRound } from '@vicons/material';
 import { DropdownOption, NIcon } from 'naive-ui';
 import { computed, h } from 'vue';
@@ -75,7 +69,6 @@ const { t } = useI18n();
 const userStore = useUserStore();
 const appStore = useAppStore();
 const route = useRoute();
-const version = 'v' + import.meta.env.PACKAGE_VERSION;
 
 // console.log(route);
 

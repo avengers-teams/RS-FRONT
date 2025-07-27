@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { TrashOutline } from '@vicons/ionicons5';
-import { CloudDownloadFilled, EmojiFlagsFilled, PersonAddAlt1Filled, RefreshFilled } from '@vicons/material';
+import { PersonAddAlt1Filled, RefreshFilled } from '@vicons/material';
 import type { DataTableColumns } from 'naive-ui';
 import { NButton, NEllipsis, NIcon, NTooltip } from 'naive-ui';
 import { computed, h, ref } from 'vue';
@@ -61,7 +61,6 @@ import { useRouter } from 'vue-router';
 import {
   assignConversationToUserApi,
   clearAllConversationApi,
-  deleteConversationApi,
   getAdminAllConversationsApi,
   vanishConversationApi,
 } from '@/api/conv';
@@ -72,6 +71,7 @@ import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
 
 import UserSelector from '../components/UserSelector.vue';
+
 const { t } = useI18n();
 const router = useRouter();
 const data = ref<BaseConversationSchema[]>([]);
@@ -98,11 +98,6 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
   {
     type: 'selection',
   },
-  // {
-  //   title: '#',
-  //   key: 'id',
-  //   sorter: 'default',
-  // },
   {
     title: 'UUID',
     key: 'conversation_id',

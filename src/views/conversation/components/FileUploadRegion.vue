@@ -84,7 +84,6 @@ const { t } = useI18n();
 
 const fileStore = useFileStore();
 
-const uploadLegacyRef = ref();
 const uploadAllRef = ref();
 
 const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {

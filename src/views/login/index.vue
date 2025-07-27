@@ -61,17 +61,15 @@
 </template>
 
 <script setup lang="ts">
-import { FormInst } from 'naive-ui';
 import { reactive, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import { LoginData, userRegisterApi } from '@/api/user';
-import { useAppStore, useUserStore } from '@/store';
+import { useUserStore } from '@/store';
 import { Message } from '@/utils/tips';
 
 const router = useRouter();
-const { t } = useI18n();
+
 const userStore = useUserStore();
 const isLogin = ref(false);
 

@@ -7,8 +7,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-
 import { useAppStore } from '@/store';
 import { BaseChatMessage } from '@/types/schema';
 import { dompurifyRenderedHtml, getTextMessageContent } from '@/utils/chat';
@@ -19,7 +17,6 @@ import { processCitations, processSandboxLinks } from '../utils/message';
 
 const appStore = useAppStore();
 const contentRef = ref<HTMLDivElement>();
-const { t } = useI18n();
 
 const props = defineProps<{
   conversationId: string;

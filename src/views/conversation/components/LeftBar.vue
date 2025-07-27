@@ -59,11 +59,6 @@ const { t } = useI18n();
 
 const conversationStore = useConversationStore();
 
-const awesome = ref();
-const setAwesome = (value: number) => {
-  awesome.value = value;
-};
-
 const props = defineProps<{
   loading: boolean;
   value: string | null;

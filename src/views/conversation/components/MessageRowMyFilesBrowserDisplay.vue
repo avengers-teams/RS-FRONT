@@ -41,13 +41,11 @@
 </template>
 
 <script setup lang="ts">
-import { InformationCircleOutline } from '@vicons/ionicons5';
 import { KeyboardArrowDownRound, KeyboardArrowUpRound } from '@vicons/material';
 import { computed, ref } from 'vue';
 
 import {
   BaseChatMessage,
-  OpenaiWebChatMessage,
   OpenaiWebChatMessageCodeContent,
   OpenaiWebChatMessageTetherBrowsingDisplayContent,
 } from '@/types/schema';

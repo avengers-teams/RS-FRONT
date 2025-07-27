@@ -12,7 +12,6 @@
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { getConversationHistoryFromCacheApi } from '@/api/conv';
 import { useConversationStore } from '@/store';
 
 import HistoryContent from './components/HistoryContent.vue';
@@ -27,9 +26,7 @@ const loading = ref(true);
 
 conversationStore
   .fetchConversationHistoryFromCache(conversationId, true)
-  .then(() => {
-    // console.log(conversationStore.conversationDetailMap);
-  })
+  .then(() => {})
   .catch((err: any) => {
     console.log(err);
     router.push({ name: '404' }).then();

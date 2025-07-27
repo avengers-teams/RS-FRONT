@@ -49,7 +49,6 @@ import { useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import LkAvatar from '@/components/LKAvatar.vue';
 import LkIcon from '@/components/LKIcon.vue';
 import { useConversationStore } from '@/store';
 import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';

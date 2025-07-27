@@ -25,7 +25,6 @@
 <script setup lang="ts">
 import { AttachFileFilled } from '@vicons/material';
 import { computed } from 'vue';
-
 import { OpenaiWebChatMessageMetadataAttachment } from '@/types/schema';
 import { sizeToHumanReadable } from '@/utils/media';
 
