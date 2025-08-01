@@ -245,26 +245,6 @@ const sendMsg = async () => {
   isAborted.value = false;
   let hasGotReply = false;
 
-  // 处理附件
-  let attachments = null as OpenaiWebChatMessageMetadataAttachment[] | null;
-  if (uploadMode.value !== null && fileStore.uploadedFileInfos.length > 0) {
-    attachments = fileStore.uploadedFileInfos
-      .filter((info) => info.openai_web_info && info.openai_web_info.file_id)
-      .map((info) => {
-        const result = {
-          id: info.openai_web_info!.file_id!,
-          name: info.original_filename,
-          size: info.size,
-          mimeType: info.content_type,
-        } as OpenaiWebChatMessageMetadataAttachment;
-        if (info.extra_info && info.extra_info.height !== undefined) {
-          result.height = info.extra_info.height;
-          result.width = info.extra_info.width;
-        }
-        return result;
-      });
-  }
-
   // 处理 gpt-4 图片
   let multimodalImages = null;
   if (uploadMode.value === 'all') {
@@ -293,7 +273,6 @@ const sendMsg = async () => {
       text,
       currentConvHistory.value?.current_node,
       currentConversation.value!.current_model!,
-      attachments,
       multimodalImages
     );
     currentRecvMessages.value = [
