@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UserCreate, UserRead, UserReadAdmin, UserSettingSchema, UserUpdate, UserUpdateAdmin } from '@/types/schema';
+import { UserCreate, UserRead, UserReadAdmin, UserUpdate, UserUpdateAdmin } from '@/types/schema';
 import ApiUrl from './url';
 export type LoginData = {
   username: string;
@@ -47,8 +47,4 @@ export function updateUserByIdApi(userId: number, userUpdateAdmin: Partial<UserU
 
 export function deleteUserApi(user_id: number) {
   return axios.delete(ApiUrl.UserList + `/${user_id}`);
-}
-
-export function updateUserSettingApi(userId: number, userSetting: Partial<UserSettingSchema>) {
-  return axios.patch<UserReadAdmin>(ApiUrl.UserList + `/${userId}/setting`, userSetting);
 }

@@ -65,7 +65,6 @@ const props = defineProps<{
   sendDisabled: boolean;
   inputValue: string;
   autoScrolling: boolean;
-  uploadMode: 'legacy_code_interpreter' | 'all' | null;
   uploadDisabled: boolean;
 }>();
 
@@ -74,7 +73,6 @@ const sendDisabled = computed(() => {
 });
 
 const onPaste = (e: ClipboardEvent) => {
-  if (props.uploadMode === null || props.uploadDisabled) return;
   const items = e.clipboardData?.items;
   if (!items) return;
   for (let i = 0; i < items.length; i++) {

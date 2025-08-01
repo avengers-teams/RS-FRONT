@@ -2,11 +2,6 @@ import { getFileDownloadUrlApi, getInterpreterSandboxFileDownloadUrlApi } from '
 import { i18n } from '@/i18n';
 import {
   BaseChatMessage,
-  ChatSourceTypes,
-  OpenaiApiChatMessageTextContent,
-  OpenaiWebChatMessageMetadata,
-  OpenaiWebChatMessageMetadataAttachment,
-  OpenaiWebChatMessageMetadataCiteData,
   OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
   OpenaiWebChatMessageTextContent,
@@ -21,12 +16,6 @@ export type DisplayItemType = 'text' | 'multimodal_text' | null;
 export type DisplayItem = {
   type: DisplayItemType;
   messages: BaseChatMessage[];
-};
-
-export type PluginAction = {
-  pluginName: string;
-  request?: string;
-  response?: string;
 };
 
 export function determineMessageType(group: BaseChatMessage[]): DisplayItemType | null {
@@ -60,12 +49,10 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
 }
 
 export function buildTemporaryMessage(
-  source: ChatSourceTypes,
+  task_type: number,
   role: string,
   textContent: string,
   parent: string | undefined,
-  model: string | undefined,
-  openaiWebAttachments: OpenaiWebChatMessageMetadataAttachment[] | null = null,
   openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
 ) {
   const random_strid = Math.random().toString(36).substring(2, 16);
@@ -75,20 +62,13 @@ export function buildTemporaryMessage(
   };
   const result = {
     id: `temp_${random_strid}`,
-    source,
+    task_type: task_type,
     content,
     role: role,
-    parent, // 其实没有用到parent
+    parent,
     children: [],
-    model,
     create_time: new Date().toISOString(),
   } as BaseChatMessage;
-  if (openaiWebAttachments) {
-    const metadata = {
-      attachments: openaiWebAttachments,
-    } as OpenaiWebChatMessageMetadata;
-    result.metadata = metadata;
-  }
   if (openaiWebMultimodalImageParts) {
     result.content = {
       content_type: 'multimodal_text',
@@ -118,9 +98,7 @@ export function processCitations(contentDiv: HTMLDivElement) {
   const citationEls = contentDiv!.querySelectorAll('span.browsing-citation');
   const citationUrls = [] as string[];
   citationEls.forEach((el) => {
-    const metadata = JSON.parse(
-      decodeURIComponent(el.getAttribute('data-citation') || '')
-    ) as OpenaiWebChatMessageMetadataCiteData;
+    const metadata = JSON.parse(decodeURIComponent(el.getAttribute('data-citation') || ''));
     if (!metadata) return;
     let citationIndex = 0;
     if (citationUrls.includes(metadata.url!)) {

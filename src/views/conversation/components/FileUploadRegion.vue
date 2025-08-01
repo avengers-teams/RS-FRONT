@@ -70,7 +70,6 @@ import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFileStore } from '@/store';
-import { UploadedFileInfoSchema } from '@/types/schema';
 import { Message } from '@/utils/tips';
 
 const { t } = useI18n();
@@ -166,7 +165,7 @@ const removeFile = async (options: { file: UploadFileInfo; fileList: Array<Uploa
   const { file } = options;
   const fileId = fileStore.naiveUiFileIdToServerFileIdMap[file.id];
   if (fileId != undefined) {
-    fileStore.uploadedFileInfos = fileStore.uploadedFileInfos.filter((uploadedFileInfo: UploadedFileInfoSchema) => {
+    fileStore.uploadedFileInfos = fileStore.uploadedFileInfos.filter((uploadedFileInfo) => {
       return uploadedFileInfo.hash_name != fileId;
     });
     delete fileStore.naiveUiFileIdToServerFileIdMap[file.id];
