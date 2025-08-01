@@ -81,6 +81,7 @@ import {
   BaseConversationSchema,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
+import { taskTypeMap } from '@/utils/chat';
 import { screenWidthGreaterThan } from '@/utils/media';
 import { popupNewConversationDialog } from '@/utils/renders';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
@@ -189,18 +190,13 @@ const sendDisabled = computed(() => {
 const makeNewTask = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
-    if (!newConversationInfo.source || !newConversationInfo.model) return;
-    if (newConversationInfo.source == 'openai_api')
-      newConversationInfo.title = newConversationInfo.title || `New Chat (${t('models.' + newConversationInfo.model)})`;
-    if (newConversationInfo.openaiWebPlugins && newConversationInfo.model !== 'gpt_4_plugins') {
-      newConversationInfo.openaiWebPlugins = null;
-    }
+    if (!newConversationInfo.task_type) return;
+    newConversationInfo.title = newConversationInfo.title || `新任务(${taskTypeMap[newConversationInfo.task_type]})`;
     console.log('makeNewConversation', newConversationInfo);
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
     hasNewConversation.value = true;
-    appStore.lastSelectedSource = newConversationInfo.source;
-    appStore.lastSelectedModel = newConversationInfo.model;
+    appStore.lastSelectedType = newConversationInfo.task_type;
   });
 };
 
@@ -254,28 +250,20 @@ const sendMsg = async () => {
     currentRecvMessages.value = [];
   } else {
     currentSendMessage.value = buildTemporaryMessage(
-      currentConversation.value!.source,
+      currentConversation.value!.task_type,
       'user',
       text,
       currentConvHistory.value?.current_node,
-      currentConversation.value!.current_model!,
       multimodalImages
     );
     currentRecvMessages.value = [
-      buildTemporaryMessage(
-        currentConversation.value!.source,
-        'assistant',
-        '...',
-        currentSendMessage.value.id,
-        currentConversation.value!.current_model!
-      ),
+      buildTemporaryMessage(currentConversation.value!.task_type, 'assistant', '...', currentSendMessage.value.id),
     ];
   }
 
   const askRequest: AskRequest = {
     new_conversation: isCurrentNewConversation.value,
-    source: currentConversation.value!.source,
-    model: currentConversation.value!.current_model!,
+    task_type: currentConversation.value!.task_type,
     text_content: text,
   };
   if (conversationStore.newConversation) {
@@ -391,12 +379,10 @@ const sendMsg = async () => {
 
           const newConvHistory = {
             _id: respConversationId!,
-            source: askRequest.source,
+            task_type: askRequest.task_type,
             title: currentConvHistory.value!.title,
-            current_model: currentConvHistory.value!.current_model,
             create_time: currentConvHistory.value!.create_time,
             update_time: currentConvHistory.value!.update_time,
-            metadata: currentConvHistory.value!.metadata,
             mapping: {},
             current_node: '',
           } as BaseConversationHistory;

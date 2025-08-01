@@ -1,13 +1,7 @@
 import { UploadFileInfo } from 'naive-ui';
 import { Ref } from 'vue';
 
-import {
-  BaseConversationHistory,
-  BaseConversationSchema,
-  ChatSourceTypes,
-  UploadedFileInfoSchema,
-  UserRead,
-} from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema, UploadedFileInfoSchema, UserRead } from '@/types/schema';
 
 export type SavedLoginForm = {
   rememberPassword: boolean;
@@ -31,8 +25,7 @@ interface AppState {
   theme: any;
   language: Ref<'zh-CN' | 'en-US' | string>;
   preference: Ref<Preference>;
-  lastSelectedSource: Ref<ChatSourceTypes | null>;
-  lastSelectedModel: Ref<string | null>;
+  lastSelectedType: Ref<ChatSourceTypes | null>;
 }
 
 interface ConversationState {

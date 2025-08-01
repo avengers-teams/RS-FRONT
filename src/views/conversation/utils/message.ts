@@ -2,7 +2,6 @@ import { getFileDownloadUrlApi, getInterpreterSandboxFileDownloadUrlApi } from '
 import { i18n } from '@/i18n';
 import {
   BaseChatMessage,
-  ChatSourceTypes,
   OpenaiWebChatMessageMetadataCiteData,
   OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
@@ -51,11 +50,10 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
 }
 
 export function buildTemporaryMessage(
-  source: ChatSourceTypes,
+  task_type: number,
   role: string,
   textContent: string,
   parent: string | undefined,
-  model: string | undefined,
   openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
 ) {
   const random_strid = Math.random().toString(36).substring(2, 16);
@@ -65,12 +63,11 @@ export function buildTemporaryMessage(
   };
   const result = {
     id: `temp_${random_strid}`,
-    source,
+    task_type: task_type,
     content,
     role: role,
     parent, // 其实没有用到parent
     children: [],
-    model,
     create_time: new Date().toISOString(),
   } as BaseChatMessage;
   if (openaiWebMultimodalImageParts) {

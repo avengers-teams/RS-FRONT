@@ -1,7 +1,5 @@
 import { components } from './openapi';
 
-export type ChatSourceTypes = components['schemas']['ChatSourceTypes'];
-
 export type UserRead = components['schemas']['UserRead'];
 export type UserReadAdmin = components['schemas']['UserReadAdmin'];
 export type UserCreate = components['schemas']['UserCreate'];
