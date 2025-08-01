@@ -30,12 +30,6 @@
               :messages="item.messages"
             />
           </div>
-          <div v-else-if="item.type == 'myfiles_browser'">
-            <MessageRowMyFilesBrowserDisplay :messages="item.messages" />
-          </div>
-          <div v-if="attachments.length != 0">
-            <MessageRowAttachmentDisplay :attachments="attachments" />
-          </div>
         </div>
       </div>
       <div class="flex w-full justify-end items-center space-x-4 pb-1">
@@ -108,15 +102,13 @@ import { JsonViewer } from 'vue3-json-viewer';
 
 import LkAvatar from '@/components/LKAvatar.vue';
 import { useAppStore } from '@/store';
-import { BaseChatMessage, OpenaiWebChatMessageMetadata } from '@/types/schema';
+import { BaseChatMessage } from '@/types/schema';
 import { getTextMessageContent, splitMessagesInGroup } from '@/utils/chat';
 import { parseTimeString, parseTimeToRelative } from '@/utils/time';
 import { Message } from '@/utils/tips';
 
 import { determineMessageType, DisplayItem } from '../utils/message';
-import MessageRowAttachmentDisplay from './MessageRowAttachmentDisplay.vue';
 import MessageRowMultimodalTextDisplay from './MessageRowMultimodalTextDisplay.vue';
-import MessageRowMyFilesBrowserDisplay from './MessageRowMyFilesBrowserDisplay.vue';
 import MessageRowTextDisplay from './MessageRowTextDisplay.vue';
 
 const { t } = useI18n();
@@ -173,12 +165,6 @@ const displayItems = computed<DisplayItem[]>(() => {
     });
   }
   return result;
-});
-
-const attachments = computed(() => {
-  const metadata = lastMessage.value?.metadata as OpenaiWebChatMessageMetadata;
-  if (metadata?.attachments) return metadata.attachments;
-  else return [];
 });
 
 const allTextContent = computed(() => {

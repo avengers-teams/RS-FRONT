@@ -11,22 +11,12 @@ import {
   OpenaiWebChatMessageMultimodalTextContentImagePart,
   OpenaiWebChatMessageTextContent,
 } from '@/types/schema';
-import { getContentRawText, getTextMessageContent } from '@/utils/chat';
+import { getTextMessageContent } from '@/utils/chat';
 import { Dialog } from '@/utils/tips';
 
 const t = i18n.global.t as any;
 
-export type DisplayItemType =
-  | 'text'
-  | 'browser'
-  | 'plugin'
-  | 'code'
-  | 'execution_output'
-  | 'multimodal_text'
-  | 'dalle_prompt'
-  | 'dalle_result'
-  | 'myfiles_browser'
-  | null;
+export type DisplayItemType = 'text' | 'multimodal_text' | null;
 
 export type DisplayItem = {
   type: DisplayItemType;
@@ -40,20 +30,6 @@ export type PluginAction = {
 };
 
 export function determineMessageType(group: BaseChatMessage[]): DisplayItemType | null {
-  // api 仅有 text 类型
-  if (group[0].source == 'openai_api') {
-    if (group[0].content?.content_type !== 'text') {
-      console.error('wrong content type in openai_api message', group);
-    }
-    return 'text';
-  }
-  // for (const message of group) {
-  //   if (message.source !== 'openai_web') {
-  //     console.error('wrong message mixed in non-text content group', group);
-  //     return null;
-  //   }
-  // }
-
   let displayType: DisplayItemType | null = null;
   const textOrMultimodal = (message: BaseChatMessage) => {
     if (message.content?.content_type == 'text') {
@@ -65,9 +41,8 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
   };
 
   for (const message of group) {
-    const metadata = message.metadata as OpenaiWebChatMessageMetadata | undefined;
-    if (message.role == 'assistant' && message.content?.content_type == 'text' && metadata?.recipient == 'all') {
-      displayType = 'text';
+    if (message.role == 'assistant') {
+      displayType = textOrMultimodal(message);
       break;
     }
     if (message.id.startsWith('temp_')) {
@@ -78,32 +53,6 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
       displayType = textOrMultimodal(message);
       break;
     }
-
-    if (message.role == 'assistant') {
-      // 根据 recipient 判断
-      const metadata = message.metadata as OpenaiWebChatMessageMetadata | null;
-      const recipient = metadata?.recipient;
-      if (recipient == 'browser') displayType = 'browser';
-      else if (recipient === 'dalle.text2im') displayType = 'dalle_prompt';
-      else if (recipient === 'myfiles_browser') displayType = 'myfiles_browser';
-      else if (recipient !== 'all' && message.model == 'gpt_4_plugins') displayType = 'plugin';
-      if (displayType) break;
-    } else if (message.role == 'tool') {
-      if (message.author_name == 'browser') displayType = 'browser';
-      else if (message.author_name == 'dalle.text2im') displayType = 'dalle_result';
-      else if (message.author_name == 'myfiles_browser') displayType = 'myfiles_browser';
-      else displayType = 'plugin';
-      break;
-    }
-
-    if (message.content?.content_type == 'code') {
-      displayType = 'code';
-    } else if (message.content?.content_type == 'execution_output') {
-      displayType = 'execution_output';
-    } else {
-      displayType = textOrMultimodal(message);
-    }
-    if (displayType) break;
   }
 
   if (!displayType) console.error('cannot find display type for group', group);
@@ -120,16 +69,10 @@ export function buildTemporaryMessage(
   openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
 ) {
   const random_strid = Math.random().toString(36).substring(2, 16);
-  const content =
-    source === 'openai_api'
-      ? {
-          content_type: 'text',
-          text: textContent,
-        }
-      : {
-          content_type: 'text',
-          parts: [textContent],
-        };
+  const content = {
+    content_type: 'text',
+    parts: [textContent],
+  };
   const result = {
     id: `temp_${random_strid}`,
     source,
@@ -160,16 +103,9 @@ export function modifiyTemporaryMessageContent(message: BaseChatMessage, textCon
     console.error('wrong content type in temporary openai_api message', message);
     return message.content;
   }
-  if (message.source == 'openai_api') {
-    const content = message.content as OpenaiApiChatMessageTextContent;
-    content.text = textContent;
-    return content;
-  } else if (message.source == 'openai_web') {
-    const content = message.content as OpenaiWebChatMessageTextContent | OpenaiWebChatMessageMultimodalTextContent;
-    content.parts = [textContent];
-    return content;
-  }
-  return message.content;
+  const content = message.content as OpenaiWebChatMessageTextContent | OpenaiWebChatMessageMultimodalTextContent;
+  content.parts = [textContent];
+  return content;
 }
 
 function htmlToElement(html: string) {
@@ -274,25 +210,4 @@ export async function getImageDownloadUrlFromFileServiceSchemaUrl(url: string | 
     console.error(e);
     return null;
   }
-}
-
-export function splitPluginActions(messages: BaseChatMessage[]) {
-  const result = [] as PluginAction[];
-  // 每两条 message 是一个完整的 action
-  // request: role == 'assistant'
-  // response: role == 'tool'
-  for (let i = 0; i < messages.length; i += 2) {
-    const requestMessage = messages[i];
-    const responseMessage = messages[i + 1];
-    if (!requestMessage || !responseMessage) continue;
-    if (requestMessage.role == 'assistant' && responseMessage.role == 'tool') {
-      const requestMeta = requestMessage.metadata as OpenaiWebChatMessageMetadata;
-      result.push({
-        pluginName: requestMeta.recipient || '',
-        request: getContentRawText(requestMessage) || '',
-        response: getContentRawText(responseMessage) || '',
-      });
-    }
-  }
-  return result;
 }

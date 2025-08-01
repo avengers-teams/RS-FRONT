@@ -59,6 +59,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+
 import { useAppStore } from '@/store';
 import { BaseChatMessage, OpenaiWebChatMessageMultimodalTextContentImagePart } from '@/types/schema';
 import { dompurifyRenderedHtml, getContentRawText, getMultimodalContentImageParts } from '@/utils/chat';
