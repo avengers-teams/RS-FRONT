@@ -1,62 +1,19 @@
 <template>
   <div class="flex flex-row lt-sm:flex-col sm:space-x-4 w-full">
     <n-upload
-      v-model:file-list="fileStore.naiveUiUploadFileInfos"
-      class="lt-sm:hidden"
-      multiple
-      :show-file-list="false"
-      :trigger-style="{ width: '100%' }"
-      :custom-request="customRequest"
-      :accept="acceptedMimeTypes.join(',')"
-      :on-before-upload="checkFileBeforeUpload"
-      :max="10"
-    >
-      <n-upload-dragger class="lt-sm:hidden h-44">
-        <div class="mb-2">
-          <n-icon size="48" :depth="3">
-            <UploadFileRound />
-          </n-icon>
-        </div>
-        <n-text style="font-size: 16px">
-          {{ $t('tips.dragFileOrImageHere') }}
-        </n-text>
-        <n-p depth="3" style="margin: 8px 0 0 0">
-          {{ $t('tips.supportedImageFormats') }}
-        </n-p>
-      </n-upload-dragger>
-    </n-upload>
-
-    <n-upload
       ref="uploadAllRef"
       v-model:file-list="fileStore.naiveUiUploadFileInfos"
-      abstract
       multiple
       :custom-request="customRequest"
       :show-cancel-button="true"
       :show-remove-button="true"
       :show-retry-button="true"
       :on-remove="removeFile"
-      list-type="image"
+      list-type="image-card"
       :accept="acceptedMimeTypes.join(',')"
       :on-before-upload="checkFileBeforeUpload"
       :max="10"
     >
-      <n-upload-trigger>
-        <n-button style="width: 100%" class="sm:hidden mb-3">
-          {{ $t('commons.selectFile') }}
-        </n-button>
-      </n-upload-trigger>
-
-      <n-card :content-style="{ padding: '0.75rem' }">
-        <n-empty
-          v-if="fileStore.naiveUiUploadFileInfos.length == 0"
-          :description="$t('commons.emptyFileList')"
-          class="h-full flex items-center justify-center"
-        />
-        <n-scrollbar v-else class="sm:max-h-37 max-h-44">
-          <n-upload-file-list />
-        </n-scrollbar>
-      </n-card>
     </n-upload>
   </div>
 </template>
@@ -147,6 +104,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     // 存储上传的文件信息
     fileStore.uploadedFileInfos = [...fileStore.uploadedFileInfos, uploadedFileInfo];
     fileStore.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.hash_name;
+    console.log(fileStore.uploadedFileInfos);
 
     // 文件上传成功完成
     Message.success(t('tips.fileUploadSuccess', [file.name]));
