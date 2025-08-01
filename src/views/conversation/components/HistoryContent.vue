@@ -12,7 +12,7 @@
         <n-text class="flex h-full items-center gap-1">
           {{ $t('commons.currentConversationModel') }}:
           <LkIcon style="height: 25px; width: 25px" />
-          {{ convHistory?.task_type || null }}
+          {{ taskTypeMap[convHistory?.task_type || ''] || null }}
         </n-text>
         <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
           <template #icon>
@@ -52,7 +52,7 @@ import { useI18n } from 'vue-i18n';
 import LkIcon from '@/components/LKIcon.vue';
 import { useConversationStore } from '@/store';
 import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
-import { getMessageListFromHistory, mergeContinuousMessages } from '@/utils/chat';
+import { getMessageListFromHistory, mergeContinuousMessages, taskTypeMap } from '@/utils/chat';
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';
@@ -90,12 +90,7 @@ const rawMessages = computed<BaseChatMessage[]>(() => {
   let canContinue = false;
   if (result.length > 0) {
     const lastMessage = result[result.length - 1];
-    if (
-      lastMessage.role == 'assistant' &&
-      lastMessage.source == 'openai_web' &&
-      lastMessage.metadata?.source === 'openai_web' &&
-      lastMessage.metadata.finish_details?.type === 'max_tokens'
-    ) {
+    if (lastMessage.role == 'assistant') {
       canContinue = true;
     }
   }
