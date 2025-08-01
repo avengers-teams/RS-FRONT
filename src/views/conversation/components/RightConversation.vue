@@ -55,7 +55,6 @@
         :can-abort="canAbort"
         :can-continue="!loadingAsk && canContinue"
         :send-disabled="sendDisabled"
-        :upload-mode="uploadMode"
         :upload-disabled="loadingAsk"
         @send-msg="sendMsg"
       />
@@ -80,7 +79,6 @@ import {
   BaseChatMessage,
   BaseConversationHistory,
   BaseConversationSchema,
-  OpenaiWebChatMessageMetadataAttachment,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
 import { screenWidthGreaterThan } from '@/utils/media';
@@ -137,17 +135,6 @@ const currentConvHistory = computed<BaseConversationHistory | null>(() => {
 const inputValue = ref('');
 const currentSendMessage = ref<BaseChatMessage | null>(null);
 const currentRecvMessages = ref<BaseChatMessage[]>([]);
-
-const uploadMode = computed(() => {
-  if (
-    currentConversation.value?.source === 'openai_web' &&
-    currentConversation.value.current_model == 'gpt_4_code_interpreter'
-  )
-    return 'legacy_code_interpreter';
-  else if (currentConversation.value?.source === 'openai_web' && currentConversation.value.current_model == 'gpt_4')
-    return 'all';
-  else return null;
-});
 
 // 实际的 currentMessageList，加上当前正在发送的消息
 const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
@@ -247,20 +234,19 @@ const sendMsg = async () => {
 
   // 处理 gpt-4 图片
   let multimodalImages = null;
-  if (uploadMode.value === 'all') {
-    multimodalImages = fileStore.uploadedFileInfos
-      .filter((info) => info.openai_web_info && info.openai_web_info.file_id && info.content_type?.startsWith('image/'))
-      .map((info) => {
-        const fileId = info.openai_web_info!.file_id!;
-        const { width, height } = info.extra_info || {};
-        return {
-          asset_pointer: `file-service://${fileId}`,
-          width,
-          height,
-          size_bytes: info.size,
-        } as OpenaiWebChatMessageMultimodalTextContentImagePart;
-      });
-  }
+
+  multimodalImages = fileStore.uploadedFileInfos
+    .filter((info) => info.openai_web_info && info.openai_web_info.file_id && info.content_type?.startsWith('image/'))
+    .map((info) => {
+      const fileId = info.openai_web_info!.file_id!;
+      const { width, height } = info.extra_info || {};
+      return {
+        asset_pointer: `file-service://${fileId}`,
+        width,
+        height,
+        size_bytes: info.size,
+      } as OpenaiWebChatMessageMultimodalTextContentImagePart;
+    });
 
   // 使用临时的随机 id 保持当前更新的两个消息
   if (text == ':continue') {
