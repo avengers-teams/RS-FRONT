@@ -98,9 +98,7 @@ export function processCitations(contentDiv: HTMLDivElement) {
   const citationEls = contentDiv!.querySelectorAll('span.browsing-citation');
   const citationUrls = [] as string[];
   citationEls.forEach((el) => {
-    const metadata = JSON.parse(
-      decodeURIComponent(el.getAttribute('data-citation') || '')
-    ) as OpenaiWebChatMessageMetadataCiteData;
+    const metadata = JSON.parse(decodeURIComponent(el.getAttribute('data-citation') || ''));
     if (!metadata) return;
     let citationIndex = 0;
     if (citationUrls.includes(metadata.url!)) {
