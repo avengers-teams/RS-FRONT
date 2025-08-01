@@ -26,6 +26,7 @@ interface AppState {
   language: Ref<'zh-CN' | 'en-US' | string>;
   preference: Ref<Preference>;
   lastSelectedType: Ref<any>;
+  currentTaskType: Ref<number | null>;
 }
 
 interface ConversationState {

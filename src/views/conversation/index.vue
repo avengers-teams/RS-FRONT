@@ -26,15 +26,18 @@
       />
     </n-layout-sider>
     <!-- 右栏 -->
-    <RightImage v-if="taskType" :_current-conversation-id="currentConversationId" @update="updateConvId"></RightImage>
+    <RightConversation
+      v-if="appStore.currentTaskType !== 2"
+      :_current-conversation-id="currentConversationId"
+      @update="updateConvId"
+    />
     <RightImage v-else :_current-conversation-id="currentConversationId" />
   </n-layout>
 </template>
 
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core';
-import { ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed, ref, watch } from 'vue';
 
 import { useAppStore, useConversationStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
@@ -44,13 +47,9 @@ import LeftBar from '@/views/conversation/components/LeftBar.vue';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
 import RightImage from '@/views/conversation/components/RightImage.vue';
 
-const taskType = ref(true);
 const handleEvent = (data: any) => {
   console.log(data); // 接收到的数据
 };
-
-const { t } = useI18n();
-
 const rootRef = ref();
 const appStore = useAppStore();
 
@@ -67,6 +66,7 @@ const currentConversationId = ref<string | null>(null);
 watch(currentConversationId, (newVal, _oldVal) => {
   if (newVal != 'new_conversation') {
     handleChangeConversation(newVal);
+    console.log(conversationStore.conversationHistoryMap);
   }
 });
 
@@ -84,6 +84,7 @@ const handleChangeConversation = (key: string | null) => {
     .fetchConversationHistory(key)
     .then(() => {
       // console.log(conversationStore.conversationDetailMap);
+      appStore.currentTaskType = conversationStore.conversationHistoryMap[key]?.task_type;
     })
     .catch((err: any) => {
       console.log(err);
@@ -102,8 +103,8 @@ const makeNewTask = () => {
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
     hasNewConversation.value = true;
-    appStore.lastSelectedSource = newConversationInfo.source;
-    appStore.lastSelectedModel = newConversationInfo.model;
+    appStore.lastSelectedType = newConversationInfo.task_type;
+    appStore.currentTaskType = newConversationInfo.task_type;
   });
 };
 

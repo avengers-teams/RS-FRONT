@@ -19,6 +19,7 @@ const useAppStore = defineStore('app', {
       widerConversationPage: true,
     }),
     lastSelectedType: useStorage('lastSelectedSource', null),
+    currentTaskType: useStorage('currentTaskType', null as number | null),
   }),
   getters: {},
   actions: {

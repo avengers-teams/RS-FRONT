@@ -52,7 +52,7 @@ import { computed, defineEmits, h, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import LkAvatar from '@/components/LKAvatar.vue';
-import { useConversationStore } from '@/store';
+import { useAppStore, useConversationStore } from '@/store';
 import { BaseConversationSchema } from '@/types/schema';
 import { dropdownRenderer, popupChangeConversationTitleDialog } from '@/utils/renders';
 import { Dialog, Message } from '@/utils/tips';
@@ -60,7 +60,7 @@ import { Dialog, Message } from '@/utils/tips';
 const { t } = useI18n();
 
 const conversationStore = useConversationStore();
-
+const appStore = useAppStore();
 const props = defineProps<{
   loading: boolean;
   value: string | null;

@@ -195,6 +195,7 @@ const makeNewTask = () => {
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
     hasNewConversation.value = true;
     appStore.lastSelectedType = newConversationInfo.task_type;
+    appStore.currentTaskType = newConversationInfo.task_type;
   });
 };
 
