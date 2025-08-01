@@ -1,7 +1,7 @@
 import { UploadFileInfo } from 'naive-ui';
 import { Ref } from 'vue';
 
-import { BaseConversationHistory, BaseConversationSchema, UploadedFileInfoSchema, UserRead } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema, UserRead } from '@/types/schema';
 
 export type SavedLoginForm = {
   rememberPassword: boolean;

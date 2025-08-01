@@ -1,17 +1,11 @@
 import DOMPurify from 'dompurify';
 
-import { i18n } from '@/i18n';
 import {
   BaseChatMessage,
   BaseConversationHistory,
   OpenaiApiChatMessageTextContent,
-  OpenaiWebChatMessageCodeContent,
   OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
-  OpenaiWebChatMessageStderrContent,
-  OpenaiWebChatMessageSystemErrorContent,
-  OpenaiWebChatMessageTetherBrowsingDisplayContent,
-  OpenaiWebChatMessageTetherQuoteContent,
   OpenaiWebChatMessageTextContent,
 } from '@/types/schema';
 

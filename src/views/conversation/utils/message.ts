@@ -2,7 +2,6 @@ import { getFileDownloadUrlApi, getInterpreterSandboxFileDownloadUrlApi } from '
 import { i18n } from '@/i18n';
 import {
   BaseChatMessage,
-  OpenaiWebChatMessageMetadataCiteData,
   OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
   OpenaiWebChatMessageTextContent,

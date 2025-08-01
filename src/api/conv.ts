@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { BaseConversationHistory, BaseConversationSchema, OpenaiChatInterpreterInfo } from '@/types/schema';
+import { BaseConversationHistory, BaseConversationSchema } from '@/types/schema';
 
 import ApiUrl from './url';
 
