@@ -299,7 +299,7 @@ export interface components {
       parent?: string | null;
       /** Children */
       children: string[];
-      content?: components['schemas']['OpenaiApiChatMessageTextContent'] | null;
+      content?: any;
       /** Title */
       title?: string | null;
     };
@@ -401,7 +401,7 @@ export interface components {
        * Content Type
        * @constant
        */
-      content_type: 'text';
+      content_type: 'text' | 'multimodal_text';
       /** Text */
       text: string;
     };

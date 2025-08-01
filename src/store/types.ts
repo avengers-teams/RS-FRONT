@@ -25,7 +25,7 @@ interface AppState {
   theme: any;
   language: Ref<'zh-CN' | 'en-US' | string>;
   preference: Ref<Preference>;
-  lastSelectedType: Ref<ChatSourceTypes | null>;
+  lastSelectedType: Ref<any>;
 }
 
 interface ConversationState {

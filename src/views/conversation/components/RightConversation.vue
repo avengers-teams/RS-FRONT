@@ -323,7 +323,6 @@ const sendMsg = async () => {
           currentRecvMessages.value[index] = message;
         }
       }
-      // console.log('got message', message, index, currentRecvMessages.value);
       respConversationId = response.conversation_id || null;
       canAbort.value = true;
     } else if (response.type === 'error') {

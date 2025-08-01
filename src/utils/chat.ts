@@ -15,8 +15,6 @@ import {
   OpenaiWebChatMessageTextContent,
 } from '@/types/schema';
 
-const t = i18n.global.t as any;
-
 export const taskTypeMap: Record<string, string> = {
   1: '图像语义生成',
   2: '目标识别与计数',
@@ -27,46 +25,28 @@ export const taskTypeMap: Record<string, string> = {
 
 export const getContentRawText = (message: BaseChatMessage | null): string => {
   if (!message || !message.content) return '';
-  if (typeof message.content == 'string') return message.content;
-  else if (message.content.content_type == 'text') {
+  if (message.content.content_type == 'text') {
     if (message.content.content_type == 'text') {
       const content = message.content as OpenaiWebChatMessageTextContent | OpenaiApiChatMessageTextContent;
       return content.parts ? content.parts[0] : content.text || '';
     }
-  } else if (message.content.content_type == 'code') {
-    const content = message.content as OpenaiWebChatMessageCodeContent;
-    return content.text || '';
-  } else if (message.content.content_type == 'stderr') {
-    const content = message.content as OpenaiWebChatMessageStderrContent;
-    return content.text || '';
-  } else if (message.content.content_type == 'tether_browsing_display') {
-    const content = message.content as OpenaiWebChatMessageTetherBrowsingDisplayContent;
-    return content.result || '';
-  } else if (message.content.content_type == 'tether_quote') {
-    const content = message.content as OpenaiWebChatMessageTetherQuoteContent;
-    return content.text || ''; // TODO: more info
-  } else if (message.content.content_type == 'system_error') {
-    const content = message.content as OpenaiWebChatMessageSystemErrorContent;
-    return `${content.name}: ${content.text}`;
   } else if (message.content.content_type == 'multimodal_text') {
     const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
     for (const part of content.parts!) {
       if (typeof part == 'string') return part;
     }
     return '';
-  } else {
-    return `${message.content}`;
   }
+  return `${message.content}`;
 };
 
 export const getMultimodalContentImageParts = (
   message: BaseChatMessage | null
 ): OpenaiWebChatMessageMultimodalTextContentImagePart[] => {
   if (!message || !message.content) return [];
-  if (typeof message.content == 'string') return [];
   if (message.content.content_type == 'multimodal_text') {
     const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
-    return content.parts!.filter((part) => {
+    return content.parts!.filter((part: any) => {
       return typeof part !== 'string';
     }) as OpenaiWebChatMessageMultimodalTextContentImagePart[];
   }

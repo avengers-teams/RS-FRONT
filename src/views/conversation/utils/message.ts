@@ -66,7 +66,7 @@ export function buildTemporaryMessage(
     task_type: task_type,
     content,
     role: role,
-    parent, // 其实没有用到parent
+    parent,
     children: [],
     create_time: new Date().toISOString(),
   } as BaseChatMessage;
