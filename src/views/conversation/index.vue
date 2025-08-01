@@ -26,11 +26,7 @@
       />
     </n-layout-sider>
     <!-- 右栏 -->
-    <RightConversation
-      v-if="taskType"
-      :_current-conversation-id="currentConversationId"
-      @update="updateConvId"
-    ></RightConversation>
+    <RightImage v-if="taskType" :_current-conversation-id="currentConversationId" @update="updateConvId"></RightImage>
     <RightImage v-else :_current-conversation-id="currentConversationId" />
   </n-layout>
 </template>

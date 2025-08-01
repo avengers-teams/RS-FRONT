@@ -23,18 +23,15 @@
 </template>
 
 <script setup lang="ts">
-import { ChatbubbleEllipses, FileTrayFull, InformationCircle } from '@vicons/ionicons5';
-import { SettingsRound, SupervisedUserCircleRound } from '@vicons/material';
-import { NIcon, useThemeVars } from 'naive-ui';
+import { ChatbubbleEllipses } from '@vicons/ionicons5';
+import { SupervisedUserCircleRound } from '@vicons/material';
+import { NIcon } from 'naive-ui';
 import { h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import LkIcon from '@/components/LKIcon.vue';
-
 const { t } = useI18n();
 const router = useRouter();
-const themeVars = useThemeVars();
 
 const collapsed = ref(true);
 const activeKey = ref<string>(router.currentRoute.value.name as string);

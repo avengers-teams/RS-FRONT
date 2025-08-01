@@ -41,9 +41,7 @@
             </n-icon>
           </template>
           <template #extra>
-            <n-button secondary @click="makeNewTask">
-              {{ $t('tips.newTask') }}
-            </n-button>
+            <n-button secondary @click="makeNewTask"> 发起新任务 </n-button>
           </template>
         </n-empty>
       </div>
