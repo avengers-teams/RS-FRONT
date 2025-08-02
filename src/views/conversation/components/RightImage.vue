@@ -30,54 +30,61 @@
         </n-card>
       </template>
       <template #2>
-        <!-- 右侧面板的对话内容 -->
-        <div class="flex-col" style="height: 100%; overflow-y: auto; padding: 10px">
-          <div class="text-center text-gray-500" style="margin-top: 20px; font-size: 20px">
-            请点击左侧面板的按钮上传图片并显示图片内容,根据需求选择或输入您需要的图像识别任务
-          </div>
-          <n-space vertical style="margin-top: 20px">
-            <n-select v-model:value="multipleSelectValue" filterable multiple tag :options="options" />
-          </n-space>
-        </div>
-        <n-layout-content embeded :class="['flex flex-col overflow-hidden', gtmd() ? '' : 'min-w-20vw']">
-          <div class="">
-            <!-- 消息记录内容（用于全屏展示） -->
-            <n-scrollbar
-              v-if="currentConversationId"
-              ref="historyRef"
-              class="relative"
-              :content-style="loadingHistory ? { height: '100%' } : {}"
-            >
-              <!-- 回到底部按钮 -->
-              <div class="">
-                <n-button secondary circle size="small" @click="scrollToBottomSmooth">
-                  <template #icon>
-                    <n-icon :component="ArrowDown" />
-                  </template>
-                </n-button>
+        <div class="flex flex-col h-full relative">
+          <!-- 右侧面板的对话内容 -->
+          <div class="flex-col flex-grow overflow-hidden">
+            <div class="text-center text-gray-500" style="margin-top: 20px; font-size: 20px">
+              请点击左侧面板的按钮上传图片并显示图片内容,根据需求选择或输入您需要的图像识别任务
+            </div>
+            <n-space vertical style="margin-top: 20px">
+              <n-select v-model:value="multipleSelectValue" filterable multiple tag :options="options" />
+            </n-space>
+
+            <n-layout-content embeded :class="['flex flex-col overflow-hidden mt-4', gtmd() ? '' : 'min-w-20vw']">
+              <div class="flex-grow">
+                <!-- 消息记录内容（用于全屏展示） -->
+                <n-scrollbar
+                  v-if="currentConversationId"
+                  ref="historyRef"
+                  class="relative"
+                  :content-style="loadingHistory ? { height: '100%' } : {}"
+                >
+                  <!-- 回到底部按钮 -->
+                  <div class="">
+                    <n-button secondary circle size="small" @click="scrollToBottomSmooth">
+                      <template #icon>
+                        <n-icon :component="ArrowDown" />
+                      </template>
+                    </n-button>
+                  </div>
+                  <HistoryContent
+                    ref="historyContentRef"
+                    v-model:can-continue="canContinue"
+                    :conversation-id="currentConversationId"
+                    :extra-messages="currentActiveMessages"
+                    :fullscreen="false"
+                    :show-tips="showFullscreenTips"
+                    :loading="loadingHistory"
+                  />
+                </n-scrollbar>
               </div>
-              <HistoryContent
-                ref="historyContentRef"
-                v-model:can-continue="canContinue"
-                :conversation-id="currentConversationId"
-                :extra-messages="currentActiveMessages"
-                :fullscreen="false"
-                :show-tips="showFullscreenTips"
-                :loading="loadingHistory"
-              />
-            </n-scrollbar>
+            </n-layout-content>
           </div>
-          <InputRegion
-            v-model:input-value="inputValue"
-            v-model:auto-scrolling="autoScrolling"
-            class="absolute bottom-5 left-0 right-0 mx-auto max-w-[767px] w-[95%] rounded-lg bg-transparent border-transparent"
-            :can-abort="canAbort"
-            :can-continue="!loadingAsk && canContinue"
-            :send-disabled="sendDisabled"
-            :upload-disabled="loadingAsk"
-            @send-msg="sendMsg"
-          />
-        </n-layout-content>
+
+          <!-- 输入区域 - 现在在右栏内部，不再是绝对定位 -->
+          <div class="mt-auto mb-4 px-2">
+            <InputRegion
+              v-model:input-value="inputValue"
+              v-model:auto-scrolling="autoScrolling"
+              class="w-full rounded-lg"
+              :can-abort="canAbort"
+              :can-continue="!loadingAsk && canContinue"
+              :send-disabled="sendDisabled"
+              :upload-disabled="loadingAsk"
+              @send-msg="sendMsg"
+            />
+          </div>
+        </div>
       </template>
     </n-split>
   </n-layout-content>

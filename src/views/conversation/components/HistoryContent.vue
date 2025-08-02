@@ -1,7 +1,11 @@
 <template>
   <div id="print-content" ref="contentRef" class="flex flex-col h-full p-0" tabindex="0" style="outline: none">
     <div v-if="!props.loading" class="relative">
-      <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
+      <div
+        v-if="appStore.currentTaskType !== 2"
+        class="flex justify-center py-4 relative"
+        :style="{ backgroundColor: themeVars.baseColor }"
+      >
         <n-text class="flex h-full items-center gap-1">
           {{ $t('commons.currentConversationModel') }}:
           <LkIcon style="height: 25px; width: 25px" />
@@ -42,6 +46,9 @@ import { getMessageListFromHistory, mergeContinuousMessages, taskTypeMap } from 
 import { Message } from '@/utils/tips';
 
 import MessageRow from './MessageRow.vue';
+import { useAppStore } from '@/store';
+
+const appStore = useAppStore();
 
 const { t } = useI18n();
 
