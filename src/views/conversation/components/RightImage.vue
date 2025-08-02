@@ -8,75 +8,127 @@
         {{ taskTypeMap[convHistory?.task_type || ''] || null }}
       </n-text>
     </div>
-    <n-split direction="horizontal" style="height: 90%" :max="0.75" :min="0.25" class="split">
+
+    <n-split direction="horizontal" style="height: calc(100% - 60px)" :max="0.75" :min="0.25" class="content-split">
       <template #1>
-        <n-card class="left-card" style="text-align: center; cursor: pointer" @click="triggerFileInput">
-          <div style="position: relative; justify-content: center; align-items: center">
-            <img
-              v-if="imageUrl"
-              :src="imageUrl"
-              alt="Uploaded Image"
-              style="max-width: 85%; max-height: 80%; object-fit: contain"
-            />
-            <img
-              v-else
-              src="/public/图片上传.png"
-              alt="Click to upload"
-              style="max-width: 100%; max-height: 200px; object-fit: contain"
-            />
+        <!-- Full-width image display area -->
+        <div
+          class="h-full w-full flex justify-center items-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900"
+        >
+          <div v-if="imageUrl" class="h-full w-full image-container relative">
+            <img :src="imageUrl" alt="Uploaded Image" class="w-full h-full object-contain">
+            <n-button
+              type="error"
+              size="small"
+              circle
+              class="absolute top-4 right-4 bg-white bg-opacity-80 hover:bg-opacity-100 transition-all"
+              @click="imageUrl = null"
+            >
+              <template #icon>
+                <n-icon>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                    />
+                  </svg>
+                </n-icon>
+              </template>
+            </n-button>
           </div>
-          <!-- 隐藏的文件输入框 -->
-          <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="handleFileChange" />
-        </n-card>
-      </template>
-      <template #2>
-        <div class="flex flex-col h-full relative">
-          <!-- 右侧面板的对话内容 -->
-          <div class="flex-col flex-grow overflow-hidden">
-            <div class="text-center text-gray-500" style="margin-top: 20px; font-size: 20px">
-              请点击左侧面板的按钮上传图片并显示图片内容,根据需求选择或输入您需要的图像识别任务
-            </div>
-            <n-space vertical style="margin-top: 20px">
-              <n-select v-model:value="multipleSelectValue" filterable multiple tag :options="options" />
-            </n-space>
-
-            <n-layout-content embeded :class="['flex flex-col overflow-hidden mt-4', gtmd() ? '' : 'min-w-20vw']">
-              <div class="flex-grow">
-                <!-- 消息记录内容（用于全屏展示） -->
-                <n-scrollbar
-                  v-if="currentConversationId"
-                  ref="historyRef"
-                  class="relative"
-                  :content-style="loadingHistory ? { height: '100%' } : {}"
-                >
-                  <!-- 回到底部按钮 -->
-                  <div class="">
-                    <n-button secondary circle size="small" @click="scrollToBottomSmooth">
-                      <template #icon>
-                        <n-icon :component="ArrowDown" />
-                      </template>
-                    </n-button>
-                  </div>
-                  <HistoryContent
-                    ref="historyContentRef"
-                    v-model:can-continue="canContinue"
-                    :conversation-id="currentConversationId"
-                    :extra-messages="currentActiveMessages"
-                    :fullscreen="false"
-                    :show-tips="showFullscreenTips"
-                    :loading="loadingHistory"
+          <div v-else class="w-full h-full flex justify-center items-center cursor-pointer" @click="triggerFileInput">
+            <div class="upload-placeholder text-center">
+              <n-icon size="60" class="upload-icon pulse-animation">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path
+                    d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
                   />
-                </n-scrollbar>
-              </div>
-            </n-layout-content>
+                </svg>
+              </n-icon>
+              <p class="mt-4 text-lg font-medium upload-text">
+                点击上传图片
+              </p>
+              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                支持 JPG, PNG, WebP 格式
+              </p>
+            </div>
+          </div>
+          <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="handleFileChange">
+        </div>
+      </template>
+
+      <template #2>
+        <div class="flex flex-col h-full conversation-container">
+          <!-- Enhanced task selection area -->
+          <div
+            class="task-selection-container px-6 py-5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-lg mb-4 mx-4 mt-4 shadow-sm"
+          >
+            <h3 class="text-center text-lg font-medium mb-3 task-title">
+              <span class="task-icon mr-2">🔍</span>选择图像识别任务
+            </h3>
+            <n-select
+              v-model:value="multipleSelectValue"
+              filterable
+              multiple
+              tag
+              :options="options"
+              class="task-select"
+              size="large"
+              placeholder="请选择或输入识别任务类型"
+            />
           </div>
 
-          <!-- 输入区域 - 现在在右栏内部，不再是绝对定位 -->
-          <div class="mt-auto mb-4 px-2">
+          <!-- Enhanced conversation area -->
+          <div class="flex-grow conversation-content px-4 pb-4">
+            <n-scrollbar
+              v-if="currentConversationId"
+              ref="historyRef"
+              class="relative h-full custom-scrollbar"
+              :content-style="loadingHistory ? { height: '100%' } : {}"
+            >
+              <!-- Enhanced back to bottom button -->
+              <div class="scroll-button">
+                <n-button secondary circle size="medium" class="floating-button" @click="scrollToBottomSmooth">
+                  <template #icon>
+                    <n-icon :component="ArrowDown" />
+                  </template>
+                </n-button>
+              </div>
+
+              <HistoryContent
+                ref="historyContentRef"
+                v-model:can-continue="canContinue"
+                :conversation-id="currentConversationId"
+                :extra-messages="currentActiveMessages"
+                :fullscreen="false"
+                :show-tips="showFullscreenTips"
+                :loading="loadingHistory"
+              />
+            </n-scrollbar>
+
+            <!-- Enhanced empty state -->
+            <div v-else class="flex-col flex items-center justify-center h-full text-center text-gray-500 empty-state">
+              <n-icon size="64" class="mb-5 text-gray-400 empty-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path
+                    d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+                  />
+                </svg>
+              </n-icon>
+              <p style="font-size: 18px" class="font-medium mb-2">
+                开始您的图像识别
+              </p>
+              <p style="font-size: 14px" class="max-w-md">
+                请点击左侧面板上传图片，并选择您需要的图像识别任务
+              </p>
+            </div>
+          </div>
+
+          <!-- Enhanced input area -->
+          <div class="mt-auto mb-4 flex justify-center px-4 w-full">
             <InputRegion
               v-model:input-value="inputValue"
               v-model:auto-scrolling="autoScrolling"
-              class="w-full rounded-lg"
+              class="w-full max-w-3xl rounded-lg"
               :can-abort="canAbort"
               :can-continue="!loadingAsk && canContinue"
               :send-disabled="sendDisabled"
@@ -89,6 +141,7 @@
     </n-split>
   </n-layout-content>
 </template>
+
 <script setup lang="ts">
 import { NButton, NCard, NIcon, NLayoutContent, NSelect, NSpace, NSplit, useThemeVars } from 'naive-ui';
 
@@ -471,6 +524,180 @@ const sendMsg = async () => {
   // };
 };
 </script>
+<style scoped>
+.header-bar {
+  background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dark .header-bar {
+  background: linear-gradient(to right, #1f2937, #111827);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.model-info {
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.model-name {
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.dark .model-name {
+  color: #818cf8;
+}
+
+.image-upload-card {
+  width: 90%;
+  max-width: 500px;
+  height: 400px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.image-upload-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.uploaded-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.upload-icon {
+  color: #6366f1;
+  opacity: 0.8;
+}
+
+.dark .upload-icon {
+  color: #818cf8;
+}
+
+.upload-text {
+  color: #4f46e5;
+}
+
+.dark .upload-text {
+  color: #818cf8;
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+.task-selection-container {
+  transition: all 0.3s ease;
+}
+
+.task-title {
+  color: #4f46e5;
+}
+
+.dark .task-title {
+  color: #818cf8;
+}
+
+.task-icon {
+  display: inline-block;
+}
+
+.task-select {
+  transition: all 0.2s ease;
+}
+
+.conversation-container {
+  background: #f9fafb;
+}
+
+.dark .conversation-container {
+  background: #1f2937;
+}
+
+.floating-button {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.floating-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.empty-icon {
+  opacity: 0.6;
+}
+
+.empty-state {
+  padding: 2rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 20px;
+}
+
+.input-region {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.input-region:focus-within {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+</style>
 <style scoped>
 .split {
 }
