@@ -6,7 +6,7 @@
       <n-scrollbar
         v-if="currentConversationId"
         ref="historyRef"
-        class="relative"
+        class="relative flex-1"
         :content-style="loadingHistory ? { height: '100%' } : {}"
       >
         <!-- 回到底部按钮 -->
@@ -26,7 +26,7 @@
           :show-tips="showFullscreenTips"
           :loading="loadingHistory"
         />
-        <div class="h-14" />
+        <div class="h-26" />
       </n-scrollbar>
       <!-- 未选中对话（空界面） -->
       <div
@@ -49,7 +49,7 @@
       <InputRegion
         v-model:input-value="inputValue"
         v-model:auto-scrolling="autoScrolling"
-        class="bottom-0 z-10 h-50"
+        class="absolute bottom-5 left-0 right-0 mx-auto max-w-[767px] w-[95%] rounded-lg bg-transparent border-transparent"
         :can-abort="canAbort"
         :can-continue="!loadingAsk && canContinue"
         :send-disabled="sendDisabled"
