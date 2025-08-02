@@ -1,12 +1,5 @@
 <template>
-  <div
-    id="print-content"
-    ref="contentRef"
-    class="flex flex-col h-full p-0"
-    tabindex="0"
-    style="outline: none"
-    @keyup.esc="toggleFullscreenHistory(true)"
-  >
+  <div id="print-content" ref="contentRef" class="flex flex-col h-full p-0" tabindex="0" style="outline: none">
     <div v-if="!props.loading" class="relative">
       <div class="flex justify-center py-4 relative" :style="{ backgroundColor: themeVars.baseColor }">
         <n-text class="flex h-full items-center gap-1">
@@ -14,13 +7,6 @@
           <LkIcon style="height: 25px; width: 25px" />
           {{ taskTypeMap[convHistory?.task_type || ''] || null }}
         </n-text>
-        <n-button v-if="_fullscreen" class="absolute left-4 hide-in-print" text @click="toggleFullscreenHistory">
-          <template #icon>
-            <n-icon>
-              <Close />
-            </n-icon>
-          </template>
-        </n-button>
       </div>
       <!-- 消息记录 -->
       <MessageRow
@@ -111,49 +97,11 @@ const filteredMessagesList = computed<BaseChatMessage[][]>(() => {
   return mergeContinuousMessages(filteredMessages.value);
 });
 
-watch(
-  () => props.fullscreen,
-  () => {
-    toggleFullscreenHistory(props.showTips);
-  }
-);
-
-const toggleFullscreenHistory = (showTips: boolean) => {
-  // fullscreenHistory.value = !fullscreenHistory.value;
-  const appElement = document.getElementById('app');
-  const bodyElement = document.body;
-  const historyContentElement = contentRef.value;
-  if (_fullscreen.value) {
-    // 将 historyContent 移动回来
-    historyContentParent.value?.appendChild(historyContentElement);
-    if (appElement) appElement.style.display = 'block';
-  } else {
-    historyContentParent.value = historyContentElement.parentElement;
-    // 移动到body child的第一个
-    bodyElement.insertBefore(historyContentElement, bodyElement.firstChild);
-    // 将div#app 设置为不可见
-    if (appElement) {
-      appElement.style.display = 'none';
-    }
-    historyContentElement.focus();
-    if (showTips)
-      Message.success(t('tips.pressEscToExitFullscreen'), {
-        duration: 2000,
-      });
-  }
-  _fullscreen.value = !_fullscreen.value;
-};
-
-if (props.fullscreen) {
-  toggleFullscreenHistory(props.showTips);
-}
-
 const focus = () => {
   contentRef.value.focus();
 };
 
 defineExpose({
   focus,
-  toggleFullscreenHistory,
 });
 </script>

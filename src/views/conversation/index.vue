@@ -31,7 +31,7 @@
       :_current-conversation-id="currentConversationId"
       @update="updateConvId"
     />
-    <RightImage v-else :_current-conversation-id="currentConversationId" />
+    <RightImage v-else :_current-conversation-id="currentConversationId" @update="updateConvId" />
   </n-layout>
 </template>
 
