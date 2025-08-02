@@ -24,7 +24,7 @@ module.exports = {
   plugins: ['vue', '@typescript-eslint', 'import', 'simple-import-sort'],
   rules: {
     indent: ['warn', 2],
-    'linebreak-style': ['error', 'unix'],
+    // 'linebreak-style': ['error', 'unix'],
     quotes: ['warn', 'single'],
     semi: ['warn', 'always'],
     'vue/no-v-model-argument': ['off'],
@@ -39,16 +39,19 @@ module.exports = {
         argsIgnorePattern: '^_',
       },
     ],
-    "vue/max-attributes-per-line": ["error", {
-      "singleline": {
-        "max": 5
-      },      
-      "multiline": {
-        "max": 1
-      }
-    }],
-    "@typescript-eslint/no-non-null-assertion": ["off"],
-    "import/no-named-as-default": ["off"]
+    'vue/max-attributes-per-line': [
+      'error',
+      {
+        singleline: {
+          max: 5,
+        },
+        multiline: {
+          max: 1,
+        },
+      },
+    ],
+    '@typescript-eslint/no-non-null-assertion': ['off'],
+    'import/no-named-as-default': ['off'],
   },
   settings: {
     'import/parsers': {
