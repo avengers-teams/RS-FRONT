@@ -22,7 +22,12 @@
           <template #suffix>
             <div class="action-buttons">
               <!-- 文件上传按钮 -->
-              <n-badge :value="fileStore.uploadedFileInfos.length" :max="99" :offset="[-6, 3]">
+              <n-badge
+                v-if="appStore.currentTaskType !== 2"
+                :value="fileStore.uploadedFileInfos.length"
+                :max="99"
+                :offset="[-6, 3]"
+              >
                 <n-button class="action-btn" quaternary circle @click="showFileUpload = !showFileUpload">
                   <template #icon>
                     <n-icon><AttachFileFilled /></n-icon>
