@@ -22,9 +22,12 @@
             directory-dnd
             :on-before-upload="checkFileBeforeUpload"
             action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
-            :max="1"
+            :theme-overrides="{
+              itemDisabledOpacity: '1',
+            }"
+            :disabled="!isCurrentNewConversation && imageUrl"
           >
-            <n-upload-dragger v-if="!imageUrl" class="h-full">
+            <n-upload-dragger v-if="!imageUrl" class="h-full" :disabled="!isCurrentNewConversation && imageUrl">
               <div class="w-full h-full flex justify-center items-center cursor-pointer">
                 <div class="upload-placeholder text-center">
                   <n-icon size="60" class="upload-icon pulse-animation">
@@ -34,35 +37,33 @@
                       />
                     </svg>
                   </n-icon>
-                  <p class="mt-4 text-lg font-medium upload-text">
-                    点击上传图片
-                  </p>
-                  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    支持 JPG, PNG,TIFF 等格式
-                  </p>
+                  <p class="mt-4 text-lg font-medium upload-text">点击上传图片</p>
+                  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">支持 JPG, PNG,TIFF 等格式</p>
                 </div>
               </div>
             </n-upload-dragger>
             <div v-else class="h-full w-full image-container relative">
-              <img :src="imageUrl" alt="Uploaded Image" class="w-full h-full object-contain">
-              
+              <img :src="imageUrl" alt="Uploaded Image" class="w-full h-full object-contain" />
+
               <!-- Overlay during upload -->
-              <div v-if="isUploading" class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center">
-                <p class="text-white text-lg mb-4">
-                  正在上传图片...
-                </p>
-                <n-progress 
-                  type="line" 
-                  :percentage="percentage" 
+              <div
+                v-if="isUploading"
+                class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center"
+              >
+                <p class="text-white text-lg mb-4">正在上传图片...</p>
+                <n-progress
+                  type="line"
+                  :percentage="percentage"
                   :show-indicator="true"
                   status="success"
                   :processing="true"
                   class="w-3/4 max-w-md"
                 />
               </div>
-              
+
+              <!-- Only show delete button for new conversations -->
               <n-button
-                v-if="!isUploading"
+                v-if="!isUploading && isCurrentNewConversation"
                 type="error"
                 size="small"
                 circle
@@ -143,12 +144,8 @@
                   />
                 </svg>
               </n-icon>
-              <p style="font-size: 18px" class="font-medium mb-2">
-                开始您的图像识别
-              </p>
-              <p style="font-size: 14px" class="max-w-md">
-                请点击左侧面板上传图片，并选择您需要的图像识别任务
-              </p>
+              <p style="font-size: 18px" class="font-medium mb-2">开始您的图像识别</p>
+              <p style="font-size: 14px" class="max-w-md">请点击左侧面板上传图片，并选择您需要的图像识别任务</p>
             </div>
           </div>
 
@@ -242,6 +239,11 @@ const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: Upload
     Message.warning('{[options.file.name]}tips.fileSizeTooLarge');
     return false;
   }
+  // 如果不是新对话且已有图片，不允许上传
+  if (!isCurrentNewConversation.value && imageUrl.value) {
+    Message.warning('已有图片的对话不能上传新图片');
+    return false;
+  }
   return true;
 };
 
@@ -299,7 +301,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     console.log(fileStore.uploadedFileInfos);
 
     // 文件上传成功完成
-    Message.success('文件 {[file.name]} 上传成功');
+    Message.success(`文件 ${[file.name]} 上传成功`);
     isUploading.value = false; // 上传完成，隐藏蒙版
     onFinish();
   } catch (error) {
