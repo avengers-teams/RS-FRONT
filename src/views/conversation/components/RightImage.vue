@@ -69,7 +69,12 @@
                 size="small"
                 circle
                 class="absolute top-4 right-4 bg-white bg-opacity-80 hover:bg-opacity-100 transition-all"
-                @click="imageUrl = null"
+                @click="
+                  () => {
+                    imageUrl = null;
+                    fileStore.clear();
+                  }
+                "
               >
                 <template #icon>
                   <n-icon>
