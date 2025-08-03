@@ -212,10 +212,3 @@ const shortcutSendMsg = (e: KeyboardEvent) => {
   }
 };
 </script>
-
-<style>
-.n-divider {
-  margin-bottom: 0px !important;
-  margin-top: 0px !important;
-}
-</style>

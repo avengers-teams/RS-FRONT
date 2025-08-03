@@ -46,9 +46,14 @@ import { LoadingBar } from '@/utils/tips';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
 import RightImage from '@/views/conversation/components/RightImage.vue';
-
 const handleEvent = (data: any) => {
-  console.log(data); // 接收到的数据
+  conversationStore.createNewConversation({
+    title: '新任务',
+    task_type: data,
+  } as NewConversationInfo);
+  currentConversationId.value = conversationStore.newConversation!.conversation_id!;
+  hasNewConversation.value = true;
+  appStore.currentTaskType = data;
 };
 const rootRef = ref();
 const appStore = useAppStore();

@@ -18,11 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { SelectOption } from 'naive-ui';
 import { computed, ref, watch } from 'vue';
 
 import { i18n } from '@/i18n';
-import { useAppStore, useUserStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
 
 const t = i18n.global.t as any;

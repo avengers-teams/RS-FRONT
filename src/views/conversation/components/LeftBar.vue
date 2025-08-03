@@ -39,8 +39,6 @@
           </n-list>
         </div>
       </div>
-
-      <!--      </n-scrollbar>-->
     </div>
   </div>
 </template>

@@ -27,6 +27,7 @@
     "markdown-it": "^14.0.0",
     "markdown-it-highlightjs": "^4.0.1",
     "pinia": "^2.1.7",
+    "tiff.js": "^1.0.0",
     "uuid": "^9.0.1",
     "vue": "^3.4.21",
     "vue-echarts": "^6.6.9",

@@ -114,60 +114,50 @@
           </div>
 
           <!-- Enhanced conversation area -->
-          <div class="flex-grow conversation-content px-4 pb-4">
-            <n-scrollbar
-              v-if="currentConversationId"
-              ref="historyRef"
-              class="relative h-full custom-scrollbar"
-              :content-style="loadingHistory ? { height: '100%' } : {}"
-            >
-              <!-- Enhanced back to bottom button -->
-              <div class="scroll-button">
-                <n-button secondary circle size="medium" class="floating-button" @click="scrollToBottomSmooth">
-                  <template #icon>
-                    <n-icon :component="ArrowDown" />
-                  </template>
-                </n-button>
+          <n-layout-content embeded :class="['flex flex-col overflow-hidden', gtmd() ? '' : 'min-w-100vw']">
+            <div class="h-full relative flex flex-col">
+              <n-scrollbar
+                v-if="currentConversationId"
+                ref="historyRef"
+                class="relative h-full custom-scrollbar"
+                :content-style="loadingHistory ? { height: '100%' } : {}"
+              >
+                <!-- Enhanced back to bottom button -->
+                <div class="scroll-button">
+                  <n-button secondary circle size="medium" class="floating-button" @click="scrollToBottomSmooth">
+                    <template #icon>
+                      <n-icon :component="ArrowDown" />
+                    </template>
+                  </n-button>
+                </div>
+
+                <HistoryContent
+                  ref="historyContentRef"
+                  v-model:can-continue="canContinue"
+                  :conversation-id="currentConversationId"
+                  :extra-messages="currentActiveMessages"
+                  :fullscreen="false"
+                  :show-tips="showFullscreenTips"
+                  :loading="loadingHistory"
+                />
+                <div class="h-16" />
+              </n-scrollbar>
+
+              <!-- Enhanced input area -->
+              <div class="relative flex flex-col flex-1 px-4">
+                <InputRegion
+                  v-model:input-value="inputValue"
+                  v-model:auto-scrolling="autoScrolling"
+                  class="w-full max-w-3xl mx-auto mb-4"
+                  :can-abort="canAbort"
+                  :can-continue="!loadingAsk && canContinue"
+                  :send-disabled="sendDisabled"
+                  :upload-disabled="loadingAsk"
+                  @send-msg="sendMsg"
+                />
               </div>
-
-              <HistoryContent
-                ref="historyContentRef"
-                v-model:can-continue="canContinue"
-                :conversation-id="currentConversationId"
-                :extra-messages="currentActiveMessages"
-                :fullscreen="false"
-                :show-tips="showFullscreenTips"
-                :loading="loadingHistory"
-              />
-            </n-scrollbar>
-
-            <!-- Enhanced empty state -->
-            <div v-else class="flex-col flex items-center justify-center h-full text-center text-gray-500 empty-state">
-              <n-icon size="64" class="mb-5 text-gray-400 empty-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path
-                    d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
-                  />
-                </svg>
-              </n-icon>
-              <p style="font-size: 18px" class="font-medium mb-2">开始您的图像识别</p>
-              <p style="font-size: 14px" class="max-w-md">请点击左侧面板上传图片，并选择您需要的图像识别任务</p>
             </div>
-          </div>
-
-          <!-- Enhanced input area -->
-          <div class="mt-auto mb-4 flex justify-center px-4 w-full">
-            <InputRegion
-              v-model:input-value="inputValue"
-              v-model:auto-scrolling="autoScrolling"
-              class="w-full max-w-3xl rounded-lg"
-              :can-abort="canAbort"
-              :can-continue="!loadingAsk && canContinue"
-              :send-disabled="sendDisabled"
-              :upload-disabled="loadingAsk"
-              @send-msg="sendMsg"
-            />
-          </div>
+          </n-layout-content>
         </div>
       </template>
     </n-split>
@@ -237,12 +227,12 @@ const isSupportedImage = (file: File) => {
 const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
   const rawFile = options.file.file as File;
   if (!isSupportedImage(rawFile)) {
-    Message.warning('{[options.file.name]}tips.unsupportedImageFormat');
+    Message.warning(`${[options.file.name]}tips.unsupportedImageFormat`);
     return false;
   }
   // 可以根据需要调整文件大小限制
   if (rawFile.size > 1024 * 1024 * 1024) {
-    Message.warning('{[options.file.name]}tips.fileSizeTooLarge');
+    Message.warning(`${[options.file.name]}tips.fileSizeTooLarge`);
     return false;
   }
   // 如果不是新对话且已有图片，不允许上传
@@ -262,7 +252,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
 
     const rawFile = file.file as File;
     if (!isSupportedImage(rawFile)) {
-      Message.warning('{[file.name]}unsupportedImageFormat');
+      Message.warning(`${[file.name]}unsupportedImageFormat`);
       onError();
       return;
     }
@@ -313,7 +303,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
   } catch (error) {
     isUploading.value = false; // 上传失败，隐藏蒙版
     Message.error(
-      '文件 {[file.name]} 上传失败' + `: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+      `文件 ${[file.name]} 上传失败` + `: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
       { duration: 5 * 1000 }
     );
     console.error(error);
@@ -835,18 +825,5 @@ const sendMsg = async () => {
 
 .input-region:focus-within {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-</style>
-<style scoped>
-.split {
-}
-.left-card {
-  height: 90%;
-  width: 90%;
-  border: 2px solid #e1e1e1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 5% 5%;
 }
 </style>
