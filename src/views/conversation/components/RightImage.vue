@@ -11,12 +11,44 @@
 
     <n-split direction="horizontal" style="height: calc(100% - 60px)" :max="0.75" :min="0.25" class="content-split">
       <template #1>
-        <!-- Full-width image display area -->
         <div
           class="h-full w-full flex justify-center items-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900"
         >
-          <div v-if="imageUrl" class="h-full w-full image-container relative">
-            <img :src="imageUrl" alt="Uploaded Image" class="w-full h-full object-contain">
+          <!-- Full-width image display area -->
+          <n-upload
+            v-if="!imageUrl"
+            v-model:file-list="fileStore.naiveUiUploadFileInfos"
+            :custom-request="customRequest"
+            :show-file-list="false"
+            directory-dnd
+            :on-before-upload="checkFileBeforeUpload"
+            action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
+            :max="1"
+          >
+            <n-upload-dragger class="h-full">
+              <div class="w-full h-full flex justify-center items-center cursor-pointer">
+                <div class="upload-placeholder text-center">
+                  <n-icon size="60" class="upload-icon pulse-animation">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <path
+                        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
+                      />
+                    </svg>
+                  </n-icon>
+                  <p class="mt-4 text-lg font-medium upload-text">点击上传图片</p>
+                  <n-progress
+                    type="line"
+                    :percentage="percentage"
+                    :show-indicator="false"
+                    :color="{ stops: ['white', 'pink'] }"
+                  />
+                  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">支持 JPG, PNG,TIFF 等格式</p>
+                </div>
+              </div>
+            </n-upload-dragger>
+          </n-upload>
+          <div v-else class="h-full w-full image-container relative">
+            <img :src="imageUrl" alt="Uploaded Image" class="w-full h-full object-contain" />
             <n-button
               type="error"
               size="small"
@@ -35,24 +67,6 @@
               </template>
             </n-button>
           </div>
-          <div v-else class="w-full h-full flex justify-center items-center cursor-pointer" @click="triggerFileInput">
-            <div class="upload-placeholder text-center">
-              <n-icon size="60" class="upload-icon pulse-animation">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path
-                    d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
-                  />
-                </svg>
-              </n-icon>
-              <p class="mt-4 text-lg font-medium upload-text">
-                点击上传图片
-              </p>
-              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                支持 JPG, PNG, WebP 格式
-              </p>
-            </div>
-          </div>
-          <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="handleFileChange">
         </div>
       </template>
 
@@ -73,6 +87,7 @@
               :options="options"
               class="task-select"
               size="large"
+              @update:value="selectUpdate"
               placeholder="请选择或输入识别任务类型"
             />
           </div>
@@ -114,12 +129,8 @@
                   />
                 </svg>
               </n-icon>
-              <p style="font-size: 18px" class="font-medium mb-2">
-                开始您的图像识别
-              </p>
-              <p style="font-size: 14px" class="max-w-md">
-                请点击左侧面板上传图片，并选择您需要的图像识别任务
-              </p>
+              <p style="font-size: 18px" class="font-medium mb-2">开始您的图像识别</p>
+              <p style="font-size: 14px" class="max-w-md">请点击左侧面板上传图片，并选择您需要的图像识别任务</p>
             </div>
           </div>
 
@@ -143,12 +154,24 @@
 </template>
 
 <script setup lang="ts">
-import { NButton, NCard, NIcon, NLayoutContent, NSelect, NSpace, NSplit, useThemeVars } from 'naive-ui';
+import {
+  NButton,
+  NCard,
+  NIcon,
+  NLayoutContent,
+  NSelect,
+  NSpace,
+  NSplit,
+  UploadCustomRequestOptions,
+  UploadFileInfo,
+  useThemeVars,
+} from 'naive-ui';
 
 import { screenWidthGreaterThan } from '@/utils/media';
 const gtmd = screenWidthGreaterThan('md');
 import { ArrowDown } from '@vicons/ionicons5';
 import { useStorage } from '@vueuse/core/index';
+import axios from 'axios';
 import { computed, ref, watch } from 'vue';
 
 import { getAskWebsocketApiUrl } from '@/api/chat';
@@ -180,6 +203,85 @@ const convHistory = computed<BaseConversationHistory | null>(() => {
   return conversationStore.conversationHistoryMap[conversationId];
 });
 
+const percentage = ref(0);
+const acceptedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/tiff'];
+const isSupportedImage = (file: File) => {
+  return acceptedMimeTypes.includes(file.type);
+};
+const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
+  const rawFile = options.file.file as File;
+  if (!isSupportedImage(rawFile)) {
+    Message.warning('{[options.file.name]}tips.unsupportedImageFormat');
+    return false;
+  }
+  // 可以根据需要调整文件大小限制
+  if (rawFile.size > 1024 * 1024 * 1024) {
+    Message.warning('{[options.file.name]}tips.fileSizeTooLarge');
+    return false;
+  }
+  return true;
+};
+
+const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
+  console.log('customRequest', file);
+  try {
+    if (!file.file) {
+      throw new Error('Failed to get the file.');
+    }
+
+    const rawFile = file.file as File;
+    if (!isSupportedImage(rawFile)) {
+      Message.warning('{[file.name]}unsupportedImageFormat');
+      onError();
+      return;
+    }
+
+    onProgress({ percent: 0 });
+
+    // 创建FormData对象
+    const formData = new FormData();
+    formData.append('images', rawFile);
+
+    // 发送到新的上传接口
+    percentage.value = 0; // 重置进度条
+    const response = await axios.post('/chat/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress({ percent: percentCompleted });
+          percentage.value = percentCompleted; // 更新进度条
+        }
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to upload the file.');
+    }
+
+    // 假设后端返回的是一个文件信息数组，我们取第一个
+    const uploadedFileInfo = response.data[0];
+
+    // 存储上传的文件信息
+    fileStore.uploadedFileInfos = [...fileStore.uploadedFileInfos, uploadedFileInfo];
+    fileStore.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.hash_name;
+    console.log(fileStore.uploadedFileInfos);
+
+    // 文件上传成功完成
+    Message.success('文件 {[file.name]} 上传成功');
+    onFinish();
+  } catch (error) {
+    Message.error(
+      '文件 {[file.name]} 上传失败' + `: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+      { duration: 5 * 1000 }
+    );
+    console.error(error);
+    onError();
+  }
+};
+
 const themeVars = useThemeVars();
 const inputValue = ref('');
 const autoScrolling = useStorage('autoScrolling', true);
@@ -189,7 +291,8 @@ const sendDisabled = computed(() => {
     loadingAsk.value ||
     currentConversationId.value == null ||
     inputValue.value === null ||
-    inputValue.value.trim() == ''
+    inputValue.value.trim() == '' ||
+    multipleSelectValue.value == null
   );
 });
 const showFullscreenTips = ref(false);
@@ -232,9 +335,23 @@ const handleFileChange = (event: Event) => {
 
 const multipleSelectValue = ref<string[]>([]);
 const currentConversationId = ref<string | null>(props._currentConversationId || null);
-
+const selectUpdate = () => {
+  if (multipleSelectValue.value.length === 0) {
+    inputValue.value = '';
+    return;
+  }
+  inputValue.value = '请帮我统计' + multipleSelectValue.value.toString() + '的数量';
+};
+watch(inputValue, (newValue) => {
+  if (newValue.trim() === '') {
+    multipleSelectValue.value = [];
+  } else {
+    // 自动填充任务类型
+    const matchedOptions = options.value.filter((option) => newValue.includes(option.label));
+    multipleSelectValue.value = matchedOptions.map((option) => option.value);
+  }
+});
 const emit = defineEmits(['update']);
-
 const options = ref([
   { label: '车辆', value: '车辆' },
   { label: '建筑物', value: '建筑物' },
@@ -299,7 +416,6 @@ const sendMsg = async () => {
     Message.error('请选择一个对话');
     return;
   }
-
   LoadingBar.start();
   loadingAsk.value = true;
   canContinue.value = false;
@@ -310,7 +426,7 @@ const sendMsg = async () => {
   isAborted.value = false;
   let hasGotReply = false;
 
-  // 处理 gpt-4 图片
+  // 处理图片
   let multimodalImages = null;
 
   multimodalImages = fileStore.uploadedFileInfos
@@ -517,11 +633,6 @@ const sendMsg = async () => {
   webSocket.onerror = (event: Event) => {
     console.error('WebSocket error:', event);
   };
-
-  // aborter = () => {
-  //   isAborted.value = true;
-  //   webSocket.close();
-  // };
 };
 </script>
 <style scoped>

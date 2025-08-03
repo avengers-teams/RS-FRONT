@@ -53,8 +53,7 @@ const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: Upload
     return false;
   }
   // 可以根据需要调整文件大小限制
-  if (rawFile.size > 10 * 1024 * 1024) {
-    // 10MB
+  if (rawFile.size > 1024 * 1024 * 1024) {
     Message.warning(t('tips.fileSizeTooLarge', [options.file.name]));
     return false;
   }
