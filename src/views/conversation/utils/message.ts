@@ -8,7 +8,6 @@ import {
 } from '@/types/schema';
 import { getTextMessageContent } from '@/utils/chat';
 import { Dialog } from '@/utils/tips';
-
 const t = i18n.global.t as any;
 
 export type DisplayItemType = 'text' | 'multimodal_text' | null;

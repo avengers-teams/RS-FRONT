@@ -170,6 +170,8 @@
 </template>
 
 <script setup lang="ts">
+import 'tiff.js';
+
 import {
   NButton,
   NCard,
@@ -188,6 +190,7 @@ import {
 } from 'naive-ui';
 
 import { screenWidthGreaterThan } from '@/utils/media';
+import { buildTemporaryMessage, modifiyTemporaryMessageContent } from '@/views/conversation/utils/message';
 const gtmd = screenWidthGreaterThan('md');
 import { ArrowDown } from '@vicons/ionicons5';
 import { useStorage } from '@vueuse/core/index';
@@ -210,7 +213,6 @@ import { taskTypeMap } from '@/utils/chat';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
 import InputRegion from '@/views/conversation/components/InputRegion.vue';
-import { buildTemporaryMessage, modifiyTemporaryMessageContent } from '@/views/conversation/utils/message';
 const props = defineProps<{
   _currentConversationId: string | null;
 }>();
@@ -248,6 +250,22 @@ const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: Upload
   return true;
 };
 
+// 判断文件是否为 TIFF 格式
+const isTiff = (buffer) => {
+  const view = new Uint8Array(buffer);
+  return (view[0] === 0x49 && view[1] === 0x49) || (view[0] === 0x4d && view[1] === 0x4d);
+};
+
+// 使用 tiff.js 解析 TIFF 文件
+const processTiffImage = async (buffer) => {
+  Tiff.initialize({ TOTAL_MEMORY: 16777216 * 10 });
+  const tiff = new Tiff({ buffer: buffer });
+  const canvas = tiff.toCanvas();
+  const base64Data = canvas.toDataURL('image/png');
+  tiff.close();
+  return base64Data;
+};
+
 const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
   console.log('customRequest', file);
   try {
@@ -261,15 +279,22 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
       onError();
       return;
     }
-
-    // 先显示预览图片
-    const reader = new FileReader();
-    reader.onload = () => {
-      imageUrl.value = reader.result as string;
-      isUploading.value = true; // 开始上传，显示蒙版
-      percentage.value = 0; // 重置进度条
-    };
-    reader.readAsDataURL(rawFile);
+    // 如果是 TIFF 文件，使用 tiff.js 解析并预览
+    const buffer = await rawFile.arrayBuffer();
+    if (isTiff(buffer)) {
+      // 使用 tiff.js 解析 TIFF 文件
+      const base64Data = await processTiffImage(buffer);
+      imageUrl.value = base64Data; // 显示预览
+    } else {
+      // 先显示预览图片
+      const reader = new FileReader();
+      reader.onload = () => {
+        imageUrl.value = reader.result as string;
+        isUploading.value = true; // 开始上传，显示蒙版
+        percentage.value = 0; // 重置进度条
+      };
+      reader.readAsDataURL(rawFile);
+    }
 
     // 创建FormData对象
     const formData = new FormData();
@@ -349,6 +374,7 @@ const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
   }
   return result;
 });
+
 const imageUrl = ref<string | null>(null);
 
 const multipleSelectValue = ref<string[]>([]);
