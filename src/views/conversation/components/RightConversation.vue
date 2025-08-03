@@ -271,7 +271,11 @@ const sendMsg = async () => {
     askRequest.conversation_id = currentConversationId.value!;
     askRequest.parent = currentConvHistory.value.current_node;
   }
-
+  if (fileStore.uploadedFileInfos) {
+    askRequest.images = fileStore.uploadedFileInfos.map((info) => {
+      return info.hash_name + info.file_suffix;
+    });
+  }
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
   let wsErrorMessage: AskResponse | null = null;

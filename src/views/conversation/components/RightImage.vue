@@ -16,7 +16,6 @@
         >
           <!-- Full-width image display area -->
           <n-upload
-            v-if="!imageUrl"
             v-model:file-list="fileStore.naiveUiUploadFileInfos"
             :custom-request="customRequest"
             :show-file-list="false"
@@ -25,7 +24,7 @@
             action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
             :max="1"
           >
-            <n-upload-dragger class="h-full">
+            <n-upload-dragger v-if="!imageUrl" class="h-full">
               <div class="w-full h-full flex justify-center items-center cursor-pointer">
                 <div class="upload-placeholder text-center">
                   <n-icon size="60" class="upload-icon pulse-animation">
@@ -35,38 +34,53 @@
                       />
                     </svg>
                   </n-icon>
-                  <p class="mt-4 text-lg font-medium upload-text">点击上传图片</p>
-                  <n-progress
-                    type="line"
-                    :percentage="percentage"
-                    :show-indicator="false"
-                    :color="{ stops: ['white', 'pink'] }"
-                  />
-                  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">支持 JPG, PNG,TIFF 等格式</p>
+                  <p class="mt-4 text-lg font-medium upload-text">
+                    点击上传图片
+                  </p>
+                  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    支持 JPG, PNG,TIFF 等格式
+                  </p>
                 </div>
               </div>
             </n-upload-dragger>
+            <div v-else class="h-full w-full image-container relative">
+              <img :src="imageUrl" alt="Uploaded Image" class="w-full h-full object-contain">
+              
+              <!-- Overlay during upload -->
+              <div v-if="isUploading" class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center">
+                <p class="text-white text-lg mb-4">
+                  正在上传图片...
+                </p>
+                <n-progress 
+                  type="line" 
+                  :percentage="percentage" 
+                  :show-indicator="true"
+                  status="success"
+                  :processing="true"
+                  class="w-3/4 max-w-md"
+                />
+              </div>
+              
+              <n-button
+                v-if="!isUploading"
+                type="error"
+                size="small"
+                circle
+                class="absolute top-4 right-4 bg-white bg-opacity-80 hover:bg-opacity-100 transition-all"
+                @click="imageUrl = null"
+              >
+                <template #icon>
+                  <n-icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
+                  </n-icon>
+                </template>
+              </n-button>
+            </div>
           </n-upload>
-          <div v-else class="h-full w-full image-container relative">
-            <img :src="imageUrl" alt="Uploaded Image" class="w-full h-full object-contain" />
-            <n-button
-              type="error"
-              size="small"
-              circle
-              class="absolute top-4 right-4 bg-white bg-opacity-80 hover:bg-opacity-100 transition-all"
-              @click="imageUrl = null"
-            >
-              <template #icon>
-                <n-icon>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                    />
-                  </svg>
-                </n-icon>
-              </template>
-            </n-button>
-          </div>
         </div>
       </template>
 
@@ -87,8 +101,8 @@
               :options="options"
               class="task-select"
               size="large"
-              @update:value="selectUpdate"
               placeholder="请选择或输入识别任务类型"
+              @update:value="selectUpdate"
             />
           </div>
 
@@ -129,8 +143,12 @@
                   />
                 </svg>
               </n-icon>
-              <p style="font-size: 18px" class="font-medium mb-2">开始您的图像识别</p>
-              <p style="font-size: 14px" class="max-w-md">请点击左侧面板上传图片，并选择您需要的图像识别任务</p>
+              <p style="font-size: 18px" class="font-medium mb-2">
+                开始您的图像识别
+              </p>
+              <p style="font-size: 14px" class="max-w-md">
+                请点击左侧面板上传图片，并选择您需要的图像识别任务
+              </p>
             </div>
           </div>
 
@@ -159,9 +177,13 @@ import {
   NCard,
   NIcon,
   NLayoutContent,
+  NProgress,
   NSelect,
   NSpace,
   NSplit,
+  NText,
+  NUpload,
+  NUploadDragger,
   UploadCustomRequestOptions,
   UploadFileInfo,
   useThemeVars,
@@ -204,6 +226,7 @@ const convHistory = computed<BaseConversationHistory | null>(() => {
 });
 
 const percentage = ref(0);
+const isUploading = ref(false);
 const acceptedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/tiff'];
 const isSupportedImage = (file: File) => {
   return acceptedMimeTypes.includes(file.type);
@@ -236,14 +259,20 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
       return;
     }
 
-    onProgress({ percent: 0 });
+    // 先显示预览图片
+    const reader = new FileReader();
+    reader.onload = () => {
+      imageUrl.value = reader.result as string;
+      isUploading.value = true; // 开始上传，显示蒙版
+      percentage.value = 0; // 重置进度条
+    };
+    reader.readAsDataURL(rawFile);
 
     // 创建FormData对象
     const formData = new FormData();
     formData.append('images', rawFile);
 
     // 发送到新的上传接口
-    percentage.value = 0; // 重置进度条
     const response = await axios.post('/chat/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -271,8 +300,10 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
 
     // 文件上传成功完成
     Message.success('文件 {[file.name]} 上传成功');
+    isUploading.value = false; // 上传完成，隐藏蒙版
     onFinish();
   } catch (error) {
+    isUploading.value = false; // 上传失败，隐藏蒙版
     Message.error(
       '文件 {[file.name]} 上传失败' + `: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
       { duration: 5 * 1000 }
@@ -316,22 +347,6 @@ const currentActiveMessages = computed<Array<BaseChatMessage>>(() => {
   return result;
 });
 const imageUrl = ref<string | null>(null);
-const triggerFileInput = () => {
-  const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-  fileInput?.click();
-};
-const handleFileChange = (event: Event) => {
-  const fileInput = event.target as HTMLInputElement;
-  if (fileInput?.files?.[0]) {
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      imageUrl.value = reader.result as string;
-    };
-    reader.readAsDataURL(file); // 读取文件并转换为 Data URL 以便显示图片
-  }
-};
 
 const multipleSelectValue = ref<string[]>([]);
 const currentConversationId = ref<string | null>(props._currentConversationId || null);
