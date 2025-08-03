@@ -26,6 +26,7 @@
               itemDisabledOpacity: '1',
             }"
             :disabled="!isCurrentNewConversation && imageUrl"
+            :max="1"
           >
             <n-upload-dragger v-if="!imageUrl" class="h-full" :disabled="!isCurrentNewConversation && imageUrl">
               <div class="w-full h-full flex justify-center items-center cursor-pointer">
