@@ -1,4 +1,4 @@
-import { getFileDownloadUrlApi, getInterpreterSandboxFileDownloadUrlApi } from '@/api/conv';
+import { getInterpreterSandboxFileDownloadUrlApi } from '@/api/conv';
 import { i18n } from '@/i18n';
 import {
   BaseChatMessage,
@@ -23,7 +23,7 @@ export function determineMessageType(group: BaseChatMessage[]): DisplayItemType 
   const textOrMultimodal = (message: BaseChatMessage) => {
     if (message.content?.content_type == 'text') {
       return 'text';
-    } else if (message.content?.content_type == 'multimodal_text') {
+    } else if (typeof message.content == 'object') {
       return 'multimodal_text';
     }
     return null;
@@ -72,7 +72,7 @@ export function buildTemporaryMessage(
   if (openaiWebMultimodalImageParts) {
     result.content = {
       content_type: 'multimodal_text',
-      parts: [...openaiWebMultimodalImageParts, textContent],
+      parts: [textContent, ...openaiWebMultimodalImageParts],
     } as OpenaiWebChatMessageMultimodalTextContent;
   }
   return result;
@@ -177,15 +177,4 @@ export function processSandboxLinks(contentDiv: HTMLDivElement, conversationId: 
     const clickHandler = getSandboxLinkClickHandler(conversationId, messages);
     link.addEventListener('click', clickHandler);
   });
-}
-
-export async function getImageDownloadUrlFromFileServiceSchemaUrl(url: string | undefined | null) {
-  if (!url || !url.startsWith('file-service://')) return null;
-  try {
-    const response = await getFileDownloadUrlApi(url.split('file-service://')[1]);
-    return response.data;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
 }

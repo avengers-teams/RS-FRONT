@@ -51,7 +51,7 @@ export function assignConversationToUserApi(conversation_id: string, username: s
 }
 
 export function getFileDownloadUrlApi(file_id: string) {
-  return axios.get<string>(`/files/${file_id}/download-url`);
+  return axios.get<string>(`/chat/download/${file_id}`);
 }
 
 export function getInterpreterSandboxFileDownloadUrlApi(

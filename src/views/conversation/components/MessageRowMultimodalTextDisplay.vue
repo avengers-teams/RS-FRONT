@@ -1,13 +1,13 @@
 <template>
-  <div class="mt-3">
+  <div v-if="appStore.currentTaskType !== 2" class="mt-3">
     <!-- 单张图片 -->
     <n-image
       v-if="imageInfos.length == 1"
       class="max-w-sm sm:max-w-md lg:max-w-lg w-full h-auto overflow-hidden rounded-md"
       :src="imageInfos[0].url"
       lazy
-      :width="imageInfos[0].data.width || 100"
-      :height="imageInfos[0].data.height || 100"
+      :width="100"
+      :height="100"
       :img-props="{
         alt: 'Uploaded Image',
         class: 'max-w-full h-auto transition-opacity duration-300 opacity-100',
@@ -62,11 +62,11 @@ import { computed, onMounted, ref } from 'vue';
 
 import { useAppStore } from '@/store';
 import { BaseChatMessage, OpenaiWebChatMessageMultimodalTextContentImagePart } from '@/types/schema';
-import { dompurifyRenderedHtml, getContentRawText, getMultimodalContentImageParts } from '@/utils/chat';
+import { dompurifyRenderedHtml, getContentRawText } from '@/utils/chat';
 import md from '@/utils/markdown';
 
 import { bindOnclick, processPreTags } from '../utils/codeblock';
-import { getImageDownloadUrlFromFileServiceSchemaUrl, processCitations, processSandboxLinks } from '../utils/message';
+import { processCitations, processSandboxLinks } from '../utils/message';
 
 const appStore = useAppStore();
 const contentRef = ref<HTMLDivElement>();
@@ -76,6 +76,7 @@ const props = defineProps<{
   messages: BaseChatMessage[];
   renderMarkdown: boolean;
 }>();
+console.log(props.messages);
 
 const content = computed(() => {
   if (props.messages.length > 1) {
@@ -92,30 +93,30 @@ const renderedContent = computed(() => {
   return processPreTags(result, appStore.preference.codeAutoWrap);
 });
 
-type ImageInfo = {
-  url: string;
-  data: OpenaiWebChatMessageMultimodalTextContentImagePart;
-};
-
-const imageInfos = ref<ImageInfo[]>([]);
-
-async function fetchImageUrls() {
-  const result = [] as ImageInfo[];
-  const parts = getMultimodalContentImageParts(props.messages[0]);
-  for (const imagePart of parts) {
-    const url = await getImageDownloadUrlFromFileServiceSchemaUrl(imagePart.asset_pointer);
-    if (url) {
-      result.push({
-        data: imagePart,
-        url,
+const imageInfos = computed(() => {
+  if (props.messages[0].content.parts) {
+    return props.messages[0].content.parts
+      ?.filter((p: any) => typeof p !== 'string')
+      .map((p) => {
+        return {
+          url: '/api/upload/' + p.hash_name + p.file_suffix,
+          data: p,
+        };
       });
-    }
   }
-  imageInfos.value = result;
-}
-
-fetchImageUrls().then();
-
+  return (
+    props.messages[0].content
+      ?.filter((part: any) => part.content_type === 'image_url' && part.image_url !== '')
+      .map((part: any) => {
+        const url = '/api/upload/' + part.image_url;
+        return {
+          url,
+          data: part,
+        };
+      }) || []
+  );
+});
+console.log(imageInfos);
 let observer = null;
 onMounted(() => {
   if (!contentRef.value) return;

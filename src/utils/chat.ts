@@ -3,10 +3,8 @@ import DOMPurify from 'dompurify';
 import {
   BaseChatMessage,
   BaseConversationHistory,
-  OpenaiApiChatMessageTextContent,
   OpenaiWebChatMessageMultimodalTextContent,
   OpenaiWebChatMessageMultimodalTextContentImagePart,
-  OpenaiWebChatMessageTextContent,
 } from '@/types/schema';
 
 export const taskTypeMap: Record<string, string> = {
@@ -19,19 +17,16 @@ export const taskTypeMap: Record<string, string> = {
 
 export const getContentRawText = (message: BaseChatMessage | null): string => {
   if (!message || !message.content) return '';
-  if (message.content.content_type == 'text') {
-    if (message.content.content_type == 'text') {
-      const content = message.content as OpenaiWebChatMessageTextContent | OpenaiApiChatMessageTextContent;
-      return content.parts ? content.parts[0] : content.text || '';
-    }
-  } else if (message.content.content_type == 'multimodal_text') {
-    const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
-    for (const part of content.parts!) {
-      if (typeof part == 'string') return part;
+  if (message.content.content_type) {
+    const content = message.content;
+    return content.parts ? content.parts[0] : content.text || '';
+  } else {
+    const content = message.content;
+    for (const part of content) {
+      if (part.content_type == 'text') return part.text;
     }
     return '';
   }
-  return `${message.content}`;
 };
 
 export const getMultimodalContentImageParts = (

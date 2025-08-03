@@ -230,18 +230,7 @@ const sendMsg = async () => {
   // 处理 gpt-4 图片
   let multimodalImages = null;
 
-  multimodalImages = fileStore.uploadedFileInfos
-    .filter((info) => info.openai_web_info && info.openai_web_info.file_id && info.content_type?.startsWith('image/'))
-    .map((info) => {
-      const fileId = info.openai_web_info!.file_id!;
-      const { width, height } = info.extra_info || {};
-      return {
-        asset_pointer: `file-service://${fileId}`,
-        width,
-        height,
-        size_bytes: info.size,
-      } as OpenaiWebChatMessageMultimodalTextContentImagePart;
-    });
+  multimodalImages = fileStore.uploadedFileInfos;
 
   // 使用临时的随机 id 保持当前更新的两个消息
   if (text == ':continue') {

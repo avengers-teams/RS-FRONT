@@ -65,11 +65,10 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   (e: 'update:can-continue', value: boolean): void;
+  (e: 'update:img', value: string): void;
 }>();
 
 const contentRef = ref();
-const historyContentParent = ref<HTMLElement>();
-const _fullscreen = ref(false);
 
 const convHistory = computed<BaseConversationHistory | null>(() => {
   const conversationId = props.conversationId;
@@ -94,6 +93,14 @@ const rawMessages = computed<BaseChatMessage[]>(() => {
 const filteredMessages = computed<BaseChatMessage[]>(() => {
   return rawMessages.value
     ? rawMessages.value.filter((message) => {
+        if (message.content.length > 1) {
+          for (const msg of message.content) {
+            if (msg.content_type === 'image_url') {
+              emits('update:img', '/api/upload/' + msg.image_url);
+              return true;
+            }
+          }
+        }
         if (message.role == 'system') return false;
         return true;
       })
