@@ -137,11 +137,7 @@
                   :conversation-id="currentConversationId"
                   :extra-messages="currentActiveMessages"
                   :fullscreen="false"
-                  @update:img="
-                    (url) => {
-                      imageUrl = url;
-                    }
-                  "
+                  @update:img="handleUpdateImg"
                   :show-tips="showFullscreenTips"
                   :loading="loadingHistory"
                 />
@@ -256,14 +252,19 @@ const isTiff = (buffer) => {
   return (view[0] === 0x49 && view[1] === 0x49) || (view[0] === 0x4d && view[1] === 0x4d);
 };
 
-// 使用 tiff.js 解析 TIFF 文件
-const processTiffImage = async (buffer) => {
-  Tiff.initialize({ TOTAL_MEMORY: 16777216 * 10 });
-  const tiff = new Tiff({ buffer: buffer });
-  const canvas = tiff.toCanvas();
-  const base64Data = canvas.toDataURL('image/png');
-  tiff.close();
-  return base64Data;
+const processTiffImage = (buffer: ArrayBuffer, pageIndex = 0) => {
+  const tiff = new Tiff({ buffer });
+  try {
+    const pages = tiff.countDirectory ? tiff.countDirectory() : 1;
+    if (pages > 1 && pageIndex >= 0 && pageIndex < pages) {
+      tiff.setDirectory(pageIndex);
+    }
+    const canvas: HTMLCanvasElement = tiff.toCanvas();
+    const base64Data = canvas.toDataURL('image/png'); // 生成可放到 <img> 的 dataURL
+    return base64Data;
+  } finally {
+    tiff.close?.();
+  }
 };
 
 const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
@@ -281,20 +282,21 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     }
     // 如果是 TIFF 文件，使用 tiff.js 解析并预览
     const buffer = await rawFile.arrayBuffer();
-    if (isTiff(buffer)) {
-      // 使用 tiff.js 解析 TIFF 文件
-      const base64Data = await processTiffImage(buffer);
-      imageUrl.value = base64Data; // 显示预览
-    } else {
-      // 先显示预览图片
-      const reader = new FileReader();
-      reader.onload = () => {
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (isTiff(buffer)) {
+        // 使用 tiff.js 解析 TIFF 文件
+        const base64Data = processTiffImage(buffer);
+        imageUrl.value = base64Data; // 显示预览
+      } else {
+        // 先显示预览图片
         imageUrl.value = reader.result as string;
-        isUploading.value = true; // 开始上传，显示蒙版
-        percentage.value = 0; // 重置进度条
-      };
-      reader.readAsDataURL(rawFile);
-    }
+      }
+      isUploading.value = true; // 开始上传，显示蒙版
+      percentage.value = 0; // 重置进度条
+    };
+    reader.readAsDataURL(rawFile);
 
     // 创建FormData对象
     const formData = new FormData();
@@ -338,6 +340,31 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     );
     console.error(error);
     onError();
+  }
+};
+// 建议用 axios，因为你项目里已经在用，并且可能要带 cookie / baseURL
+
+const handleUpdateImg = async (url?: string | null) => {
+  if (!url) {
+    imageUrl.value = null;
+    return;
+  }
+
+  if (/\.tiff?(?:$|\?|#)/i.test(url)) {
+    try {
+      console.log(url);
+      const resp = await fetch(url, { credentials: 'include' }); // 需要带 cookie 就加这个
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      console.log(resp.status);
+      const buffer = await resp.arrayBuffer();
+      const base64Data = processTiffImage(buffer);
+      imageUrl.value = base64Data;
+    } catch (e: any) {
+      Message.error(`TIFF 加载失败：${e?.message || e}`);
+      imageUrl.value = null;
+    }
+  } else {
+    imageUrl.value = url;
   }
 };
 
