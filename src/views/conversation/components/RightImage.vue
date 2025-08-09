@@ -253,6 +253,7 @@ const isTiff = (buffer) => {
 };
 
 const processTiffImage = (buffer: ArrayBuffer, pageIndex = 0) => {
+  Tiff.initialize({ TOTAL_MEMORY: 16777216 * 10 });
   const tiff = new Tiff({ buffer });
   try {
     const pages = tiff.countDirectory ? tiff.countDirectory() : 1;
@@ -285,6 +286,8 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
 
     const reader = new FileReader();
     reader.onload = () => {
+      isUploading.value = true; // 开始上传，显示蒙版
+      percentage.value = 0; // 重置进度条
       if (isTiff(buffer)) {
         // 使用 tiff.js 解析 TIFF 文件
         const base64Data = processTiffImage(buffer);
