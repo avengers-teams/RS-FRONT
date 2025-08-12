@@ -268,83 +268,96 @@ const processTiffImage = (buffer: ArrayBuffer, pageIndex = 0) => {
   }
 };
 
-const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
-  console.log('customRequest', file);
-  try {
-    if (!file.file) {
-      throw new Error('Failed to get the file.');
-    }
+// ==== 新增：常量 ====
+const TIFF_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
+// 1x1 透明 PNG：让 imageUrl 有值，从而显示“上传中”蒙版和进度条
+const TRANSPARENT_PX =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==';
 
+// /temp 下的缩略图 URL 生成（根据你们后端路径改）
+const buildTempThumbUrl = (hashName: string) => `/api/temp/${hashName}.png`;
+
+// ==== 改造后的上传函数 ====
+const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCustomRequestOptions) => {
+  try {
+    if (!file.file) throw new Error('Failed to get the file.');
     const rawFile = file.file as File;
-    if (!isSupportedImage(rawFile)) {
+
+    // 类型校验
+    const isOkType = acceptedMimeTypes.includes(rawFile.type) || /\.tiff?$/i.test(rawFile.name);
+    if (!isOkType) {
       Message.warning(`${[file.name]}unsupportedImageFormat`);
       onError();
       return;
     }
-    // 如果是 TIFF 文件，使用 tiff.js 解析并预览
-    const buffer = await rawFile.arrayBuffer();
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      isUploading.value = true; // 开始上传，显示蒙版
-      percentage.value = 0; // 重置进度条
-      if (isTiff(buffer)) {
-        // 使用 tiff.js 解析 TIFF 文件
-        const base64Data = processTiffImage(buffer);
-        imageUrl.value = base64Data; // 显示预览
-      } else {
-        // 先显示预览图片
-        imageUrl.value = reader.result as string;
-      }
-      isUploading.value = true; // 开始上传，显示蒙版
-      percentage.value = 0; // 重置进度条
-    };
-    reader.readAsDataURL(rawFile);
+    // 是否为“大”TIFF：>5MB
+    const isTiffMime = rawFile.type === 'image/tiff' || rawFile.type === 'image/tif' || /\.tiff?$/i.test(rawFile.name);
+    const isHeavyTiff = isTiffMime && rawFile.size > TIFF_SIZE_LIMIT;
 
-    // 创建FormData对象
+    // 预览阶段
+    if (isHeavyTiff) {
+      // 不做 tiff.js 转换，直接显示“上传中”蒙版（用透明占位图撑起容器）
+      imageUrl.value = TRANSPARENT_PX;
+      isUploading.value = true;
+      percentage.value = 0;
+    } else {
+      // 原有小图/非TIFF 预览逻辑
+      const buffer = await rawFile.arrayBuffer();
+      const reader = new FileReader();
+      reader.onload = () => {
+        isUploading.value = true;
+        percentage.value = 0;
+        if (isTiff(buffer)) {
+          const base64Data = processTiffImage(buffer);
+          imageUrl.value = base64Data;
+        } else {
+          imageUrl.value = reader.result as string;
+        }
+      };
+      reader.readAsDataURL(rawFile);
+    }
+
+    // 上传阶段
     const formData = new FormData();
     formData.append('images', rawFile);
 
-    // 发送到新的上传接口
     const response = await axios.post('/chat/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: (progressEvent) => {
-        if (progressEvent.total) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (e) => {
+        if (e.total) {
+          const percentCompleted = Math.round((e.loaded * 100) / e.total);
           onProgress({ percent: percentCompleted });
-          percentage.value = percentCompleted; // 更新进度条
+          percentage.value = percentCompleted;
         }
       },
     });
+    if (response.status !== 200) throw new Error('Failed to upload the file.');
 
-    if (response.status !== 200) {
-      throw new Error('Failed to upload the file.');
-    }
-
-    // 假设后端返回的是一个文件信息数组，我们取第一个
+    // 假设后端返回的数组第一项包含 hash_name
     const uploadedFileInfo = response.data[0];
-
-    // 存储上传的文件信息
     fileStore.uploadedFileInfos = [...fileStore.uploadedFileInfos, uploadedFileInfo];
     fileStore.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.hash_name;
-    console.log(fileStore.uploadedFileInfos);
 
-    // 文件上传成功完成
+    // ⭐ 关键：直接用 /temp/${hash_name}.png 作为缩略图
+    const thumbUrl = buildTempThumbUrl(uploadedFileInfo.hash_name);
+    // 加时间戳避免缓存
+    imageUrl.value = `${thumbUrl}?ts=${Date.now()}`;
+
     Message.success(`文件 ${[file.name]} 上传成功`);
-    isUploading.value = false; // 上传完成，隐藏蒙版
     onFinish();
   } catch (error) {
-    isUploading.value = false; // 上传失败，隐藏蒙版
     Message.error(
       `文件 ${[file.name]} 上传失败` + `: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
       { duration: 5 * 1000 }
     );
     console.error(error);
     onError();
+  } finally {
+    isUploading.value = false; // 结束上传，关闭蒙版
   }
 };
+
 // 建议用 axios，因为你项目里已经在用，并且可能要带 cookie / baseURL
 
 const handleUpdateImg = async (url?: string | null) => {
