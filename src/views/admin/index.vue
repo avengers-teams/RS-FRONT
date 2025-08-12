@@ -53,7 +53,7 @@ const menuOptions = [
   },
   {
     label: '一键验证',
-    key: 'oneclickVerification',
+    key: 'oneClickVerification',
     icon: renderIcon(SupervisedUserCircleRound),
   },
 ];

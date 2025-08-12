@@ -9,8 +9,8 @@ enum ApiUrl {
   AllConversation = '/conv/all',
   UserList = '/user',
 
-  FilesLocalUpload = '/chat/upload',
-  FilesLocalDownload = '/chat/download',
+  VerifyLog = '/verify/log',
+  VerifyLogFiles = '/verify/log_files',
 }
 
 export default ApiUrl;

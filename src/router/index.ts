@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
 import createRouteGuard from './guard';
 
 const router = createRouter({
@@ -65,8 +66,8 @@ const router = createRouter({
           component: () => import('@/views/admin/pages/conversation_manager.vue'),
         },
         {
-          path: 'user',
-          name: 'oneclickVerification',
+          path: 'verification',
+          name: 'oneClickVerification',
           component: () => import('@/views/admin/pages/log_viewer.vue'),
         },
       ],

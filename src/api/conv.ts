@@ -50,10 +50,6 @@ export function assignConversationToUserApi(conversation_id: string, username: s
   return axios.patch(`${ApiUrl.Conversation}/${conversation_id}/assign/${username}`);
 }
 
-export function getFileDownloadUrlApi(file_id: string) {
-  return axios.get<string>(`/chat/download/${file_id}`);
-}
-
 export function getInterpreterSandboxFileDownloadUrlApi(
   conversation_id: string,
   message_id: string,
