@@ -64,6 +64,11 @@ const router = createRouter({
           name: 'conversationManagement',
           component: () => import('@/views/admin/pages/conversation_manager.vue'),
         },
+        {
+          path: 'user',
+          name: 'oneclickVerification',
+          component: () => import('@/views/admin/pages/log_viewer.vue'),
+        },
       ],
     },
     {

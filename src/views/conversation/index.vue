@@ -39,14 +39,18 @@
 import { useStorage } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 
-import { useAppStore, useConversationStore } from '@/store';
+import { useAppStore, useConversationStore, useFileStore } from '@/store';
 import { NewConversationInfo } from '@/types/custom';
 import { popupNewConversationDialog } from '@/utils/renders';
 import { LoadingBar } from '@/utils/tips';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
 import RightImage from '@/views/conversation/components/RightImage.vue';
+
+const fileStore = useFileStore();
+
 const handleEvent = (data: any) => {
+  fileStore.clear();
   conversationStore.createNewConversation({
     title: '新任务',
     task_type: data,
@@ -82,6 +86,7 @@ const updateConvId = (new_id: any) => {
 const handleChangeConversation = (key: string | null) => {
   // TODO: 清除当前已询问、得到回复，但是发生错误的两条消息
   if (loadingAsk.value || !key) return;
+  fileStore.clear();
   loadingAsk.value = true;
   loadingHistory.value = true;
   LoadingBar.start();

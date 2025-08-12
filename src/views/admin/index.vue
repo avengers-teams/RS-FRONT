@@ -42,14 +42,19 @@ function renderIcon(icon: any) {
 
 const menuOptions = [
   {
-    label: t('commons.userManagement'),
+    label: '用户管理',
     key: 'userManagement',
     icon: renderIcon(SupervisedUserCircleRound),
   },
   {
-    label: t('commons.conversationManagement'),
+    label: '会话管理',
     key: 'conversationManagement',
     icon: renderIcon(ChatbubbleEllipses),
+  },
+  {
+    label: '一键验证',
+    key: 'oneclickVerification',
+    icon: renderIcon(SupervisedUserCircleRound),
   },
 ];
 

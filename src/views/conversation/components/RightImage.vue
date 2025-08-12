@@ -439,6 +439,7 @@ watch(props, () => {
 });
 watch(currentConversationId, (newVal, _oldVal) => {
   emit('update', currentConversationId.value);
+  imageUrl.value = null;
   if (newVal != 'new_conversation') {
     handleChangeConversation(newVal);
   }
