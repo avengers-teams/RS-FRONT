@@ -365,23 +365,9 @@ const handleUpdateImg = async (url?: string | null) => {
     imageUrl.value = null;
     return;
   }
-
-  if (/\.tiff?(?:$|\?|#)/i.test(url)) {
-    try {
-      console.log(url);
-      const resp = await fetch(url, { credentials: 'include' }); // 需要带 cookie 就加这个
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      console.log(resp.status);
-      const buffer = await resp.arrayBuffer();
-      const base64Data = processTiffImage(buffer);
-      imageUrl.value = base64Data;
-    } catch (e: any) {
-      Message.error(`TIFF 加载失败：${e?.message || e}`);
-      imageUrl.value = null;
-    }
-  } else {
-    imageUrl.value = url;
-  }
+  var regex = /(\.[^.]+)$/;
+  var newFileName = url.replace(regex, '');
+  imageUrl.value = newFileName + '.png';
 };
 
 const themeVars = useThemeVars();

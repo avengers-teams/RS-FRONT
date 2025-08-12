@@ -96,7 +96,7 @@ const filteredMessages = computed<BaseChatMessage[]>(() => {
         if (message.content.length > 1) {
           for (const msg of message.content) {
             if (msg.content_type === 'image_url') {
-              emits('update:img', '/api/upload/' + msg.image_url);
+              emits('update:img', '/api/temp/' + msg.image_url);
               return true;
             }
           }
