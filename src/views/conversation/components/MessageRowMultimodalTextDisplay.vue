@@ -99,7 +99,7 @@ const imageInfos = computed(() => {
       ?.filter((p: any) => typeof p !== 'string')
       .map((p) => {
         return {
-          url: '/api/upload/' + p.hash_name + p.file_suffix,
+          url: '/api/temp/' + p.hash_name + '.png',
           data: p,
         };
       });
@@ -108,7 +108,9 @@ const imageInfos = computed(() => {
     props.messages[0].content
       ?.filter((part: any) => part.content_type === 'image_url' && part.image_url !== '')
       .map((part: any) => {
-        const url = '/api/upload/' + part.image_url;
+        var regex = /(\.[^.]+)$/;
+        var newFileName = part.image_url.replace(regex, '');
+        const url = '/api/temp/' + newFileName + '.png';
         return {
           url,
           data: part,
