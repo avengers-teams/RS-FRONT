@@ -12,7 +12,7 @@
       >
         <n-button>上传数据集</n-button>
       </n-upload>
-      <n-button type="primary" @click="loadLogs">新建测试任务</n-button>
+      <n-button type="primary" @click="newverifytask">新建测试任务</n-button>
     </div>
     <div class="flex flex-col">
       <!-- 设置 -->
@@ -57,6 +57,8 @@ import { nextTick, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getVerifyLogApi, getVerifyLogFilesApi } from '@/api/verify';
+
+// const  newverifytask=
 
 const { t } = useI18n();
 

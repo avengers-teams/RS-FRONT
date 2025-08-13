@@ -36,7 +36,7 @@ interface ConversationState {
 }
 
 interface FileState {
-  uploadedFileInfos: UploadedFileInfoSchema[];
+  uploadedFileInfos: any;
   naiveUiUploadFileInfos: UploadFileInfo[];
   naiveUiFileIdToServerFileIdMap: Record<string, string>;
 }
