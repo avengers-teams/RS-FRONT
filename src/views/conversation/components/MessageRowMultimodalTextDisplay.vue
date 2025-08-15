@@ -76,7 +76,6 @@ const props = defineProps<{
   messages: BaseChatMessage[];
   renderMarkdown: boolean;
 }>();
-console.log(props.messages);
 
 const content = computed(() => {
   if (props.messages.length > 1) {
@@ -118,7 +117,6 @@ const imageInfos = computed(() => {
       }) || []
   );
 });
-console.log(imageInfos);
 let observer = null;
 onMounted(() => {
   if (!contentRef.value) return;
