@@ -72,6 +72,8 @@ const contentRef = ref();
 
 const convHistory = computed<BaseConversationHistory | null>(() => {
   const conversationId = props.conversationId;
+  console.log(conversationId);
+
   if (!conversationId) return null;
   return conversationStore.conversationHistoryMap[conversationId];
 });

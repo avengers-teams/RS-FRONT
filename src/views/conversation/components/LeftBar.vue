@@ -98,7 +98,7 @@ const menuOptions = computed<MenuOption[]>(() => {
     });
   const results = sorted_conversations?.map((conversation: BaseConversationSchema) => {
     return {
-      label: () => h(NEllipsis, null, { default: () => conversation.title || 'New Task' }),
+      label: () => h(NEllipsis, null, { default: () => conversation.title || '新任务' }),
       key: conversation.conversation_id,
       disabled: props.loading == true,
       icon: () => h(LkAvatar, { size: 20, class: 'opacity-80' }, { default: () => null }),

@@ -27,7 +27,6 @@ const props = defineProps<{
 const content = computed(() => {
   return getTextMessageContent(props.messages);
 });
-console.log('content', content.value);
 const renderedContent = computed(() => {
   if (!props.renderMarkdown) {
     return content.value;
@@ -36,7 +35,6 @@ const renderedContent = computed(() => {
   const result = dompurifyRenderedHtml(md.render(content.value || ''));
   return processPreTags(result, appStore.preference.codeAutoWrap);
 });
-console.log('renderedContent', renderedContent.value);
 
 let observer = null;
 onMounted(() => {

@@ -217,6 +217,7 @@ const loadingHistory = ref<boolean>(false);
 const conversationStore = useConversationStore();
 const convHistory = computed<BaseConversationHistory | null>(() => {
   const conversationId = props._currentConversationId;
+  console.log(conversationId);
   if (!conversationId) return null;
   return conversationStore.conversationHistoryMap[conversationId];
 });
