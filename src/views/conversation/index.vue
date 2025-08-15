@@ -46,6 +46,7 @@ import { LoadingBar } from '@/utils/tips';
 import LeftBar from '@/views/conversation/components/LeftBar.vue';
 import RightConversation from '@/views/conversation/components/RightConversation.vue';
 import RightImage from '@/views/conversation/components/RightImage.vue';
+import { taskTypeMap } from '@/utils/chat';
 
 const fileStore = useFileStore();
 
@@ -110,6 +111,7 @@ const makeNewTask = () => {
   if (hasNewConversation.value) return;
   popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
     console.log('makeNewConversation', newConversationInfo);
+    newConversationInfo.title = newConversationInfo.title || `新任务(${taskTypeMap[newConversationInfo.task_type]})`;
     conversationStore.createNewConversation(newConversationInfo);
     currentConversationId.value = conversationStore.newConversation!.conversation_id!;
     hasNewConversation.value = true;
