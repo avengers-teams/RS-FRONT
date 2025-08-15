@@ -47,10 +47,7 @@ const sendKeyOptions = [
   { label: 'Ctrl+Enter', value: 'Ctrl+Enter' },
 ];
 
-const languageOptions = [
-  { label: '简体中文', value: 'zh-CN' },
-  { label: 'English', value: 'en-US' },
-];
+const languageOptions = [{ label: '简体中文', value: 'zh-CN' }];
 
 const emit = defineEmits(['update:value']);
 
