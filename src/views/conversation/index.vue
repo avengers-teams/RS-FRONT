@@ -53,7 +53,7 @@ const fileStore = useFileStore();
 const handleEvent = (data: any) => {
   fileStore.clear();
   conversationStore.createNewConversation({
-    title: '新任务',
+    title: `新任务(${taskTypeMap[data]})`,
     task_type: data,
   } as NewConversationInfo);
   currentConversationId.value = conversationStore.newConversation!.conversation_id!;
