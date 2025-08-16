@@ -18,33 +18,6 @@ function setUniqueItemsForEnumProperties(obj: any) {
   }
 }
 
-/**
-   pydantic V2 会将 optional 的字段转换为 anyOf，例如：
-   "valid_until": {
-      "anyOf": [
-        {
-          "type": "string",
-          "format": "date-time"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Valid Until"
-    }
-  见：https://github.com/pydantic/pydantic/issues/7161
-  这显然不是我们想要的，它会让 form 中出现一个选择性下拉框。应当去除这一层 anyOf。
-  具体来说：遍历 properties 中的字段. 假如一个字段：
-    1. 在 required 中没有出现
-    2. 具有 anyOf，且 anyOf 中有一个 type 为 null
-  那么，去除 anyOf，将 type 设置为原本的 type。
-  在上面的情况下，就应该转换为：
-  "valid_until": {
-    "type": "string",
-    "format": "date-time",
-    "title": "Valid Until"
-  }
-*/
 function fixModelOptionalTypeAnyOf(model: any) {
   if (model['properties'] == undefined) {
     return;
