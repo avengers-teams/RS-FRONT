@@ -12,16 +12,16 @@ type ListAttr<T> = {
 // 用于 UserProfile，复用了一部分 user_manager 代码
 export function getUserAttrColumns(): ListAttr<UserRead>[] {
   return [
-    { title: '#', key: 'id' },
-    { title: t('commons.username'), key: 'username' },
-    { title: t('commons.email'), key: 'email' },
-    { title: t('commons.nickname'), key: 'nickname' },
+    { title: 'id', key: 'id' },
+    { title: '用户名', key: 'username' },
+    { title: '邮箱', key: 'email' },
+    { title: '昵称', key: 'nickname' },
 
     {
-      title: t('labels.last_active_time'),
+      title: '最后活动时间',
       key: 'last_active_time',
       render(row) {
-        return row.last_active_time ? new Date(row.last_active_time).toLocaleString() : t('commons.neverActive');
+        return row.last_active_time ? new Date(row.last_active_time).toLocaleString() : '从未活动';
       },
     },
   ];

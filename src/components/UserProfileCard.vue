@@ -30,7 +30,7 @@ const translateKey = (key: string) => {
   if (['id', 'username', 'email'].includes(key)) {
     return key;
   }
-  return t(`labels.${key}`);
+  return key;
 };
 
 const items = computed(() => {
@@ -47,7 +47,7 @@ const items = computed(() => {
     if (typeof value === 'string') {
       value = h('div', null, { default: () => value });
     }
-    return { title: translateKey(column.key), value: value as VNode };
+    return { title: column.title, value: value as VNode };
   });
 });
 </script>
