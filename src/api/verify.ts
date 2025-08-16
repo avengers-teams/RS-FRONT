@@ -19,3 +19,7 @@ export function getVerifyLogApi(options: any) {
 export function getVerifyTreeApi(params: GetVerifyTreeParams) {
   return axios.get(ApiUrl.VerifyUnpackedTree, { params });
 }
+
+export function runVerifyApi(options: any) {
+  return axios.post(ApiUrl.VerifyRun, options);
+}

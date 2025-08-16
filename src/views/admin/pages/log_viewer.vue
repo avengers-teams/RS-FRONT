@@ -19,11 +19,11 @@
       <div class="flex flex-row mt-3 justify-between">
         <div class="flex flex-wrap flex-row sm:space-x-3">
           <div class="option-item">
-            <n-text>{{ t('commons.maxLineCount') }}</n-text>
+            <n-text>行数</n-text>
             <n-input-number v-model:value="maxLineCount" size="small" class="w-27" :min="100" :max="2000" :step="100" />
           </div>
           <div class="option-item">
-            <n-text>{{ t('commons.updateInterval') }}</n-text>
+            <n-text>刷新间隔</n-text>
             <n-select
               v-model:value="refresh_duration"
               size="small"
@@ -41,7 +41,7 @@
           </div>
         </div>
         <div class="flex items-center space-x-2">
-          <n-text>{{ t('commons.autoScrolling') }}</n-text>
+          <n-text>自动滚动</n-text>
           <n-switch v-model:value="enableAutoScroll" size="small" />
         </div>
       </div>
@@ -54,22 +54,15 @@
 
 <script setup lang="ts">
 import { nextTick, onUnmounted, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
 
-import { getVerifyLogApi, getVerifyLogFilesApi } from '@/api/verify';
+import { getVerifyLogApi, getVerifyLogFilesApi, runVerifyApi } from '@/api/verify';
+import { NewVerificationInfo } from '@/types/custom';
 import { popupNewVerifyDialog } from '@/utils/renders';
 
-// const  newverifytask=
-
-const { t } = useI18n();
-
 const refresh_duration = ref(5);
-const tab = ref<string>('server');
 const logsContent = ref<Array<string>>();
 const enableAutoScroll = ref(true);
 const maxLineCount = ref(100);
-const proxyExcludeKeywords = ref<Array<string>>([]);
-const serverExcludeKeywords = ref<Array<string>>(['status', 'logs']);
 
 const logInstRef = ref();
 const logFileOptions = ref();
@@ -77,12 +70,7 @@ getVerifyLogFilesApi().then((res) => {
   logFileOptions.value = res.data;
 });
 const logFile = ref();
-watch(
-  () => tab.value,
-  () => {
-    loadLogs();
-  }
-);
+
 watch(
   () => maxLineCount.value,
   () => {
@@ -97,23 +85,25 @@ const scrollToBottom = () => {
 };
 
 const loadLogs = () => {
-  if (tab.value === 'server') {
-    getVerifyLogApi({
-      verify_log_name: logFile.value,
-      max_lines: maxLineCount.value,
-    }).then((res) => {
-      logsContent.value = res.data;
-    });
-  }
+  getVerifyLogApi({
+    verify_log_name: logFile.value,
+    max_lines: maxLineCount.value,
+  }).then((res) => {
+    logsContent.value = res.data;
+  });
   if (enableAutoScroll.value) {
     scrollToBottom();
   }
 };
 
 const onCreateVerify = () => {
-  popupNewVerifyDialog(async ({ folder, json }) => {
-    // 在这里把 folder / json 传给你的创建验证接口
-    // await api.createVerify({ folder, json });
+  popupNewVerifyDialog(async (data: NewVerificationInfo) => {
+    runVerifyApi(data).then((res) => {
+      if (res.status === 200) {
+        logFile.value = res.data.log_name;
+        loadLogs();
+      }
+    });
   });
 };
 
@@ -134,20 +124,6 @@ watch(
     interval = setInterval(() => {
       loadLogs();
     }, refresh_duration.value * 1000);
-  }
-);
-
-watch(
-  () => serverExcludeKeywords.value,
-  () => {
-    loadLogs();
-  }
-);
-
-watch(
-  () => proxyExcludeKeywords.value,
-  () => {
-    loadLogs();
   }
 );
 </script>
