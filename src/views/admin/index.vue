@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChatbubbleEllipses } from '@vicons/ionicons5';
+import { ChatbubbleEllipses, CheckmarkCircleOutline } from '@vicons/ionicons5';
 import { SupervisedUserCircleRound } from '@vicons/material';
 import { NIcon } from 'naive-ui';
 import { h, ref, watch } from 'vue';
@@ -54,7 +54,7 @@ const menuOptions = [
   {
     label: '一键验证',
     key: 'oneClickVerification',
-    icon: renderIcon(SupervisedUserCircleRound),
+    icon: renderIcon(CheckmarkCircleOutline),
   },
 ];
 

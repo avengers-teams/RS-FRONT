@@ -1,11 +1,6 @@
 import { getInterpreterSandboxFileDownloadUrlApi } from '@/api/conv';
 import { i18n } from '@/i18n';
-import {
-  BaseChatMessage,
-  OpenaiWebChatMessageMultimodalTextContent,
-  OpenaiWebChatMessageMultimodalTextContentImagePart,
-  OpenaiWebChatMessageTextContent,
-} from '@/types/schema';
+import { BaseChatMessage } from '@/types/schema';
 import { getTextMessageContent } from '@/utils/chat';
 import { Dialog } from '@/utils/tips';
 const t = i18n.global.t as any;
@@ -52,7 +47,7 @@ export function buildTemporaryMessage(
   role: string,
   textContent: string,
   parent: string | undefined,
-  openaiWebMultimodalImageParts: OpenaiWebChatMessageMultimodalTextContentImagePart[] | null = null
+  MultimodalImageParts: any = null
 ) {
   const random_strid = Math.random().toString(36).substring(2, 16);
   const content = {
@@ -68,21 +63,20 @@ export function buildTemporaryMessage(
     children: [],
     create_time: new Date().toISOString(),
   } as BaseChatMessage;
-  if (openaiWebMultimodalImageParts) {
+  if (MultimodalImageParts) {
     result.content = {
       content_type: 'multimodal_text',
-      parts: [textContent, ...openaiWebMultimodalImageParts],
-    } as OpenaiWebChatMessageMultimodalTextContent;
+      parts: [textContent, ...MultimodalImageParts],
+    };
   }
   return result;
 }
 
 export function modifiyTemporaryMessageContent(message: BaseChatMessage, textContent: string) {
   if (message.content?.content_type != 'text') {
-    console.error('wrong content type in temporary openai_api message', message);
     return message.content;
   }
-  const content = message.content as OpenaiWebChatMessageTextContent | OpenaiWebChatMessageMultimodalTextContent;
+  const content = message.content;
   content.parts = [textContent];
   return content;
 }

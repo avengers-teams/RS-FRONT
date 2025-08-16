@@ -21,21 +21,21 @@
         <n-menu
           ref="menuRef"
           v-model:value="convId"
-          class="-mx-2 h-[64vh] overflow-y-auto"
+          class="-mx-2 h-[61.5vh] overflow-y-auto"
           :content-style="{ backgroundColor: 'red' }"
           :disabled="props.loading"
           :options="menuOptions"
           :root-indent="18"
         />
-        <div class="h-[23vh] overflow-y-auto">
+        <div class="h-[24.5vh] overflow-y-auto">
           <!-- 左侧功能按钮 -->
           <n-list class="text-center">
-            <n-divider />
-            <n-list-item class="pb-5 pt-0 cursor-pointer" @click="emits('addEvent', 1)"> 图像语义生成 </n-list-item>
+            <hr class="bg-[#9A9A9A5F] border-none h-[0.5px]" />
+            <n-list-item class="pb-3 pt-0 cursor-pointer" @click="emits('addEvent', 1)"> 图像语义生成 </n-list-item>
             <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 2)"> 目标识别与计数 </n-list-item>
             <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 3)"> 空间感知与定位 </n-list-item>
             <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 4)"> 地物分类与状态评估 </n-list-item>
-            <n-list-item class="py-5 cursor-pointer" @click="emits('addEvent', 5)"> 场景推理与决策 </n-list-item>
+            <n-list-item class="py-3 cursor-pointer" @click="emits('addEvent', 5)"> 场景推理与决策 </n-list-item>
           </n-list>
         </div>
       </div>

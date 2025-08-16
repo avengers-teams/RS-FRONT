@@ -25,7 +25,7 @@
             :theme-overrides="{
               itemDisabledOpacity: '1',
             }"
-            :disabled="!isCurrentNewConversation && imageUrl"
+            :disabled="!isCurrentNewConversation"
             :max="1"
           >
             <n-upload-dragger v-if="!imageUrl" class="h-full" :disabled="!isCurrentNewConversation && imageUrl">
@@ -195,13 +195,7 @@ import { getAskWebsocketApiUrl } from '@/api/chat';
 import { generateConversationTitleApi, setConversationTitleApi } from '@/api/conv';
 import LkIcon from '@/components/LKIcon.vue';
 import { useConversationStore, useFileStore, useUserStore } from '@/store';
-import {
-  AskRequest,
-  AskResponse,
-  BaseChatMessage,
-  BaseConversationHistory,
-  BaseConversationSchema,
-} from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory, BaseConversationSchema } from '@/types/schema';
 import { taskTypeMap } from '@/utils/chat';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
 import HistoryContent from '@/views/conversation/components/HistoryContent.vue';
@@ -245,7 +239,7 @@ const checkFileBeforeUpload = (options: { file: UploadFileInfo; fileList: Upload
 };
 
 // 判断文件是否为 TIFF 格式
-const isTiff = (buffer) => {
+const isTiff = (buffer: any) => {
   const view = new Uint8Array(buffer);
   return (view[0] === 0x49 && view[1] === 0x49) || (view[0] === 0x4d && view[1] === 0x4d);
 };
@@ -522,7 +516,7 @@ const sendMsg = async () => {
     ];
   }
 
-  const askRequest: AskRequest = {
+  const askRequest: any = {
     new_conversation: isCurrentNewConversation.value,
     task_type: currentConversation.value!.task_type,
     text_content: text,
@@ -534,14 +528,14 @@ const sendMsg = async () => {
     askRequest.parent = currentConvHistory.value.current_node;
   }
   if (fileStore.uploadedFileInfos) {
-    askRequest.images = fileStore.uploadedFileInfos.map((info) => {
+    askRequest.images = fileStore.uploadedFileInfos.map((info: any) => {
       return info.hash_name + info.file_suffix;
     });
   }
 
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
-  let wsErrorMessage: AskResponse | null = null;
+  let wsErrorMessage: any | null = null;
   const webSocket = new WebSocket(wsUrl);
 
   let respConversationId = null as string | null;
@@ -551,7 +545,7 @@ const sendMsg = async () => {
   };
 
   webSocket.onmessage = (event: MessageEvent) => {
-    const response = JSON.parse(event.data) as AskResponse;
+    const response = JSON.parse(event.data);
     // console.log('Received message from server:', reply);
     if (response.type === 'waiting') {
       // 等待回复
@@ -615,31 +609,6 @@ const sendMsg = async () => {
         // 更新对话信息，恢复正常状态
         if (isCurrentNewConversation.value) {
           // 尝试生成标题或保存标题
-          if (
-            askRequest.source == 'openai_web' &&
-            (askRequest.new_title == undefined || askRequest.new_title.length == 0)
-          ) {
-            if (currentConvHistory.value!.title == undefined || currentConvHistory.value!.title.length == 0) {
-              const lastRecvMessageId = allNewMessages[allNewMessages.length - 1].id;
-              console.log('try to generate conversation title', respConversationId, lastRecvMessageId);
-              try {
-                const response = await generateConversationTitleApi(respConversationId!, lastRecvMessageId);
-                currentConvHistory.value!.title = response.data;
-              } catch (err) {
-                console.error('Failed to generate conversation title', err);
-              }
-            } else {
-              // 自动生成了标题，更新到数据库
-              const title = currentConvHistory.value!.title;
-              try {
-                console.log('update title', respConversationId, title);
-                await setConversationTitleApi(respConversationId!, title);
-              } catch (err) {
-                console.error('Failed to set conversation title', err);
-              }
-            }
-          }
-
           const newConvHistory = {
             _id: respConversationId!,
             task_type: askRequest.task_type,
