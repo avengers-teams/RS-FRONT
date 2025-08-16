@@ -3,10 +3,11 @@ import { NButton, NDropdown, NIcon, NInput } from 'naive-ui';
 import { h } from 'vue';
 
 import { i18n } from '@/i18n';
-import { NewConversationInfo } from '@/types/custom';
+import { NewConversationInfo, NewVerificationInfo } from '@/types/custom';
 import { BaseConversationSchema } from '@/types/schema';
 import { Dialog, Message } from '@/utils/tips';
 import NewConversationForm from '@/views/conversation/components/NewConversationForm.vue';
+import NewVerificationForm from '@/views/admin/components/NewVerificationForm.vue';
 
 const t = i18n.global.t as any;
 
@@ -135,6 +136,49 @@ export const popupNewConversationDialog = (callback: (newConversationInfo: NewCo
           .catch(() => {
             resolve(true);
           })
+          .finally(() => {
+            d.loading = false;
+          });
+      });
+    },
+  });
+};
+
+export const popupNewVerifyDialog = (callback: (info: NewVerificationInfo) => Promise<void>) => {
+  let input: NewVerificationInfo | null = null;
+
+  const d = Dialog.info({
+    title: t('新建验证'),
+    positiveText: t('确认'),
+    negativeText: t('取消'),
+    content: () =>
+      h(NewVerificationForm, {
+        onInput: (val: NewVerificationInfo) => {
+          input = val;
+        },
+      }),
+    style: { width: '640px' },
+    onPositiveClick() {
+      d.loading = true;
+      return new Promise((resolve) => {
+        if (!input) {
+          Message.error('请完成表单');
+          d.loading = false;
+          return resolve(false);
+        }
+        if (!input.image_root) {
+          Message.error('请选择目录');
+          d.loading = false;
+          return resolve(false);
+        }
+        if (!input.filepath) {
+          Message.error('请选择 JSON 文件');
+          d.loading = false;
+          return resolve(false);
+        }
+        callback(input)
+          .then(() => resolve(true))
+          .catch(() => resolve(true))
           .finally(() => {
             d.loading = false;
           });

@@ -12,7 +12,7 @@
       >
         <n-button>上传数据集</n-button>
       </n-upload>
-      <n-button type="primary" @click="newverifytask">新建测试任务</n-button>
+      <n-button type="primary" @click="onCreateVerify">新建测试任务</n-button>
     </div>
     <div class="flex flex-col">
       <!-- 设置 -->
@@ -57,6 +57,7 @@ import { nextTick, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getVerifyLogApi, getVerifyLogFilesApi } from '@/api/verify';
+import { popupNewVerifyDialog } from '@/utils/renders';
 
 // const  newverifytask=
 
@@ -107,6 +108,13 @@ const loadLogs = () => {
   if (enableAutoScroll.value) {
     scrollToBottom();
   }
+};
+
+const onCreateVerify = () => {
+  popupNewVerifyDialog(async ({ folder, json }) => {
+    // 在这里把 folder / json 传给你的创建验证接口
+    // await api.createVerify({ folder, json });
+  });
 };
 
 loadLogs();

@@ -46,6 +46,7 @@ declare module 'vue' {
     NSwitch: typeof import('naive-ui')['NSwitch']
     NText: typeof import('naive-ui')['NText']
     NTooltip: typeof import('naive-ui')['NTooltip']
+    NTreeSelect: typeof import('naive-ui')['NTreeSelect']
     NUpload: typeof import('naive-ui')['NUpload']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']
     PreferenceForm: typeof import('./src/components/PreferenceForm.vue')['default']

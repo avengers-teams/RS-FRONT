@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { BaseConversationHistory } from '@/types/schema';
+export type VerifyTreeType = 'all' | 'floder' | 'folder' | 'json' | string;
+
+export interface GetVerifyTreeParams {
+  type?: VerifyTreeType;
+  relpath?: string;
+  include_root?: boolean;
+}
 import ApiUrl from '@/api/url';
 
 export function getVerifyLogFilesApi() {
@@ -8,4 +14,8 @@ export function getVerifyLogFilesApi() {
 
 export function getVerifyLogApi(options: any) {
   return axios.post(`${ApiUrl.VerifyLog}`, options);
+}
+
+export function getVerifyTreeApi(params: GetVerifyTreeParams) {
+  return axios.get(ApiUrl.VerifyUnpackedTree, { params });
 }

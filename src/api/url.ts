@@ -11,6 +11,8 @@ enum ApiUrl {
 
   VerifyLog = '/verify/log',
   VerifyLogFiles = '/verify/log_files',
+  VerifyUnpackedTree = '/verify/unpacked/tree',
+  VerifyRun = '/verify/run',
 }
 
 export default ApiUrl;
