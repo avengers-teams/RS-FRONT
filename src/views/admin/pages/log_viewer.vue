@@ -69,7 +69,7 @@ const logFileOptions = ref();
 getVerifyLogFilesApi().then((res) => {
   logFileOptions.value = res.data;
 });
-const logFile = ref();
+const logFile = ref('verify.log');
 
 watch(
   () => maxLineCount.value,
@@ -100,7 +100,10 @@ const onCreateVerify = () => {
   popupNewVerifyDialog(async (data: NewVerificationInfo) => {
     runVerifyApi(data).then((res) => {
       if (res.status === 200) {
-        logFile.value = res.data.log_name;
+        getVerifyLogFilesApi().then((res) => {
+          logFileOptions.value = res.data;
+          logFile.value = res.data[0].value;
+        });
         loadLogs();
       }
     });
@@ -113,7 +116,6 @@ let interval = setInterval(() => {
 }, refresh_duration.value * 1000);
 
 onUnmounted(() => {
-  // 添加这个部分，这样组件卸载时会清除定时器
   clearInterval(interval);
 });
 
@@ -124,6 +126,12 @@ watch(
     interval = setInterval(() => {
       loadLogs();
     }, refresh_duration.value * 1000);
+  }
+);
+watch(
+  () => logFile.value,
+  () => {
+    loadLogs();
   }
 );
 </script>

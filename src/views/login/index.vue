@@ -6,11 +6,11 @@
         <form action="#" class="sign-in-form">
           <h2 class="title">登录</h2>
           <div class="input-field">
-            <i> <img src="../../../public/用户.svg" class="w-5" /></i>
+            <i> <img src="../../../public/user.png" class="w-5" /></i>
             <input v-model="formValue.username" type="text" placeholder="用户名" />
           </div>
           <div class="input-field">
-            <i> <img src="../../../public/密码.svg" class="w-5" /></i>
+            <i> <img src="../../../public/password.png" class="w-5" /></i>
             <input v-model="formValue.password" type="password" placeholder="密码" />
           </div>
           <n-button class="btn solid text-lg" @click="login" text-color="#ffffff">立即登录</n-button>
@@ -19,15 +19,15 @@
         <form action="#" class="sign-up-form">
           <h2 class="title">注册</h2>
           <div class="input-field">
-            <i> <img src="../../../public/用户.svg" class="w-5" /></i>
+            <i> <img src="../../../public/user.png" class="w-5" /></i>
             <input v-model="formValue.username" type="text" placeholder="用户名" />
           </div>
           <div class="input-field">
-            <i> <img src="../../../public/邮箱.svg" class="w-5" /></i>
+            <i> <img src="../../../public/email.png" class="w-5" /></i>
             <input v-model="formValue.email" type="email" placeholder="邮箱" />
           </div>
           <div class="input-field">
-            <i> <img src="../../../public/密码.svg" class="w-5" /></i>
+            <i> <img src="../../../public/password.png" class="w-5" /></i>
             <input v-model="formValue.password" type="password" placeholder="密码" />
           </div>
 
@@ -44,7 +44,7 @@
           <h1 class="yishuzi text-5xl">灵瞰视界，洞见未来</h1>
           <h3 class="buttomtext">感知地球变化，赋能智慧决策</h3>
         </div>
-        <img src="../../../public/卫星.svg" class="image123" alt="" />
+        <img src="../../../public/plant.png" class="image123" alt="" />
       </div>
       <div class="panel right-panel">
         <div class="content tooltext">
@@ -54,7 +54,7 @@
           <h3>地物状态透视｜量化灾损与城市变迁</h3>
           <h3>动态推演决策｜预判趋势+生成最优路径</h3>
         </div>
-        <img src="../../../public/卫星.svg" class="image123" alt="" />
+        <img src="../../../public/plant.png" class="image123" alt="" />
       </div>
     </div>
   </div>

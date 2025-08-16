@@ -70,6 +70,7 @@ import { getDateStringSorter } from '@/utils/table';
 import { Dialog, Message } from '@/utils/tips';
 
 import UserSelector from '../components/UserSelector.vue';
+import { taskTypeMap } from '@/utils/chat';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -113,11 +114,11 @@ const columns = computed<DataTableColumns<BaseConversationSchema>>(() => [
     },
   },
   {
-    title: t('labels.source'),
+    title: '任务类型',
     key: 'type',
     width: 80,
     render: (row) => {
-      return t(`sources_short.${row.source}`);
+      return taskTypeMap[row.task_type];
     },
   },
   {
