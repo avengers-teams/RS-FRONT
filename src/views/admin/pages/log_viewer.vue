@@ -2,16 +2,21 @@
   <div class="mb-4 flex flex-col">
     <div class="flex gap-9xl">
       <n-upload
-        action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
-        :headers="{
-          'naive-info': 'hello!',
-        }"
-        :data="{
-          'naive-data': 'cool! naive!',
-        }"
+        action="/api/verify/upload_dataset"
+        name="file"
+        method="post"
+        :multiple="false"
+        accept=".zip,application/zip,application/x-zip-compressed"
+        :on-before-upload="beforeUpload"
+        :on-finish="handleUploadFinish"
+        :on-error="handleUploadError"
+        :headers="uploadHeaders"
+        :show-file-list="false"
+        :with-credentials="false"
       >
         <n-button>上传数据集</n-button>
       </n-upload>
+
       <n-button type="primary" @click="onCreateVerify">新建测试任务</n-button>
     </div>
     <div class="flex flex-col">
@@ -53,11 +58,13 @@
 </template>
 
 <script setup lang="ts">
+import type { UploadProps } from 'naive-ui';
 import { nextTick, onUnmounted, ref, watch } from 'vue';
 
 import { getVerifyLogApi, getVerifyLogFilesApi, runVerifyApi } from '@/api/verify';
 import { NewVerificationInfo } from '@/types/custom';
 import { popupNewVerifyDialog } from '@/utils/renders';
+import { Message } from '@/utils/tips';
 
 const refresh_duration = ref(5);
 const logsContent = ref<Array<string>>();
@@ -108,6 +115,31 @@ const onCreateVerify = () => {
       }
     });
   });
+};
+
+// 如果需要 Bearer Token，把这里替换为你项目里获取 token 的方式
+const uploadHeaders = {
+  // Authorization: `Bearer ${yourToken}`
+} as Record<string, string>;
+
+const beforeUpload: UploadProps['onBeforeUpload'] = ({ file }) => {
+  // 名称或 MIME 其一符合即可
+  const isZipByName = /\.zip$/i.test(file.name);
+  const isZipByMime = file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
+  if (!isZipByName && !isZipByMime) {
+    Message.error('仅支持上传 .zip 文件');
+    return false;
+  }
+  return true;
+};
+
+const handleUploadFinish: UploadProps['onFinish'] = () => {
+  Message.success('上传成功');
+  // 如果需要，上传成功后可刷新日志文件列表或自动选中最新日志：
+};
+
+const handleUploadError: UploadProps['onError'] = () => {
+  Message.error('上传失败，请稍后重试');
 };
 
 loadLogs();
