@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     LKAvatar: typeof import('./src/components/LKAvatar.vue')['default']
     LKIcon: typeof import('./src/components/LKIcon.vue')['default']
-    NAutoComplete: typeof import('naive-ui')['NAutoComplete']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NBadge: typeof import('naive-ui')['NBadge']
     NButton: typeof import('naive-ui')['NButton']
