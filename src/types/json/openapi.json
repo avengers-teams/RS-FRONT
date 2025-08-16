@@ -443,7 +443,7 @@
           "parent": { "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }], "title": "Parent" },
           "children": { "items": { "type": "string", "format": "uuid" }, "type": "array", "title": "Children" },
           "content": {
-            "anyOf": [{ "$ref": "#/components/schemas/OpenaiApiChatMessageTextContent" }, { "type": "null" }]
+            "anyOf": [{ "$ref": "#/components/schemas/ChatMessageTextContent" }, { "type": "null" }]
           },
           "title": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Title" }
         },
@@ -524,14 +524,14 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "OpenaiApiChatMessageTextContent": {
+      "ChatMessageTextContent": {
         "properties": {
           "content_type": { "const": "text", "title": "Content Type" },
           "text": { "type": "string", "title": "Text" }
         },
         "type": "object",
         "required": ["content_type", "text"],
-        "title": "OpenaiApiChatMessageTextContent"
+        "title": "ChatMessageTextContent"
       },
       "UserCreate": {
         "properties": {

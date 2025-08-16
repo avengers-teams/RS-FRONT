@@ -1,11 +1,6 @@
 import DOMPurify from 'dompurify';
 
-import {
-  BaseChatMessage,
-  BaseConversationHistory,
-  OpenaiWebChatMessageMultimodalTextContent,
-  OpenaiWebChatMessageMultimodalTextContentImagePart,
-} from '@/types/schema';
+import { BaseChatMessage, BaseConversationHistory } from '@/types/schema';
 
 export const taskTypeMap: Record<string, string> = {
   1: '图像语义生成',
@@ -29,12 +24,10 @@ export const getContentRawText = (message: BaseChatMessage | null): string => {
   }
 };
 
-export const getMultimodalContentImageParts = (
-  message: BaseChatMessage | null
-): OpenaiWebChatMessageMultimodalTextContentImagePart[] => {
+export const getMultimodalContentImageParts = (message: BaseChatMessage | null) => {
   if (!message || !message.content) return [];
   if (message.content.content_type == 'multimodal_text') {
-    const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
+    const content = message.content;
     return content.parts!.filter((part: any) => {
       return typeof part !== 'string';
     });
@@ -99,7 +92,6 @@ export function getTextMessageContent(messages: BaseChatMessage[]) {
   let result = '';
   // 遍历 props.messages
   // 如果 message.content.content_type == 'text' 则加入 result，其它跳过
-  // 对于 GPT-4-browsing 的引用，转换为 span
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i] as BaseChatMessage;
     if (!message || !message.content) continue;

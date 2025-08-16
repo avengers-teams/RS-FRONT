@@ -61,7 +61,7 @@
 import { computed, onMounted, ref } from 'vue';
 
 import { useAppStore } from '@/store';
-import { BaseChatMessage, OpenaiWebChatMessageMultimodalTextContentImagePart } from '@/types/schema';
+import { BaseChatMessage } from '@/types/schema';
 import { dompurifyRenderedHtml, getContentRawText } from '@/utils/chat';
 import md from '@/utils/markdown';
 

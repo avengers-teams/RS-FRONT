@@ -395,8 +395,8 @@ export interface components {
       /** Detail */
       detail?: components['schemas']['ValidationError'][];
     };
-    /** OpenaiApiChatMessageTextContent */
-    OpenaiApiChatMessageTextContent: {
+    /** ChatMessageTextContent */
+    ChatMessageTextContent: {
       /**
        * Content Type
        * @constant

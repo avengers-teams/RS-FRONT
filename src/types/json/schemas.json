@@ -95,7 +95,7 @@
             },
             "type": "object",
             "required": ["content_type", "text"],
-            "title": "OpenaiApiChatMessageTextContent"
+            "title": "ChatMessageTextContent"
           },
           {
             "type": "null"
@@ -236,7 +236,7 @@
                   },
                   "type": "object",
                   "required": ["content_type", "text"],
-                  "title": "OpenaiApiChatMessageTextContent"
+                  "title": "ChatMessageTextContent"
                 },
                 {
                   "type": "null"
@@ -482,7 +482,7 @@
     "type": "object",
     "title": "HTTPValidationError"
   },
-  "OpenaiApiChatMessageTextContent": {
+  "ChatMessageTextContent": {
     "properties": {
       "content_type": {
         "const": "text",
@@ -495,7 +495,7 @@
     },
     "type": "object",
     "required": ["content_type", "text"],
-    "title": "OpenaiApiChatMessageTextContent"
+    "title": "ChatMessageTextContent"
   },
   "UserCreate": {
     "properties": {
