@@ -37,7 +37,7 @@ export const getMultimodalContentImageParts = (
     const content = message.content as OpenaiWebChatMessageMultimodalTextContent;
     return content.parts!.filter((part: any) => {
       return typeof part !== 'string';
-    }) as OpenaiWebChatMessageMultimodalTextContentImagePart[];
+    });
   }
   return [];
 };

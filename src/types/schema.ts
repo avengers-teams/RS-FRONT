@@ -10,7 +10,6 @@ export type OpenaiWebChatMessageTextContent = components['schemas']['OpenaiWebCh
 export type OpenaiWebChatMessageMultimodalTextContent =
   components['schemas']['OpenaiWebChatMessageMultimodalTextContent'];
 
-export type OpenaiApiChatMessageTextContent = components['schemas']['OpenaiApiChatMessageTextContent'];
 export type OpenaiWebChatMessageMultimodalTextContentImagePart =
   components['schemas']['OpenaiWebChatMessageMultimodalTextContentImagePart-Input'];
 

@@ -34,14 +34,11 @@
         class="flex-grow flex flex-col justify-center"
         :style="{ backgroundColor: themeVars.cardColor }"
       >
-        <n-empty v-if="!currentConversation" :description="$t('tips.loadTask')">
+        <n-empty v-if="!currentConversation" description="请从左侧选择任务以加载">
           <template #icon>
             <n-icon>
               <ChatboxEllipses />
             </n-icon>
-          </template>
-          <template #extra>
-            <n-button secondary @click="makeNewTask"> 发起新任务 </n-button>
           </template>
         </n-empty>
       </div>
@@ -184,20 +181,6 @@ const sendDisabled = computed(() => {
     inputValue.value.trim() == ''
   );
 });
-
-const makeNewTask = () => {
-  if (hasNewConversation.value) return;
-  popupNewConversationDialog(async (newConversationInfo: NewConversationInfo) => {
-    if (!newConversationInfo.task_type) return;
-    newConversationInfo.title = newConversationInfo.title || `新任务(${taskTypeMap[newConversationInfo.task_type]})`;
-    console.log('makeNewConversation', newConversationInfo);
-    conversationStore.createNewConversation(newConversationInfo);
-    currentConversationId.value = conversationStore.newConversation!.conversation_id!;
-    hasNewConversation.value = true;
-    appStore.lastSelectedType = newConversationInfo.task_type;
-    appStore.currentTaskType = newConversationInfo.task_type;
-  });
-};
 
 const scrollToBottom = () => {
   historyRef.value.scrollTo({ left: 0, top: historyRef.value.$refs.scrollbarInstRef.contentRef.scrollHeight });

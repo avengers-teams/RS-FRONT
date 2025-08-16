@@ -170,12 +170,10 @@ import 'tiff.js';
 
 import {
   NButton,
-  NCard,
   NIcon,
   NLayoutContent,
   NProgress,
   NSelect,
-  NSpace,
   NSplit,
   NText,
   NUpload,
@@ -203,7 +201,6 @@ import {
   BaseChatMessage,
   BaseConversationHistory,
   BaseConversationSchema,
-  OpenaiWebChatMessageMultimodalTextContentImagePart,
 } from '@/types/schema';
 import { taskTypeMap } from '@/utils/chat';
 import { Dialog, LoadingBar, Message } from '@/utils/tips';
@@ -341,6 +338,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
     fileStore.naiveUiFileIdToServerFileIdMap[file.id] = uploadedFileInfo.hash_name;
 
     // ⭐ 关键：直接用 /temp/${hash_name}.png 作为缩略图
+    console.log(file);
     const thumbUrl = buildTempThumbUrl(uploadedFileInfo.hash_name);
     // 加时间戳避免缓存
     imageUrl.value = `${thumbUrl}?ts=${Date.now()}`;
@@ -362,6 +360,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: UploadCust
 // 建议用 axios，因为你项目里已经在用，并且可能要带 cookie / baseURL
 
 const handleUpdateImg = async (url?: string | null) => {
+  console.log(url);
   if (!url) {
     imageUrl.value = null;
     return;
@@ -543,7 +542,6 @@ const sendMsg = async () => {
   const wsUrl = getAskWebsocketApiUrl();
   let hasError = false;
   let wsErrorMessage: AskResponse | null = null;
-  console.log('Connecting to', wsUrl, askRequest);
   const webSocket = new WebSocket(wsUrl);
 
   let respConversationId = null as string | null;
@@ -576,7 +574,6 @@ const sendMsg = async () => {
       }
       const message = response.message as BaseChatMessage;
       if (message.role == 'user') {
-        console.log('got message', message);
         currentSendMessage.value = message;
       } else {
         if (message.title != null) {
@@ -665,9 +662,14 @@ const sendMsg = async () => {
         currentConversationId.value = respConversationId!; // 这里将会导致 currentConversation 切换
 
         // 清除附件
-        fileStore.clear();
+
+        console.log(imageUrl.value);
 
         await conversationStore.fetchAllConversations();
+        console.log(fileStore.uploadedFileInfos);
+        imageUrl.value = '/api/temp/' + fileStore.uploadedFileInfos[0].hash_name + '.png';
+        fileStore.clear();
+        console.log(imageUrl.value);
         conversationStore.removeNewConversation();
         hasNewConversation.value = false;
         console.log('done', allNewMessages, currentConversationId.value);
