@@ -432,7 +432,12 @@ watch(props, () => {
 });
 watch(currentConversationId, (newVal, _oldVal) => {
   emit('update', currentConversationId.value);
-  imageUrl.value = null;
+  const isCommitFromNew =
+    !!_oldVal && _oldVal.startsWith('new_conversation') && !!newVal && !newVal.startsWith('new_conversation');
+  // 只有不是“新建 → 正式”的切换时，才清空 imageUrl
+  if (!isCommitFromNew) {
+    imageUrl.value = null;
+  }
   if (newVal != 'new_conversation') {
     handleChangeConversation(newVal);
   }
@@ -636,7 +641,6 @@ const sendMsg = async () => {
 
         await conversationStore.fetchAllConversations();
         console.log(fileStore.uploadedFileInfos);
-        imageUrl.value = '/api/temp/' + fileStore.uploadedFileInfos[0].hash_name + '.png';
         fileStore.clear();
         console.log(imageUrl.value);
         conversationStore.removeNewConversation();

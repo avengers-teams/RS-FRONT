@@ -665,6 +665,6 @@
         "title": "ValidationError"
       }
     },
-    "securitySchemes": { "APIKeyCookie": { "type": "apiKey", "in": "cookie", "name": "cws_user_auth" } }
+    "securitySchemes": { "APIKeyCookie": { "type": "apiKey", "in": "cookie", "name": "lingkan_user_auth" } }
   }
 }

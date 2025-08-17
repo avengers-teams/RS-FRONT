@@ -1,6 +1,6 @@
 import { hasCookie, removeCookie } from '@/utils/cookies';
 
-const COOKIE_KEY = 'cws_user_auth';
+const COOKIE_KEY = 'lingkan_user_auth';
 
 const hasLoginCookie = () => {
   return !!hasCookie(COOKIE_KEY);
